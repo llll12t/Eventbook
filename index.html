@@ -44,6 +44,8 @@
       <div id="detailEventQueue" class="text-sm text-red-500"></div>
     </div>
     <div id="detailEventPrice" class="text-xl font-bold text-red-500 mb-4"></div>
+    <!-- Gallery -->
+    <div id="detailGallery" class="flex space-x-2 overflow-x-auto mb-4"></div>
     <p id="detailEventDesc" class="text-sm text-gray-700 mb-2"></p>
     <p id="detailEventDesc2" class="text-sm text-gray-700 mb-4"></p>
     <button id="detailBookBtn" class="bg-[#071d4a] text-white w-full py-2 rounded-2xl">จองกิจกรรมนี้</button>
@@ -104,22 +106,35 @@
   </div>
 
   <script>
+    // Helpers: format date/time
+    function formatDate(d) {
+      const dt = new Date(d);
+      const dd = String(dt.getDate()).padStart(2, '0');
+      const mm = String(dt.getMonth()+1).padStart(2, '0');
+      const yyyy = dt.getFullYear();
+      return `${dd}-${mm}-${yyyy}`;
+    }
+    function formatTime(d) {
+      const dt = new Date(d);
+      const hh = String(dt.getHours()).padStart(2, '0');
+      const mi = String(dt.getMinutes()).padStart(2, '0');
+      return `${hh}:${mi}`;
+    }
+
     // Global state
     let eventsData = [];
     let selectedEvent = null;
-    let userLineIdGlobal = "";
 
     // LIFF
     async function initLiffGlobal() {
       await liff.init({ liffId: "2007305761-opN68Y00" });
       if (!liff.isLoggedIn()) liff.login();
       const profile = await liff.getProfile();
-      userLineIdGlobal = profile.userId;
       document.getElementById("bookUserLineId").value = profile.userId;
     }
     document.addEventListener("DOMContentLoaded", () => {
       initLiffGlobal();
-      flatpickr("#step1EventDate", { locale: "th", dateFormat: "d-m-Y" });
+      flatpickr("#step1EventList", { locale: "th", dateFormat: "d-m-Y" });
       fetchAllEvents();
     });
 
@@ -131,16 +146,14 @@
     async function fetchAllEvents() {
       showLoading();
       const res = await fetch(API_URL);
-      const data = await res.json();
-      eventsData = data;
-      renderEventList(data);
+      eventsData = await res.json();
+      renderEventList(eventsData);
       hideLoading();
     }
 
-    // Render list
+    // Render list with queue badge
     function renderEventList(events) {
-      const c = document.getElementById("step1EventList");
-      c.innerHTML = "";
+      const c = document.getElementById("step1EventList"); c.innerHTML = "";
       events.forEach(evt => {
         const card = document.createElement("div");
         card.className = "relative glass p-2 rounded-2xl shadow flex flex-col items-center";
@@ -152,8 +165,7 @@
         const total  = Number(evt["จำนวน"]) || 0;
         const badge = document.createElement("div");
         badge.className = "absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full";
-        badge.textContent = booked + "/" + total;
-
+        badge.textContent = `${booked}/${total}`;
         const btn = document.createElement("button");
         btn.textContent = "เลือก";
         btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
@@ -164,39 +176,49 @@
       });
     }
 
-    // Populate detail
+    // Populate detail including formatted date/time and gallery
     function populateDetail() {
       showStep("step2");
       document.getElementById("detailMainImg").src = selectedEvent["รูปภาพ"];
       document.getElementById("detailEventName").textContent     = selectedEvent["ชื่อ"];
       document.getElementById("detailEventCategory").textContent = selectedEvent["หมวดหมู่"];
-      // format date + time
-      const rawDate = selectedEvent["วันที่"]; // "DD-MM-YYYY"
-      const rawTime = String(selectedEvent["เวลา"]);
-      let formattedTime = rawTime;
-      if (/^\d{3,4}$/.test(rawTime)) {
-        formattedTime = rawTime.padStart(4, "0").replace(/(\d{2})(\d{2})/, "$1:$2");
-      }
-      document.getElementById("detailEventDateTime").textContent = rawDate + " เวลา " + formattedTime;
+      // format date/time
+      const rawDate = selectedEvent["วันที่"];
+      const rawTime = selectedEvent["เวลา"];
+      const fDate = formatDate(rawDate);
+      const fTime = formatTime(rawTime);
+      document.getElementById("detailEventDateTime").textContent = `${fDate} เวลา ${fTime}`;
       // queue
       const booked = Number(selectedEvent["คิว"]) || 0;
       const total  = Number(selectedEvent["จำนวน"]) || 0;
-      document.getElementById("detailEventQueue").textContent = booked + "/" + total;
-
-      document.getElementById("detailEventPrice").textContent    = selectedEvent["ราคา"];
-      document.getElementById("detailEventDesc").textContent     = selectedEvent["รายละเอียด"];
-      document.getElementById("detailEventDesc2").textContent    = selectedEvent["รายละเอียด-2"];
+      document.getElementById("detailEventQueue").textContent = `${booked}/${total}`;
+      // price & desc
+      document.getElementById("detailEventPrice").textContent = selectedEvent["ราคา"];
+      document.getElementById("detailEventDesc").textContent  = selectedEvent["รายละเอียด"];
+      document.getElementById("detailEventDesc2").textContent = selectedEvent["รายละเอียด-2"];
+      // gallery
+      const gallery = document.getElementById("detailGallery");
+      gallery.innerHTML = "";
+      ["รูปประกอบ-1","รูปประกอบ-2","รูปประกอบ-3","รูปประกอบ-4"].forEach(key => {
+        if (selectedEvent[key]) {
+          const thumb = document.createElement("img");
+          thumb.src = selectedEvent[key];
+          thumb.className = "w-20 h-20 object-cover rounded-2xl cursor-pointer";
+          thumb.onclick = () => { document.getElementById("detailMainImg").src = selectedEvent[key]; };
+          gallery.appendChild(thumb);
+        }
+      });
     }
 
-    // Populate form
+    // Populate booking form
     function populateBookingForm() {
       showStep("step3");
       document.getElementById("bookEventId").value       = selectedEvent["ไอดีกิจกรรม"];
       document.getElementById("bookEventName").value     = selectedEvent["ชื่อ"];
       document.getElementById("bookEventCategory").value = selectedEvent["หมวดหมู่"];
       document.getElementById("bookEventPrice").value    = selectedEvent["ราคา"];
-      document.getElementById("bookEventDate").value     = selectedEvent["วันที่"];
-      document.getElementById("bookEventTime").value     = selectedEvent["เวลา"];
+      document.getElementById("bookEventDate").value     = formatDate(selectedEvent["วันที่"]);
+      document.getElementById("bookEventTime").value     = formatTime(selectedEvent["เวลา"]);
     }
 
     // Steps navigation
