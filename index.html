@@ -212,7 +212,7 @@
 
                 // Content section
                 const content = document.createElement("div");
-                content.className = "p-4 flex flex-col gap-2";
+                content.className = "p-2 flex flex-col gap-2";
 
                 // Row 1: Title and status
                 const topRow = document.createElement("div");
@@ -235,13 +235,13 @@
                 const dateTime = document.createElement("div");
                 dateTime.className = "flex flex-col justify-center";
                 dateTime.innerHTML = `
-      <div class="text-sm">${formatDate(evt["วันที่"])}</div>
-      <div class="text-sm">${formatTime(evt["เวลา"])}</div>
-    `;
+                  <div class="text-xs">${formatDate(evt["วันที่"])}</div>
+                  <div class="text-xs">${formatTime(evt["เวลา"])}</div>
+                `;
 
                 const btn = document.createElement("button");
                 btn.textContent = "เลือก";
-                btn.className = "bg-orange-500 text-white px-5 rounded-full text-sm w-20"; // fixed width
+                btn.className = "bg-orange-500 text-white px-2 rounded-md text-sm w-12"; // fixed width
                 btn.onclick = () => {
                     selectedEvent = evt;
                     showStep("step2");
