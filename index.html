@@ -47,7 +47,7 @@
     </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen relative">
+<body class="bg-gray-50 min-h-screen relative">
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
         class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
@@ -56,8 +56,8 @@
 
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
-    <!--<h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1>
-    <!-- ปุ่มกรองหมวดหมู่ -->  <div class="px-2 py-4 mb-4 border rounded-lg shadow-lg">
+    <!-- <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1> -->
+    <div class="px-2 py-6 mb-4 border rounded-lg shadow-lg">
     <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center"></div>
  </div>
         <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
@@ -174,17 +174,7 @@
                 บันทึกการจอง
             </button>
         </form>
-<!--         <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40"></pre> -->
-        <!-- Custom Alert -->
-        <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-          <div class="bg-white p-6 rounded-xl shadow-xl max-w-xs text-center">
-            <p id="customAlertMessage" class="text-sm text-gray-800 mb-4"></p>
-            <button onclick="closeCustomAlert()" class="bg-[#071d4a] text-white px-4 py-2 rounded-full text-sm">
-              ตกลง
-            </button>
-          </div>
-        </div>
-
+        <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40"></pre>
     </div>
 
     <script>
@@ -411,19 +401,7 @@
             });
         }
 
-function showCustomAlert(message) {
-    const alertBox = document.getElementById('customAlert');
-    const alertMsg = document.getElementById('customAlertMessage');
-    alertMsg.textContent = message;
-    alertBox.classList.remove('hidden');
-}
-
-function closeCustomAlert() {
-    document.getElementById('customAlert').classList.add('hidden');
-}
-
-
-async function submitBooking() {
+        async function submitBooking() {
     showLoading();
 
     // Validate required fields
@@ -441,7 +419,7 @@ async function submitBooking() {
         const val = document.getElementById(field.id).value.trim();
         if (!val) {
             hideLoading();
-            showCustomAlert(`กรุณากรอก ${field.label}`);
+            alert(`กรุณากรอก ${field.label}`);
             document.getElementById(field.id).focus();
             return;
         }
@@ -454,7 +432,7 @@ async function submitBooking() {
         price: document.getElementById('bookEventPrice').value,
         date: document.getElementById('bookEventDate').value,
         time: document.getElementById('bookEventTime').value,
-        queue: "1",
+        queue: "1", // คิวตายตัว
         renterName: document.getElementById('bookRenterName').value,
         renterNameEn: document.getElementById('bookRenterNameEn').value,
         citizenId: document.getElementById('bookCitizenId').value,
@@ -476,25 +454,23 @@ async function submitBooking() {
         });
 
         await fetchAllEvents();
-        showCustomAlert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
 
-        // ปิด LIFF หลัง 1.5 วินาที
-        setTimeout(() => {
-            if (liff && liff.isInClient()) {
-                liff.close();
-            } else {
-                showStep('step1');
-                closeCustomAlert();
-            }
-        }, 1500);
+        // ปิด LIFF ถ้าอยู่ใน LIFF
+        if (liff && liff.isInClient()) {
+            liff.close();
+        } else {
+            showStep('step1');
+        }
 
     } catch (e) {
         console.error('Submit failed:', e);
-        showCustomAlert('ไม่สามารถจองได้ กรุณาลองใหม่');
+        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
     } finally {
         hideLoading();
     }
 }
+
 
     </script>
 </body>
