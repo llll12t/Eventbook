@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -8,7 +7,7 @@
   <title>จองกิจกรรม</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Flatpickr -->
+  <!-- Flatpickr CSS & JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -16,14 +15,14 @@
   <script src="config.js"></script>
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  <!-- Loading Spinner -->
+  <!-- Loading Spinner Styles -->
   <style>
     @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
     .loader {border:8px solid #f3f3f3;border-top:8px solid #071d4a;border-radius:50%;width:64px;height:64px;animation:spin 1s linear infinite;}
   </style>
 </head>
 <body class="bg-gradient-to-b from-blue-200 via-purple-100 to-white min-h-screen relative">
-  <!-- Loading -->
+  <!-- Loading Overlay -->
   <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
     <div class="loader"></div>
   </div>
@@ -105,18 +104,18 @@
   </div>
 
   <script>
-    // Variables
+    // Global state
     let eventsData = [];
     let selectedEvent = null;
     let userLineIdGlobal = "";
 
-    // LIFF init
+    // LIFF
     async function initLiffGlobal() {
       await liff.init({ liffId: "2007305761-opN68Y00" });
       if (!liff.isLoggedIn()) liff.login();
-      const p = await liff.getProfile();
-      userLineIdGlobal = p.userId;
-      document.getElementById("bookUserLineId").value = p.userId;
+      const profile = await liff.getProfile();
+      userLineIdGlobal = profile.userId;
+      document.getElementById("bookUserLineId").value = profile.userId;
     }
     document.addEventListener("DOMContentLoaded", () => {
       initLiffGlobal();
@@ -125,10 +124,10 @@
     });
 
     // Loading
-    function showLoading() {document.getElementById("loadingOverlay").classList.remove("hidden");}
-    function hideLoading() {document.getElementById("loadingOverlay").classList.add("hidden");}
+    function showLoading() { document.getElementById("loadingOverlay").classList.remove("hidden"); }
+    function hideLoading() { document.getElementById("loadingOverlay").classList.add("hidden"); }
 
-    // Fetch
+    // Fetch events
     async function fetchAllEvents() {
       showLoading();
       const res = await fetch(API_URL);
@@ -140,17 +139,27 @@
 
     // Render list
     function renderEventList(events) {
-      const c = document.getElementById("step1EventList"); c.innerHTML = "";
+      const c = document.getElementById("step1EventList");
+      c.innerHTML = "";
       events.forEach(evt => {
         const card = document.createElement("div");
-        card.className = "glass p-2 rounded-2xl shadow flex flex-col items-center";
+        card.className = "relative glass p-2 rounded-2xl shadow flex flex-col items-center";
         const img = document.createElement("img"); img.src = evt["รูปภาพ"];
         img.className = "w-full h-24 object-cover rounded-lg mb-2";
         const title = document.createElement("div"); title.textContent = evt["ชื่อ"];
+        // badge คิว
+        const booked = Number(evt["คิว"]) || 0;
+        const total  = Number(evt["จำนวน"]) || 0;
+        const badge = document.createElement("div");
+        badge.className = "absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full";
+        badge.textContent = booked + "/" + total;
+
         const btn = document.createElement("button");
-        btn.textContent = "เลือก"; btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
+        btn.textContent = "เลือก";
+        btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
         btn.onclick = () => { selectedEvent = evt; showStep("step2"); populateDetail(); };
-        card.append(img, title, btn);
+
+        card.append(img, title, badge, btn);
         c.appendChild(card);
       });
     }
@@ -161,10 +170,19 @@
       document.getElementById("detailMainImg").src = selectedEvent["รูปภาพ"];
       document.getElementById("detailEventName").textContent     = selectedEvent["ชื่อ"];
       document.getElementById("detailEventCategory").textContent = selectedEvent["หมวดหมู่"];
-      document.getElementById("detailEventDateTime").textContent =
-        selectedEvent["วันที่"] + ' เวลา ' + selectedEvent["เวลา"];
-      document.getElementById("detailEventQueue").textContent    =
-        selectedEvent["คิว"] + '/' + selectedEvent["จำนวน"];
+      // format date + time
+      const rawDate = selectedEvent["วันที่"]; // "DD-MM-YYYY"
+      const rawTime = String(selectedEvent["เวลา"]);
+      let formattedTime = rawTime;
+      if (/^\d{3,4}$/.test(rawTime)) {
+        formattedTime = rawTime.padStart(4, "0").replace(/(\d{2})(\d{2})/, "$1:$2");
+      }
+      document.getElementById("detailEventDateTime").textContent = rawDate + " เวลา " + formattedTime;
+      // queue
+      const booked = Number(selectedEvent["คิว"]) || 0;
+      const total  = Number(selectedEvent["จำนวน"]) || 0;
+      document.getElementById("detailEventQueue").textContent = booked + "/" + total;
+
       document.getElementById("detailEventPrice").textContent    = selectedEvent["ราคา"];
       document.getElementById("detailEventDesc").textContent     = selectedEvent["รายละเอียด"];
       document.getElementById("detailEventDesc2").textContent    = selectedEvent["รายละเอียด-2"];
@@ -181,7 +199,7 @@
       document.getElementById("bookEventTime").value     = selectedEvent["เวลา"];
     }
 
-    // Steps
+    // Steps navigation
     function showStep(id) {
       ["step1","step2","step3"].forEach(s => document.getElementById(s).classList.add("hidden"));
       document.getElementById(id).classList.remove("hidden");
@@ -190,22 +208,22 @@
     document.getElementById("backToStep2").onclick = () => showStep("step2");
     document.getElementById("detailBookBtn").onclick = populateBookingForm;
 
-    // Submit
+    // Submit booking
     document.getElementById("submitBookingBtn").onclick = async () => {
       showLoading();
       const payload = {
-        eventId:       document.getElementById("bookEventId").value,
-        eventName:     document.getElementById("bookEventName").value,
-        category:      document.getElementById("bookEventCategory").value,
-        price:         document.getElementById("bookEventPrice").value,
-        date:          document.getElementById("bookEventDate").value,
-        time:          document.getElementById("bookEventTime").value,
-        queue:         document.getElementById("bookQueue").value,
-        renterName:    document.getElementById("bookRenterName").value,
-        phone:         document.getElementById("bookPhone").value,
-        email:         document.getElementById("bookEmail").value,
-        note:          document.getElementById("bookNote").value,
-        userLineId:    document.getElementById("bookUserLineId").value,
+        eventId:    document.getElementById("bookEventId").value,
+        eventName:  document.getElementById("bookEventName").value,
+        category:   document.getElementById("bookEventCategory").value,
+        price:      document.getElementById("bookEventPrice").value,
+        date:       document.getElementById("bookEventDate").value,
+        time:       document.getElementById("bookEventTime").value,
+        queue:      document.getElementById("bookQueue").value,
+        renterName: document.getElementById("bookRenterName").value,
+        phone:      document.getElementById("bookPhone").value,
+        email:      document.getElementById("bookEmail").value,
+        note:       document.getElementById("bookNote").value,
+        userLineId: document.getElementById("bookUserLineId").value
       };
       await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
       hideLoading();
