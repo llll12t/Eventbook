@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <!-- config.js ให้กำหนด API_URL -->
+  <!-- config.js ให้กำหนด const API_URL = 'https://your-script-url/exec'; -->
   <script src="config.js"></script>
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -106,16 +106,22 @@
   </div>
 
   <script>
+    // Ensure API_URL is defined in config.js, e.g.:
+    // const API_URL = 'https://script.google.com/macros/s/AKfy.../exec';
+    if (typeof API_URL === 'undefined') {
+      console.error('API_URL is not defined. ตรวจสอบ config.js');
+    }
+
     // Helpers: format date/time
     function formatDate(d) {
-      const dt = new Date(d);
+      const dt = (typeof d === 'string' ? new Date(d) : d);
       const dd = String(dt.getDate()).padStart(2, '0');
       const mm = String(dt.getMonth()+1).padStart(2, '0');
       const yyyy = dt.getFullYear();
       return `${dd}-${mm}-${yyyy}`;
     }
     function formatTime(d) {
-      const dt = new Date(d);
+      const dt = (typeof d === 'string' ? new Date(d) : d);
       const hh = String(dt.getHours()).padStart(2, '0');
       const mi = String(dt.getMinutes()).padStart(2, '0');
       return `${hh}:${mi}`;
@@ -127,14 +133,17 @@
 
     // LIFF
     async function initLiffGlobal() {
-      await liff.init({ liffId: "2007305761-opN68Y00" });
-      if (!liff.isLoggedIn()) liff.login();
-      const profile = await liff.getProfile();
-      document.getElementById("bookUserLineId").value = profile.userId;
+      try {
+        await liff.init({ liffId: "2007106715-87nBmwNL" });
+        if (!liff.isLoggedIn()) await liff.login();
+        const profile = await liff.getProfile();
+        document.getElementById("bookUserLineId").value = profile.userId;
+      } catch(err) {
+        console.error('LIFF init error:', err);
+      }
     }
     document.addEventListener("DOMContentLoaded", () => {
       initLiffGlobal();
-      flatpickr("#step1EventList", { locale: "th", dateFormat: "d-m-Y" });
       fetchAllEvents();
     });
 
@@ -144,11 +153,18 @@
 
     // Fetch events
     async function fetchAllEvents() {
-      showLoading();
-      const res = await fetch(API_URL);
-      eventsData = await res.json();
-      renderEventList(eventsData);
-      hideLoading();
+      try {
+        showLoading();
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        eventsData = await res.json();
+        renderEventList(eventsData);
+      } catch(err) {
+        console.error('Error fetching events:', err);
+        alert('ไม่สามารถดึงข้อมูลกิจกรรมได้');
+      } finally {
+        hideLoading();
+      }
     }
 
     // Render list with queue badge
@@ -183,10 +199,8 @@
       document.getElementById("detailEventName").textContent     = selectedEvent["ชื่อ"];
       document.getElementById("detailEventCategory").textContent = selectedEvent["หมวดหมู่"];
       // format date/time
-      const rawDate = selectedEvent["วันที่"];
-      const rawTime = selectedEvent["เวลา"];
-      const fDate = formatDate(rawDate);
-      const fTime = formatTime(rawTime);
+      const fDate = formatDate(selectedEvent["วันที่"]);
+      const fTime = formatTime(selectedEvent["เวลา"]);
       document.getElementById("detailEventDateTime").textContent = `${fDate} เวลา ${fTime}`;
       // queue
       const booked = Number(selectedEvent["คิว"]) || 0;
@@ -197,14 +211,13 @@
       document.getElementById("detailEventDesc").textContent  = selectedEvent["รายละเอียด"];
       document.getElementById("detailEventDesc2").textContent = selectedEvent["รายละเอียด-2"];
       // gallery
-      const gallery = document.getElementById("detailGallery");
-      gallery.innerHTML = "";
+      const gallery = document.getElementById("detailGallery"); gallery.innerHTML = "";
       ["รูปประกอบ-1","รูปประกอบ-2","รูปประกอบ-3","รูปประกอบ-4"].forEach(key => {
         if (selectedEvent[key]) {
           const thumb = document.createElement("img");
           thumb.src = selectedEvent[key];
           thumb.className = "w-20 h-20 object-cover rounded-2xl cursor-pointer";
-          thumb.onclick = () => { document.getElementById("detailMainImg").src = selectedEvent[key]; };
+          thumb.onclick = () => document.getElementById("detailMainImg").src = selectedEvent[key];
           gallery.appendChild(thumb);
         }
       });
@@ -232,25 +245,32 @@
 
     // Submit booking
     document.getElementById("submitBookingBtn").onclick = async () => {
-      showLoading();
-      const payload = {
-        eventId:    document.getElementById("bookEventId").value,
-        eventName:  document.getElementById("bookEventName").value,
-        category:   document.getElementById("bookEventCategory").value,
-        price:      document.getElementById("bookEventPrice").value,
-        date:       document.getElementById("bookEventDate").value,
-        time:       document.getElementById("bookEventTime").value,
-        queue:      document.getElementById("bookQueue").value,
-        renterName: document.getElementById("bookRenterName").value,
-        phone:      document.getElementById("bookPhone").value,
-        email:      document.getElementById("bookEmail").value,
-        note:       document.getElementById("bookNote").value,
-        userLineId: document.getElementById("bookUserLineId").value
-      };
-      await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-      hideLoading();
-      alert('จองกิจกรรมเรียบร้อย');
-      liff.close();
+      try {
+        showLoading();
+        const payload = {
+          eventId:    document.getElementById("bookEventId").value,
+          eventName:  document.getElementById("bookEventName").value,
+          category:   document.getElementById("bookEventCategory").value,
+          price:      document.getElementById("bookEventPrice").value,
+          date:       document.getElementById("bookEventDate").value,
+          time:       document.getElementById("bookEventTime").value,
+          queue:      document.getElementById("bookQueue").value,
+          renterName: document.getElementById("bookRenterName").value,
+          phone:      document.getElementById("bookPhone").value,
+          email:      document.getElementById("bookEmail").value,
+          note:       document.getElementById("bookNote").value,
+          userLineId: document.getElementById("bookUserLineId").value
+        };
+        const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        alert('จองกิจกรรมเรียบร้อย');
+        liff.close();
+      } catch(err) {
+        console.error('Error submitting booking:', err);
+        alert('ไม่สามารถบันทึกการจองได้');
+      } finally {
+        hideLoading();
+      }
     };
   </script>
 </body>
