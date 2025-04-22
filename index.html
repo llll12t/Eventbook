@@ -467,24 +467,16 @@ function closeCustomAlert() {
     };
 
     document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
-
-    try {
+ try {
         await fetch(API_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-
         await fetchAllEvents();
-        showCustomAlert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
-        if (liff && liff.isInClient()) {
-            setTimeout(() => liff.close(), 1500); // ปิดหลังผู้ใช้กด "ตกลง"
-        }
-        } else {
-            showStep('step1');
-        }
-
+        showStep('step1');
+        alert('จองสำเร็จ');
     } catch (e) {
         console.error('Submit failed:', e);
         alert('ไม่สามารถจองได้ กรุณาลองใหม่');
