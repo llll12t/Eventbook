@@ -174,7 +174,17 @@
                 บันทึกการจอง
             </button>
         </form>
-        <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40"></pre>
+<!--         <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40"></pre> -->
+        <!-- Custom Alert -->
+        <div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+          <div class="bg-white p-6 rounded-xl shadow-xl max-w-xs text-center">
+            <p id="customAlertMessage" class="text-sm text-gray-800 mb-4"></p>
+            <button onclick="closeCustomAlert()" class="bg-[#071d4a] text-white px-4 py-2 rounded-full text-sm">
+              ตกลง
+            </button>
+          </div>
+        </div>
+
     </div>
 
     <script>
@@ -401,6 +411,18 @@
             });
         }
 
+function showCustomAlert(message) {
+    const alertBox = document.getElementById('customAlert');
+    const alertMsg = document.getElementById('customAlertMessage');
+    alertMsg.textContent = message;
+    alertBox.classList.remove('hidden');
+}
+
+function closeCustomAlert() {
+    document.getElementById('customAlert').classList.add('hidden');
+}
+
+
         async function submitBooking() {
     showLoading();
 
@@ -419,10 +441,11 @@
         const val = document.getElementById(field.id).value.trim();
         if (!val) {
             hideLoading();
-            alert(`กรุณากรอก ${field.label}`);
+            showCustomAlert(`กรุณากรอก ${field.label}`);
             document.getElementById(field.id).focus();
             return;
         }
+
     }
 
     const payload = {
@@ -454,11 +477,10 @@
         });
 
         await fetchAllEvents();
-        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
-
-        // ปิด LIFF ถ้าอยู่ใน LIFF
+        showCustomAlert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
         if (liff && liff.isInClient()) {
-            liff.close();
+            setTimeout(() => liff.close(), 1500); // ปิดหลังผู้ใช้กด "ตกลง"
+        }
         } else {
             showStep('step1');
         }
