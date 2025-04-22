@@ -56,6 +56,9 @@
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
         <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1>
+        <!-- ปุ่มกรองหมวดหมู่ -->
+        <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center mb-4"></div>
+
         <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
     </div>
 
@@ -177,6 +180,7 @@
             try {
                 const res = await fetch(API_URL);
                 eventsData = await res.json();
+                renderCategoryButtons(eventsData);
                 renderEventList(eventsData);
             } catch (e) {
                 console.error('Fetch events failed:', e);
@@ -332,6 +336,32 @@
         }
 
         function showStep(id) { ['step1', 'step2', 'step3'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+
+        function renderCategoryButtons(events) {
+            const catContainer = document.getElementById('categoryFilter');
+            catContainer.innerHTML = '';
+
+            const allCategories = [...new Set(events.map(evt => evt["หมวดหมู่"]).filter(Boolean))];
+
+            // เพิ่มปุ่ม "ทั้งหมด"
+            const allBtn = document.createElement("button");
+            allBtn.textContent = "ทั้งหมด";
+            allBtn.className = "bg-[#071d4a] text-white px-3 py-1 rounded-full text-sm";
+            allBtn.onclick = () => renderEventList(events);
+            catContainer.appendChild(allBtn);
+
+            // ปุ่มตามหมวดหมู่
+            allCategories.forEach(cat => {
+                const btn = document.createElement("button");
+                btn.textContent = cat;
+                btn.className = "bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full text-sm";
+                btn.onclick = () => {
+                    const filtered = events.filter(evt => evt["หมวดหมู่"] === cat);
+                    renderEventList(filtered);
+                };
+                catContainer.appendChild(btn);
+            });
+        }
 
         async function submitBooking() {
             showLoading();
