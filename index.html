@@ -134,7 +134,7 @@
     // LIFF
     async function initLiffGlobal() {
       try {
-        await liff.init({ liffId: "2007106715-87nBmwNL" });
+        await liff.init({ liffId: "2007305761-opN68Y00" });
         if (!liff.isLoggedIn()) await liff.login();
         const profile = await liff.getProfile();
         document.getElementById("bookUserLineId").value = profile.userId;
