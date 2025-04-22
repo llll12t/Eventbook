@@ -403,6 +403,28 @@
 
         async function submitBooking() {
     showLoading();
+
+    // Validate required fields
+    const requiredFields = [
+        { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
+        { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
+        { id: 'bookEventId', label: 'รหัสกิจกรรม' },
+        { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
+        { id: 'bookEventDate', label: 'วันที่' },
+        { id: 'bookEventTime', label: 'เวลา' },
+        { id: 'bookUserLineId', label: 'LINE ID' },
+    ];
+
+    for (const field of requiredFields) {
+        const val = document.getElementById(field.id).value.trim();
+        if (!val) {
+            hideLoading();
+            alert(`กรุณากรอก ${field.label}`);
+            document.getElementById(field.id).focus();
+            return;
+        }
+    }
+
     const payload = {
         eventId: document.getElementById('bookEventId').value,
         eventName: document.getElementById('bookEventName').value,
@@ -410,7 +432,7 @@
         price: document.getElementById('bookEventPrice').value,
         date: document.getElementById('bookEventDate').value,
         time: document.getElementById('bookEventTime').value,
-        queue: "1", // Fix คิว = 1
+        queue: "1", // คิวตายตัว
         renterName: document.getElementById('bookRenterName').value,
         renterNameEn: document.getElementById('bookRenterNameEn').value,
         citizenId: document.getElementById('bookCitizenId').value,
@@ -420,7 +442,9 @@
         note: document.getElementById('bookNote').value,
         userLineId: document.getElementById('bookUserLineId').value
     };
+
     document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+
     try {
         await fetch(API_URL, {
             method: 'POST',
@@ -428,9 +452,17 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+
         await fetchAllEvents();
-        showStep('step1');
-        alert('จองสำเร็จ');
+        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+
+        // ปิด LIFF ถ้าอยู่ใน LIFF
+        if (liff && liff.isInClient()) {
+            liff.close();
+        } else {
+            showStep('step1');
+        }
+
     } catch (e) {
         console.error('Submit failed:', e);
         alert('ไม่สามารถจองได้ กรุณาลองใหม่');
@@ -438,6 +470,7 @@
         hideLoading();
     }
 }
+
 
     </script>
 </body>
