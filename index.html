@@ -423,7 +423,7 @@ function closeCustomAlert() {
 }
 
 
-        async function submitBooking() {
+async function submitBooking() {
     showLoading();
 
     // Validate required fields
@@ -445,7 +445,6 @@ function closeCustomAlert() {
             document.getElementById(field.id).focus();
             return;
         }
-
     }
 
     const payload = {
@@ -455,7 +454,7 @@ function closeCustomAlert() {
         price: document.getElementById('bookEventPrice').value,
         date: document.getElementById('bookEventDate').value,
         time: document.getElementById('bookEventTime').value,
-        queue: "1", // คิวตายตัว
+        queue: "1",
         renterName: document.getElementById('bookRenterName').value,
         renterNameEn: document.getElementById('bookRenterNameEn').value,
         citizenId: document.getElementById('bookCitizenId').value,
@@ -467,7 +466,8 @@ function closeCustomAlert() {
     };
 
     document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
-try {
+
+    try {
         await fetch(API_URL, {
             method: 'POST',
             mode: 'no-cors',
@@ -476,23 +476,25 @@ try {
         });
 
         await fetchAllEvents();
-        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+        showCustomAlert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
 
-        // ปิด LIFF ถ้าอยู่ใน LIFF
-        if (liff && liff.isInClient()) {
-            liff.close();
-        } else {
-            showStep('step1');
-        }
+        // ปิด LIFF หลัง 1.5 วินาที
+        setTimeout(() => {
+            if (liff && liff.isInClient()) {
+                liff.close();
+            } else {
+                showStep('step1');
+                closeCustomAlert();
+            }
+        }, 1500);
 
     } catch (e) {
         console.error('Submit failed:', e);
-        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+        showCustomAlert('ไม่สามารถจองได้ กรุณาลองใหม่');
     } finally {
         hideLoading();
     }
 }
-
 
     </script>
 </body>
