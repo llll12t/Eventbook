@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>จองกิจกรรม</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Flatpickr -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <!-- config.js ให้กำหนด API_URL -->
+  <script src="config.js"></script>
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <!-- Loading Spinner -->
+  <style>
+    @keyframes spin {0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
+    .loader {border:8px solid #f3f3f3;border-top:8px solid #071d4a;border-radius:50%;width:64px;height:64px;animation:spin 1s linear infinite;}
+  </style>
+</head>
+<body class="bg-gradient-to-b from-blue-200 via-purple-100 to-white min-h-screen relative">
+  <!-- Loading -->
+  <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
+    <div class="loader"></div>
+  </div>
+
+  <!-- STEP 1: เลือกกิจกรรม -->
+  <div id="step1" class="p-4 max-w-md mx-auto">
+    <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1>
+    <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
+  </div>
+
+  <!-- STEP 2: รายละเอียดกิจกรรม -->
+  <div id="step2" class="hidden p-4 max-w-md mx-auto">
+    <button id="backToStep1" class="mb-4 px-4 py-2 border rounded-full">กลับ</button>
+    <img id="detailMainImg" src="" alt="Event" class="w-full h-48 object-cover rounded-2xl mb-4" />
+    <h2 id="detailEventName" class="text-lg font-bold"></h2>
+    <p id="detailEventCategory" class="text-sm text-gray-500 mb-1"></p>
+    <div class="flex justify-between items-center mb-2">
+      <div id="detailEventDateTime" class="text-sm text-gray-700"></div>
+      <div id="detailEventQueue" class="text-sm text-red-500"></div>
+    </div>
+    <div id="detailEventPrice" class="text-xl font-bold text-red-500 mb-4"></div>
+    <p id="detailEventDesc" class="text-sm text-gray-700 mb-2"></p>
+    <p id="detailEventDesc2" class="text-sm text-gray-700 mb-4"></p>
+    <button id="detailBookBtn" class="bg-[#071d4a] text-white w-full py-2 rounded-2xl">จองกิจกรรมนี้</button>
+  </div>
+
+  <!-- STEP 3: ฟอร์มจอง -->
+  <div id="step3" class="hidden p-4 max-w-md mx-auto">
+    <button id="backToStep2" class="mb-4 px-4 py-2 border rounded-full">กลับ</button>
+    <form id="bookingForm" class="space-y-4 bg-white p-4 rounded-2xl shadow">
+      <input type="hidden" id="bookEventId" required />
+      <div>
+        <label class="block text-xs text-gray-500">ชื่อกิจกรรม</label>
+        <input type="text" id="bookEventName" class="w-full border-b" readonly />
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs text-gray-500">หมวดหมู่</label>
+          <input type="text" id="bookEventCategory" class="w-full border-b" readonly />
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500">ราคา</label>
+          <input type="text" id="bookEventPrice" class="w-full border-b" readonly />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs text-gray-500">วันที่</label>
+          <input type="text" id="bookEventDate" class="w-full border-b" readonly />
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500">เวลา</label>
+          <input type="text" id="bookEventTime" class="w-full border-b" readonly />
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">คิวที่</label>
+        <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2" min="1" value="1" required />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">ชื่อผู้จอง</label>
+        <input type="text" id="bookRenterName" class="w-full border rounded-2xl p-2" required />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">เบอร์ติดต่อ</label>
+        <input type="tel" id="bookPhone" class="w-full border rounded-2xl p-2" required />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">อีเมล</label>
+        <input type="email" id="bookEmail" class="w-full border rounded-2xl p-2" />
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">หมายเหตุ</label>
+        <textarea id="bookNote" class="w-full border rounded-2xl p-2" rows="3"></textarea>
+      </div>
+      <input type="hidden" id="bookUserLineId" required />
+      <button type="button" id="submitBookingBtn" class="bg-[#071d4a] text-white w-full py-3 rounded-2xl">บันทึกการจอง</button>
+    </form>
+  </div>
+
+  <script>
+    // Variables
+    let eventsData = [];
+    let selectedEvent = null;
+    let userLineIdGlobal = "";
+
+    // LIFF init
+    async function initLiffGlobal() {
+      await liff.init({ liffId: "2007106715-87nBmwNL" });
+      if (!liff.isLoggedIn()) liff.login();
+      const p = await liff.getProfile();
+      userLineIdGlobal = p.userId;
+      document.getElementById("bookUserLineId").value = p.userId;
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+      initLiffGlobal();
+      flatpickr("#step1EventDate", { locale: "th", dateFormat: "d-m-Y" });
+      fetchAllEvents();
+    });
+
+    // Loading
+    function showLoading() {document.getElementById("loadingOverlay").classList.remove("hidden");}
+    function hideLoading() {document.getElementById("loadingOverlay").classList.add("hidden");}
+
+    // Fetch
+    async function fetchAllEvents() {
+      showLoading();
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      eventsData = data;
+      renderEventList(data);
+      hideLoading();
+    }
+
+    // Render list
+    function renderEventList(events) {
+      const c = document.getElementById("step1EventList"); c.innerHTML = "";
+      events.forEach(evt => {
+        const card = document.createElement("div");
+        card.className = "glass p-2 rounded-2xl shadow flex flex-col items-center";
+        const img = document.createElement("img"); img.src = evt["รูปภาพ"];
+        img.className = "w-full h-24 object-cover rounded-lg mb-2";
+        const title = document.createElement("div"); title.textContent = evt["ชื่อ"];
+        const btn = document.createElement("button");
+        btn.textContent = "เลือก"; btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
+        btn.onclick = () => { selectedEvent = evt; showStep("step2"); populateDetail(); };
+        card.append(img, title, btn);
+        c.appendChild(card);
+      });
+    }
+
+    // Populate detail
+    function populateDetail() {
+      showStep("step2");
+      document.getElementById("detailMainImg").src = selectedEvent["รูปภาพ"];
+      document.getElementById("detailEventName").textContent     = selectedEvent["ชื่อ"];
+      document.getElementById("detailEventCategory").textContent = selectedEvent["หมวดหมู่"];
+      document.getElementById("detailEventDateTime").textContent =
+        selectedEvent["วันที่"] + ' เวลา ' + selectedEvent["เวลา"];
+      document.getElementById("detailEventQueue").textContent    =
+        selectedEvent["คิว"] + '/' + selectedEvent["จำนวน"];
+      document.getElementById("detailEventPrice").textContent    = selectedEvent["ราคา"];
+      document.getElementById("detailEventDesc").textContent     = selectedEvent["รายละเอียด"];
+      document.getElementById("detailEventDesc2").textContent    = selectedEvent["รายละเอียด-2"];
+    }
+
+    // Populate form
+    function populateBookingForm() {
+      showStep("step3");
+      document.getElementById("bookEventId").value       = selectedEvent["ไอดีกิจกรรม"];
+      document.getElementById("bookEventName").value     = selectedEvent["ชื่อ"];
+      document.getElementById("bookEventCategory").value = selectedEvent["หมวดหมู่"];
+      document.getElementById("bookEventPrice").value    = selectedEvent["ราคา"];
+      document.getElementById("bookEventDate").value     = selectedEvent["วันที่"];
+      document.getElementById("bookEventTime").value     = selectedEvent["เวลา"];
+    }
+
+    // Steps
+    function showStep(id) {
+      ["step1","step2","step3"].forEach(s => document.getElementById(s).classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+    }
+    document.getElementById("backToStep1").onclick = () => showStep("step1");
+    document.getElementById("backToStep2").onclick = () => showStep("step2");
+    document.getElementById("detailBookBtn").onclick = populateBookingForm;
+
+    // Submit
+    document.getElementById("submitBookingBtn").onclick = async () => {
+      showLoading();
+      const payload = {
+        eventId:       document.getElementById("bookEventId").value,
+        eventName:     document.getElementById("bookEventName").value,
+        category:      document.getElementById("bookEventCategory").value,
+        price:         document.getElementById("bookEventPrice").value,
+        date:          document.getElementById("bookEventDate").value,
+        time:          document.getElementById("bookEventTime").value,
+        queue:         document.getElementById("bookQueue").value,
+        renterName:    document.getElementById("bookRenterName").value,
+        phone:         document.getElementById("bookPhone").value,
+        email:         document.getElementById("bookEmail").value,
+        note:          document.getElementById("bookNote").value,
+        userLineId:    document.getElementById("bookUserLineId").value,
+      };
+      await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+      hideLoading();
+      alert('จองกิจกรรมเรียบร้อย');
+      liff.close();
+    };
+  </script>
+</body>
+</html>
