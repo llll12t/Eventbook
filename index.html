@@ -206,10 +206,15 @@
       document.getElementById('detailEventDesc').textContent = selectedEvent['รายละเอียด'];
       document.getElementById('detailEventDesc2').textContent = selectedEvent['รายละเอียด-2'];
 
-      const gallery = document.getElementById('detailGallery'); gallery.innerHTML = '';
+      const gallery = document.getElementById('detailGallery');
+      gallery.innerHTML = '';
       ['รูปประกอบ-1','รูปประกอบ-2','รูปประกอบ-3','รูปประกอบ-4'].forEach(key => {
         if (selectedEvent[key]) {
-          const thumb = document.createElement('img'); thumb.src = selectedEvent[key]; thumb.className = 'w-20 h-20 object-cover rounded-2xl cursor-pointer'; thumb.onclick = () => { document.getElementById('detailMainImg').src = selectedEvent[key]; }; gallery.appendChild(thumb);
+          const thumb = document.createElement('img');
+          thumb.src = selectedEvent[key];
+          thumb.className = 'w-20 h-20 object-cover rounded-2xl cursor-pointer';
+          thumb.onclick = () => { document.getElementById('detailMainImg').src = selectedEvent[key]; };
+          gallery.appendChild(thumb);
         }
       });
 
@@ -256,4 +261,17 @@
       };
       document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
       try {
-        await fetch(API_URL, { method: 'POST', mode: 'no-
+        await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        await fetchAllEvents();
+        showStep('step1');
+        alert('จองสำเร็จ');
+      } catch (e) {
+        console.error('Submit failed:', e);
+        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+      } finally {
+        hideLoading();
+      }
+    }
+  </script>
+</body>
+</html>
