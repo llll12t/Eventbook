@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>จองกิจกรรม</title>
+  <title>จองกิจกรรม2</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
@@ -18,13 +18,13 @@
 <body class="bg-gradient-to-b from-blue-200 via-purple-100 to-white min-h-screen relative">
   <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden"><div class="loader"></div></div>
 
-  <!-- STEP 1 -->
+  <!-- STEP 1: เลือกกิจกรรม -->
   <div id="step1" class="p-4 max-w-md mx-auto">
     <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1>
     <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
   </div>
 
-  <!-- STEP 2 -->
+  <!-- STEP 2: รายละเอียดกิจกรรม -->
   <div id="step2" class="hidden p-4 max-w-md mx-auto">
     <button id="backToStep1" class="mb-4 px-4 py-2 border rounded-full">กลับ</button>
     <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4">
@@ -38,7 +38,7 @@
     <button id="detailBookBtn" class="bg-[#071d4a] text-white w-full py-2 rounded-2xl">จองกิจกรรมนี้</button>
   </div>
 
-  <!-- STEP 3 -->
+  <!-- STEP 3: ฟอร์มจอง -->
   <div id="step3" class="hidden p-4 max-w-md mx-auto">
     <button id="backToStep2" class="mb-4 px-4 py-2 border rounded-full">กลับ</button>
     <form id="bookingForm" class="space-y-4 bg-white p-4 rounded-2xl shadow">
