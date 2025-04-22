@@ -1,286 +1,343 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>จองกิจกรรม</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Flatpickr CSS & JS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <!-- config.js สำหรับ API_URL -->
-  <script src="config.js"></script>
-  <!-- LIFF SDK -->
-  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  <style>
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .loader { border: 8px solid #f3f3f3; border-top: 8px solid #071d4a; border-radius: 50%; width: 64px; height: 64px; animation: spin 1s linear infinite; }
-  </style>
-</head>
-<body class="bg-gradient-to-b from-blue-200 via-purple-100 to-white min-h-screen relative">
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
-    <div class="loader"></div>
-  </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>จองกิจกรรม</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Flatpickr CSS & JS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- config.js สำหรับ API_URL -->
+    <script src="config.js"></script>
+    <!-- LIFF SDK -->
+    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <style>
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
 
-  <!-- STEP 1: เลือกกิจกรรม -->
-  <div id="step1" class="p-4 max-w-md mx-auto">
-    <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1>
-    <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
-  </div>
-
-  <!-- STEP 2: รายละเอียดกิจกรรม -->
-  <div id="step2" class="hidden p-4 max-w-md mx-auto">
-    <button id="backToStep1" class="mb-4 px-4 py-2 border rounded-full">กลับ</button>
-    <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4" />
-    <h2 id="detailEventName" class="text-lg font-bold"></h2>
-    <p id="detailEventCategory" class="text-sm text-gray-500 mb-1"></p>
-    <div class="flex justify-between items-center mb-2">
-      <div id="detailEventDateTime" class="text-sm text-gray-700"></div>
-      <div id="detailEventQueue" class="text-sm text-red-500"></div>
-    </div>
-    <div id="detailEventPrice" class="text-xl font-bold text-red-500 mb-4"></div>
-    <div id="detailGallery" class="flex space-x-2 overflow-x-auto mb-4"></div>
-    <p id="detailEventDesc" class="text-sm text-gray-700 mb-2"></p>
-    <p id="detailEventDesc2" class="text-sm text-gray-700 mb-4"></p>
-    <button id="detailBookBtn" class="w-full py-2 rounded-2xl text-white">
-      จองกิจกรรมนี้
-    </button>
-  </div>
-
-  <!-- STEP 3: ฟอร์มจอง -->
-  <div id="step3" class="hidden p-4 max-w-md mx-auto">
-    <button id="backToStep2" class="mb-4 px-4 py-2 border rounded-full">กลับ</button>
-    <form id="bookingForm" class="space-y-4 bg-white p-4 rounded-2xl shadow">
-      <input type="hidden" id="bookEventId" required />
-      <div>
-        <label class="block text-xs text-gray-500">ชื่อกิจกรรม</label>
-        <input type="text" id="bookEventName" class="w-full border-b" readonly />
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs text-gray-500">หมวดหมู่</label>
-          <input type="text" id="bookEventCategory" class="w-full border-b" readonly />
-        </div>
-        <div>
-          <label class="block text-xs text-gray-500">ราคา</label>
-          <input type="text" id="bookEventPrice" class="w-full border-b" readonly />
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs text-gray-500">วันที่</label>
-          <input type="text" id="bookEventDate" class="w-full border-b" readonly />
-        </div>
-        <div>
-          <label class="block text-xs text-gray-500">เวลา</label>
-          <input type="text" id="bookEventTime" class="w-full border-b" readonly />
-        </div>
-      </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">คิวที่</label>
-        <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm" min="1" value="1" required />
-      </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">ชื่อผู้จอง</label>
-        <input type="text" id="bookRenterName" class="w-full border rounded-2xl p-2 text-sm" required />
-      </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">เบอร์ติดต่อ</label>
-        <input type="tel" id="bookPhone" class="w-full border rounded-2xl p-2 text-sm" required />
-      </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">อีเมล</label>
-        <input type="email" id="bookEmail" class="w-full border rounded-2xl p-2 text-sm" />
-      </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">หมายเหตุ</label>
-        <textarea id="bookNote" class="w-full border rounded-2xl p-2 text-sm" rows="3"></textarea>
-      </div>
-      <input type="hidden" id="bookUserLineId" required />
-      <button type="button" id="submitBookingBtn" class="bg-[#071d4a] text-white w-full py-3 rounded-2xl text-sm">
-        บันทึกการจอง
-      </button>
-    </form>
-    <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40"></pre>
-  </div>
-
-  <script>
-    // Helpers
-    function formatDate(d) {
-      const dt = new Date(d);
-      const dd = String(dt.getDate()).padStart(2, '0');
-      const mm = String(dt.getMonth() + 1).padStart(2, '0');
-      const yyyy = dt.getFullYear();
-      return `${dd}-${mm}-${yyyy}`;
-    }
-    function formatTime(d) {
-      const dt = new Date(d);
-      const hh = String(dt.getHours()).padStart(2, '0');
-      const mi = String(dt.getMinutes()).padStart(2, '0');
-      return `${hh}:${mi}`;
-    }
-
-    let eventsData = [];
-    let selectedEvent = null;
-
-    document.addEventListener('DOMContentLoaded', async () => {
-      await liff.init({ liffId: '2007305761-opN68Y00' });
-      if (!liff.isLoggedIn()) liff.login();
-      const profile = await liff.getProfile();
-      document.getElementById('bookUserLineId').value = profile.userId;
-
-      await fetchAllEvents();
-
-      document.getElementById('submitBookingBtn').onclick = submitBooking;
-      document.getElementById('detailBookBtn').onclick = populateBookingForm;
-      document.getElementById('backToStep1').onclick = () => showStep('step1');
-      document.getElementById('backToStep2').onclick = () => showStep('step2');
-    });
-
-    function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
-    function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-
-    async function fetchAllEvents() {
-      showLoading();
-      try {
-        const res = await fetch(API_URL);
-        eventsData = await res.json();
-        renderEventList(eventsData);
-      } catch (e) {
-        console.error('Fetch events failed:', e);
-      } finally {
-        hideLoading();
-      }
-    }
-
-    function renderEventList(events) {
-  const c = document.getElementById("step1EventList");
-  c.innerHTML = ""; // Clear the existing list
-
-  events.forEach(evt => {
-    const booked = Number(evt["คิว"]) || 0; // จำนวนที่จองแล้ว
-    const total = Number(evt["จำนวน"]) || 0; // จำนวนที่รองรับ
-
-    const card = document.createElement("div");
-    card.className = "relative glass p-2 rounded-2xl shadow flex flex-col items-center";
-
-    const img = document.createElement("img");
-    img.src = evt["รูปภาพ"];
-    img.className = "w-full h-24 object-cover rounded-lg mb-2";
-    img.onerror = () => { img.src = 'placeholder.png'; }; // Placeholder image if broken
-
-    const title = document.createElement("div");
-    title.textContent = evt["ชื่อ"];
-
-    const badge = document.createElement("div");
-    badge.className = "absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full";
-    badge.textContent = `${booked}/${total}`;
-
-    const btn = document.createElement("button");
-    // Check if the event is full
-    if (booked >= total) {
-      btn.textContent = "เต็มแล้ว"; // Display "Full" when event is full
-      btn.disabled = true; // Disable button to prevent further booking
-      btn.className = "mt-2 bg-gray-400 text-white px-4 py-1 rounded-2xl pointer-events-none"; // Disabled style
-    } else {
-      btn.textContent = "เลือก";
-      btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
-      btn.onclick = () => {
-        selectedEvent = evt;
-        showStep("step2");
-        populateDetail();
-      };
-    }
-
-    card.append(img, title, badge, btn);
-    c.appendChild(card);
-  });
-}
-
-
-    function populateDetail() {
-      showStep('step2');
-      const booked = Number(selectedEvent['คิว']) || 0;
-      const total = Number(selectedEvent['จำนวน']) || 0;
-
-      document.getElementById('detailMainImg').src = selectedEvent['รูปภาพ'];
-      document.getElementById('detailEventName').textContent = selectedEvent['ชื่อ'];
-      document.getElementById('detailEventCategory').textContent = selectedEvent['หมวดหมู่'];
-      document.getElementById('detailEventDateTime').textContent = `${formatDate(selectedEvent['วันที่'])} เวลา ${formatTime(selectedEvent['เวลา'])}`;
-      document.getElementById('detailEventQueue').textContent = `${booked}/${total}`;
-      document.getElementById('detailEventPrice').textContent = selectedEvent['ราคา'];
-      document.getElementById('detailEventDesc').textContent = selectedEvent['รายละเอียด'];
-      document.getElementById('detailEventDesc2').textContent = selectedEvent['รายละเอียด-2'];
-
-      const gallery = document.getElementById('detailGallery');
-      gallery.innerHTML = '';
-      ['รูปประกอบ-1','รูปประกอบ-2','รูปประกอบ-3','รูปประกอบ-4'].forEach(key => {
-        if (selectedEvent[key]) {
-          const thumb = document.createElement('img');
-          thumb.src = selectedEvent[key];
-          thumb.className = 'w-20 h-20 object-cover rounded-2xl cursor-pointer';
-          thumb.onclick = () => { document.getElementById('detailMainImg').src = selectedEvent[key]; };
-          gallery.appendChild(thumb);
+            100% {
+                transform: rotate(360deg);
+            }
         }
-      });
 
-      const btn = document.getElementById('detailBookBtn');
-      if (booked >= total) {
-        btn.textContent = 'ครบจำนวนแล้ว';
-        btn.disabled = true;
-        btn.className = 'w-full py-2 rounded-2xl text-white bg-gray-400 pointer-events-none';
-      } else {
-        btn.textContent = 'จองกิจกรรมนี้';
-        btn.disabled = false;
-        btn.className = 'w-full py-2 rounded-2xl text-white bg-[#071d4a]';
-        btn.onclick = () => { showStep('step3'); populateBookingForm(); };
-      }
-    }
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #071d4a;
+            border-radius: 50%;
+            width: 64px;
+            height: 64px;
+            animation: spin 1s linear infinite;
+        }
 
-    function populateBookingForm() {
-      showStep('step3');
-      document.getElementById('bookEventId').value = selectedEvent['ไอดีกิจกรรม'];
-      document.getElementById('bookEventName').value = selectedEvent['ชื่อ'];
-      document.getElementById('bookEventCategory').value = selectedEvent['หมวดหมู่'];
-      document.getElementById('bookEventPrice').value = selectedEvent['ราคา'];
-      document.getElementById('bookEventDate').value = formatDate(selectedEvent['วันที่']);
-      document.getElementById('bookEventTime').value = formatTime(selectedEvent['เวลา']);
-    }
+        .glass {
+            background: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(3.5px);
+            -webkit-backdrop-filter: blur(3.5px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+    </style>
+</head>
 
-    function showStep(id) { ['step1','step2','step3'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+<body class="bg-gradient-to-b from-blue-200 via-purple-100 to-white min-h-screen relative">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay"
+        class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
+        <div class="loader"></div>
+    </div>
 
-    async function submitBooking() {
-      showLoading();
-      const payload = {
-        eventId: document.getElementById('bookEventId').value,
-        eventName: document.getElementById('bookEventName').value,
-        category: document.getElementById('bookEventCategory').value,
-        price: document.getElementById('bookEventPrice').value,
-        date: document.getElementById('bookEventDate').value,
-        time: document.getElementById('bookEventTime').value,
-        queue: document.getElementById('bookQueue').value,
-        renterName: document.getElementById('bookRenterName').value,
-        phone: document.getElementById('bookPhone').value,
-        email: document.getElementById('bookEmail').value,
-        note: document.getElementById('bookNote').value,
-        userLineId: document.getElementById('bookUserLineId').value
-      };
-      document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
-      try {
-        await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-        await fetchAllEvents();
-        showStep('step1');
-        alert('จองสำเร็จ');
-      } catch (e) {
-        console.error('Submit failed:', e);
-        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
-      } finally {
-        hideLoading();
-      }
-    }
-  </script>
+    <!-- STEP 1: เลือกกิจกรรม -->
+    <div id="step1" class="p-4 max-w-md mx-auto">
+        <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1>
+        <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- STEP 2: รายละเอียดกิจกรรม -->
+    <div id="step2" class="hidden p-4 max-w-md mx-auto">
+        <button id="backToStep1" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
+        <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4" />
+        <h2 id="detailEventName" class="text-lg font-bold"></h2>
+        <p id="detailEventCategory" class="text-sm text-gray-500 mb-1"></p>
+        <div class="flex justify-between items-center mb-2">
+            <div id="detailEventDateTime" class="text-sm text-gray-700"></div>
+            <div id="detailEventQueue" class="text-sm text-red-500"></div>
+        </div>
+        <div id="detailEventPrice" class="text-xl font-bold text-red-500 mb-4"></div>
+        <div id="detailGallery" class="flex space-x-2 overflow-x-auto mb-4"></div>
+        <p id="detailEventDesc" class="text-sm text-gray-700 mb-2"></p>
+        <p id="detailEventDesc2" class="text-sm text-gray-700 mb-4"></p>
+        <button id="detailBookBtn" class="w-full py-2 rounded-2xl text-white">
+            จองกิจกรรมนี้
+        </button>
+    </div>
+
+    <!-- STEP 3: ฟอร์มจอง -->
+    <div id="step3" class="hidden p-4 max-w-md mx-auto">
+        <button id="backToStep2" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
+        <form id="bookingForm" class="space-y-4 bg-white p-4 rounded-2xl shadow">
+            <input type="hidden" id="bookEventId" required />
+            <div>
+                <label class="block text-xs text-gray-500">ชื่อกิจกรรม</label>
+                <input type="text" id="bookEventName" class="w-full border-b" readonly />
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-500">หมวดหมู่</label>
+                    <input type="text" id="bookEventCategory" class="w-full border-b" readonly />
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500">ราคา</label>
+                    <input type="text" id="bookEventPrice" class="w-full border-b" readonly />
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs text-gray-500">วันที่</label>
+                    <input type="text" id="bookEventDate" class="w-full border-b" readonly />
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500">เวลา</label>
+                    <input type="text" id="bookEventTime" class="w-full border-b" readonly />
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">คิวที่</label>
+                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm" min="1" value="1"
+                    required />
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">ชื่อผู้จอง</label>
+                <input type="text" id="bookRenterName" class="w-full border rounded-2xl p-2 text-sm" required />
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">เบอร์ติดต่อ</label>
+                <input type="tel" id="bookPhone" class="w-full border rounded-2xl p-2 text-sm" required />
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">อีเมล</label>
+                <input type="email" id="bookEmail" class="w-full border rounded-2xl p-2 text-sm" />
+            </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1">หมายเหตุ</label>
+                <textarea id="bookNote" class="w-full border rounded-2xl p-2 text-sm" rows="3"></textarea>
+            </div>
+            <input type="hidden" id="bookUserLineId" required />
+            <button type="button" id="submitBookingBtn" class="bg-[#071d4a] text-white w-full py-3 rounded-2xl text-sm">
+                บันทึกการจอง
+            </button>
+        </form>
+        <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40"></pre>
+    </div>
+
+    <script>
+        // Helpers
+        function formatDate(d) {
+            const dt = new Date(d);
+            const dd = String(dt.getDate()).padStart(2, '0');
+            const mm = String(dt.getMonth() + 1).padStart(2, '0');
+            const yyyy = dt.getFullYear();
+            return `${dd}-${mm}-${yyyy}`;
+        }
+        function formatTime(d) {
+            const dt = new Date(d);
+            const hh = String(dt.getHours()).padStart(2, '0');
+            const mi = String(dt.getMinutes()).padStart(2, '0');
+            return `${hh}:${mi}`;
+        }
+
+        let eventsData = [];
+        let selectedEvent = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+              await liff.init({ liffId: '2007305761-opN68Y00' });
+              if (!liff.isLoggedIn()) liff.login();
+              const profile = await liff.getProfile();
+              document.getElementById('bookUserLineId').value = profile.userId;
+
+            await fetchAllEvents();
+
+            document.getElementById('submitBookingBtn').onclick = submitBooking;
+            document.getElementById('detailBookBtn').onclick = populateBookingForm;
+            document.getElementById('backToStep1').onclick = () => showStep('step1');
+            document.getElementById('backToStep2').onclick = () => showStep('step2');
+        });
+
+        function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
+        function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+
+        async function fetchAllEvents() {
+            showLoading();
+            try {
+                const res = await fetch(API_URL);
+                eventsData = await res.json();
+                renderEventList(eventsData);
+            } catch (e) {
+                console.error('Fetch events failed:', e);
+            } finally {
+                hideLoading();
+            }
+        }
+        function renderEventList(events) {
+            const c = document.getElementById("step1EventList");
+            c.innerHTML = "";
+
+            events.forEach(evt => {
+                const booked = Number(evt["คิว"]) || 0;
+                const total = Number(evt["จำนวน"]) || 0;
+
+                const card = document.createElement("div");
+                card.className = "relative bg-white rounded-2xl shadow-lg overflow-hidden";
+
+                // Image section
+                const imgWrapper = document.createElement("div");
+                imgWrapper.className = "relative";
+
+                const img = document.createElement("img");
+                img.src = evt["รูปภาพ"];
+                img.className = "w-full h-32 object-cover";
+                img.onerror = () => { img.src = 'placeholder.png'; };
+
+                const priceTag = document.createElement("div");
+                priceTag.className = "absolute top-2 left-2 bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-full";
+                priceTag.textContent = `${evt["ราคา"]} บาท`;
+
+                imgWrapper.append(img, priceTag);
+
+                // Content section
+                const content = document.createElement("div");
+                content.className = "p-4 flex flex-col gap-2";
+
+                // Row 1: Title and status
+                const topRow = document.createElement("div");
+                topRow.className = "flex justify-between items-center";
+
+                const title = document.createElement("div");
+                title.textContent = evt["ชื่อ"] || "Eventname";
+                title.className = "text-lg font-bold text-[#0D1C4D]";
+
+                const status = document.createElement("div");
+                status.textContent = `${booked}/${total}`;
+                status.className = "text-[#0D1C4D] font-bold";
+
+                topRow.append(title, status);
+
+                // Row 2: Date + Time on left, Button on right (equal height)
+                const row = document.createElement("div");
+                row.className = "flex justify-between items-stretch"; // <-- key line for height match
+
+                const dateTime = document.createElement("div");
+                dateTime.className = "flex flex-col justify-center";
+                dateTime.innerHTML = `
+      <div class="text-sm">${formatDate(evt["วันที่"])}</div>
+      <div class="text-sm">${formatTime(evt["เวลา"])}</div>
+    `;
+
+                const btn = document.createElement("button");
+                btn.textContent = "เลือก";
+                btn.className = "bg-orange-500 text-white px-5 rounded-full text-sm w-20"; // fixed width
+                btn.onclick = () => {
+                    selectedEvent = evt;
+                    showStep("step2");
+                    populateDetail();
+                };
+
+                row.append(dateTime, btn);
+                content.append(topRow, row);
+
+                card.append(imgWrapper, content);
+                c.appendChild(card);
+            });
+        }
+
+
+        function populateDetail() {
+            showStep('step2');
+            const booked = Number(selectedEvent['คิว']) || 0;
+            const total = Number(selectedEvent['จำนวน']) || 0;
+
+            document.getElementById('detailMainImg').src = selectedEvent['รูปภาพ'];
+            document.getElementById('detailEventName').textContent = selectedEvent['ชื่อ'];
+            document.getElementById('detailEventCategory').textContent = selectedEvent['หมวดหมู่'];
+            document.getElementById('detailEventDateTime').textContent = `${formatDate(selectedEvent['วันที่'])} - ${formatTime(selectedEvent['เวลา'])}`;
+            document.getElementById('detailEventQueue').textContent = `${booked}/${total}`;
+            document.getElementById('detailEventPrice').textContent = selectedEvent['ราคา'];
+            document.getElementById('detailEventDesc').textContent = selectedEvent['รายละเอียด'];
+            document.getElementById('detailEventDesc2').textContent = selectedEvent['รายละเอียด-2'];
+
+            const gallery = document.getElementById('detailGallery');
+            gallery.innerHTML = '';
+            ['รูปประกอบ-1', 'รูปประกอบ-2', 'รูปประกอบ-3', 'รูปประกอบ-4'].forEach(key => {
+                if (selectedEvent[key]) {
+                    const thumb = document.createElement('img');
+                    thumb.src = selectedEvent[key];
+                    thumb.className = 'w-20 h-20 object-cover rounded-2xl cursor-pointer';
+                    thumb.onclick = () => { document.getElementById('detailMainImg').src = selectedEvent[key]; };
+                    gallery.appendChild(thumb);
+                }
+            });
+
+            const btn = document.getElementById('detailBookBtn');
+            if (booked >= total) {
+                btn.textContent = 'ครบจำนวนแล้ว';
+                btn.disabled = true;
+                btn.className = 'w-full py-2 rounded-2xl text-white bg-gray-400 pointer-events-none';
+            } else {
+                btn.textContent = 'จองกิจกรรมนี้';
+                btn.disabled = false;
+                btn.className = 'w-full py-2 rounded-2xl text-white bg-[#071d4a]';
+                btn.onclick = () => { showStep('step3'); populateBookingForm(); };
+            }
+        }
+
+        function populateBookingForm() {
+            showStep('step3');
+            document.getElementById('bookEventId').value = selectedEvent['ไอดีกิจกรรม'];
+            document.getElementById('bookEventName').value = selectedEvent['ชื่อ'];
+            document.getElementById('bookEventCategory').value = selectedEvent['หมวดหมู่'];
+            document.getElementById('bookEventPrice').value = selectedEvent['ราคา'];
+            document.getElementById('bookEventDate').value = formatDate(selectedEvent['วันที่']);
+            document.getElementById('bookEventTime').value = formatTime(selectedEvent['เวลา']);
+        }
+
+        function showStep(id) { ['step1', 'step2', 'step3'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
+
+        async function submitBooking() {
+            showLoading();
+            const payload = {
+                eventId: document.getElementById('bookEventId').value,
+                eventName: document.getElementById('bookEventName').value,
+                category: document.getElementById('bookEventCategory').value,
+                price: document.getElementById('bookEventPrice').value,
+                date: document.getElementById('bookEventDate').value,
+                time: document.getElementById('bookEventTime').value,
+                queue: document.getElementById('bookQueue').value,
+                renterName: document.getElementById('bookRenterName').value,
+                phone: document.getElementById('bookPhone').value,
+                email: document.getElementById('bookEmail').value,
+                note: document.getElementById('bookNote').value,
+                userLineId: document.getElementById('bookUserLineId').value
+            };
+            document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                await fetchAllEvents();
+                showStep('step1');
+                alert('จองสำเร็จ');
+            } catch (e) {
+                console.error('Submit failed:', e);
+                alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+            } finally {
+                hideLoading();
+            }
+        }
+    </script>
 </body>
+
 </html>
