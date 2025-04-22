@@ -66,19 +66,35 @@
     <div id="step2" class="hidden p-4 max-w-md mx-auto">
         <button id="backToStep1" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
         <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4" />
-        <h2 id="detailEventName" class="text-lg font-bold"></h2>
-        <p id="detailEventCategory" class="text-sm text-gray-500 mb-1"></p>
-        <div class="flex justify-between items-center mb-2">
-            <div id="detailEventDateTime" class="text-sm text-gray-700"></div>
-            <div id="detailEventQueue" class="text-sm text-red-500"></div>
-        </div>
-        <div id="detailEventPrice" class="text-xl font-bold text-red-500 mb-4"></div>
         <div id="detailGallery" class="flex space-x-2 overflow-x-auto mb-4"></div>
-        <p id="detailEventDesc" class="text-sm text-gray-700 mb-2"></p>
-        <p id="detailEventDesc2" class="text-sm text-gray-700 mb-4"></p>
-        <button id="detailBookBtn" class="w-full py-2 rounded-2xl text-white">
+        <div class="flex  ">
+        <h2 id="detailEventName" class="text-lg font-bold"></h2>
+        <p id="detailEventCategory" class="text-sm text-gray-500 mb-1 p-1"></p>
+        </div>
+        <div class="flex justify-between items-center mb-2">
+            <div class="flex"> <div class="pt-1 mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none">
+                <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg></div>
+            <div id="detailEventDateTime" class="text-sm text-gray-700"></div>
+        </div>
+            <div id="detailEventPrice" class="text-2xl font-bold text-red-500"></div>
+        </div>
+        <div class="flex justify-between items-center mb-2">
+            <div id="detailEventQueue" class="w-40 text-center mr-4 rounded-full border-2 px-4 py-2 font-bold text-red-500"></div>
+         <div class="w-full">
+        <button id="detailBookBtn" class="w-full px-4 py-2 rounded-2xl text-white bg-[#071d4a]">
             จองกิจกรรมนี้
         </button>
+        </div>
+    </div>
+        <h3>รายละเอียด</h3>
+        <p id="detailEventDesc" class="text-sm text-gray-700 mb-2"></p>
+        <p id="detailEventDesc2" class="text-sm text-gray-700 mb-4"></p>
+       
     </div>
 
     <!-- STEP 3: ฟอร์มจอง -->
@@ -263,19 +279,19 @@
                     `;
 
                 const btn = document.createElement("button");
-                // if (booked >= total) {
-                // btn.textContent = "เต็มแล้ว"; // แสดงเมื่อเต็มแล้ว
-                // btn.disabled = true; // ปิดการใช้งานปุ่ม
-                // btn.className = "mt-2 bg-gray-400 text-white px-4 py-2 rounded-2xl cursor-not-allowed"; // Disabled style
-                // } else {
+                if (booked >= total) {
+                btn.textContent = "เต็ม"; // แสดงเมื่อเต็มแล้ว
+                btn.disabled = true; // ปิดการใช้งานปุ่ม
+                btn.className = "mt-2 bg-gray-400 text-white px-4 py-2 rounded-2xl cursor-not-allowed"; // Disabled style
+                } else {
                 btn.textContent = "เลือก";
-                btn.className = "mt-2 bg-orange-500 text-white px-2 py-2 rounded-2xl";
+                btn.className = "mt-2 bg-[#071D4A] text-white px-3 py-2 rounded-xl";
                 btn.onclick = () => {
                     selectedEvent = evt;
                     showStep("step2");
                     populateDetail();
                 };
-                // }
+                }
 
                 row.append(dateTime, btn);
                 content.append(topRow, row);
@@ -306,7 +322,7 @@
                 if (selectedEvent[key]) {
                     const thumb = document.createElement('img');
                     thumb.src = selectedEvent[key];
-                    thumb.className = 'w-20 h-20 object-cover rounded-2xl cursor-pointer';
+                    thumb.className = 'w-20 h-16 object-cover rounded-2xl cursor-pointer';
                     thumb.onclick = () => { document.getElementById('detailMainImg').src = selectedEvent[key]; };
                     gallery.appendChild(thumb);
                 }
