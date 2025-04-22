@@ -111,133 +111,108 @@
     // Helpers: format date/time
     function formatDate(d) {
       const dt = (typeof d === 'string' || typeof d === 'number') ? new Date(d) : d;
-      const dd = String(dt.getDate()).padStart(2, '0');
-      const mm = String(dt.getMonth()+1).padStart(2, '0');
-      const yyyy = dt.getFullYear();
-      return `${dd}-${mm}-${yyyy}`;
+      return [dt.getDate().toString().padStart(2,'0'), (dt.getMonth()+1).toString().padStart(2,'0'), dt.getFullYear()].join('-');
     }
     function formatTime(d) {
       const dt = (typeof d === 'string' || typeof d === 'number') ? new Date(d) : d;
-      const hh = String(dt.getHours()).padStart(2, '0');
-      const mi = String(dt.getMinutes()).padStart(2, '0');
-      return `${hh}:${mi}`;
+      return [dt.getHours().toString().padStart(2,'0'), dt.getMinutes().toString().padStart(2,'0')].join(':');
     }
 
-    let eventsData = [];
-    let selectedEvent = null;
+    let eventsData = [], selectedEvent = null;
 
-    document.addEventListener("DOMContentLoaded", () => {
-      liff.init({ liffId: "2007305761-opN68Y00" }).then(() => {
-        if (!liff.isLoggedIn()) liff.login();
+    document.addEventListener('DOMContentLoaded', ()=>{
+      liff.init({liffId:'2007305761-opN68Y00'}).then(()=>{
+        if(!liff.isLoggedIn()) liff.login();
         return liff.getProfile();
-      }).then(profile => {
-        document.getElementById("bookUserLineId").value = profile.userId;
-      });
+      }).then(p=>document.getElementById('bookUserLineId').value=p.userId);
 
       fetchAllEvents();
-      document.getElementById("submitBookingBtn").addEventListener("click", submitBooking);
-      document.getElementById("detailBookBtn").addEventListener("click", populateBookingForm);
-      document.getElementById("backToStep1").addEventListener("click", () => showStep("step1"));
-      document.getElementById("backToStep2").addEventListener("click", () => showStep("step2"));
+      document.getElementById('submitBookingBtn').onclick=submitBooking;
+      document.getElementById('detailBookBtn').onclick=populateBookingForm;
+      document.getElementById('backToStep1').onclick=()=>showStep('step1');
+      document.getElementById('backToStep2').onclick=()=>showStep('step2');
     });
 
-    function showLoading() { document.getElementById("loadingOverlay").classList.remove("hidden"); }
-    function hideLoading() { document.getElementById("loadingOverlay").classList.add("hidden"); }
+    function showLoading(){document.getElementById('loadingOverlay').classList.remove('hidden');}
+    function hideLoading(){document.getElementById('loadingOverlay').classList.add('hidden');}
 
-    async function fetchAllEvents() {
+    async function fetchAllEvents(){
       showLoading();
-      try {
-        const res = await fetch(API_URL, { mode: 'cors' });
-        eventsData = await res.json();
-        renderEventList(eventsData);
-      } catch (e) {
-        console.error("Fetch events failed:", e);
-      } finally { hideLoading(); }
+      try{
+        const res=await fetch(API_URL,{mode:'cors'});
+        eventsData=await res.json(); renderEventList(eventsData);
+      }catch(e){console.error(e);}finally{hideLoading();}
     }
 
-    function renderEventList(events) {
-      const c = document.getElementById("step1EventList"); c.innerHTML = "";
-      events.forEach(evt => {
-        const card = document.createElement("div");
-        card.className = "relative glass p-2 rounded-2xl shadow flex flex-col items-center";
-        const img = document.createElement("img"); img.src = evt["รูปภาพ"];
-        img.className = "w-full h-24 object-cover rounded-lg mb-2";
-        const title = document.createElement("div"); title.textContent = evt["ชื่อ"];
-        const booked = Number(evt["คิว"]) || 0;
-        const total = Number(evt["จำนวน"]) || 0;
-        const badge = document.createElement("div");
-        badge.className = "absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full";
-        badge.textContent = `${booked}/${total}`;
-        const btn = document.createElement("button"); btn.textContent = "เลือก";
-        btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
-        btn.onclick = () => { selectedEvent = evt; showStep("step2"); populateDetail(); };
-        card.append(img, title, badge, btn);
-        c.appendChild(card);
+    function renderEventList(evts){
+      const c=document.getElementById('step1EventList');c.innerHTML='';
+      evts.forEach(evt=>{
+        const card=document.createElement('div');card.className='relative glass p-2 rounded-2xl shadow flex flex-col items-center';
+        const img=document.createElement('img');img.src=evt['รูปภาพ'];img.className='w-full h-24 object-cover rounded-lg mb-2';
+        const title=document.createElement('div');title.textContent=evt['ชื่อ'];
+        const bk=Number(evt['คิว'])||0,tot=Number(evt['จำนวน'])||0;
+        const badge=document.createElement('div');badge.className='absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-full';badge.textContent=`${bk}/${tot}`;
+        const btn=document.createElement('button');btn.textContent='เลือก';btn.className='mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl';btn.onclick=()=>{selectedEvent=evt;showStep('step2');populateDetail();};
+        card.append(img,title,badge,btn);c.appendChild(card);
       });
     }
 
-    function populateDetail() {
-      showStep("step2");
-      document.getElementById("detailMainImg").src = selectedEvent["รูปภาพ"];
-      document.getElementById("detailEventName").textContent = selectedEvent["ชื่อ"];
-      document.getElementById("detailEventCategory").textContent = selectedEvent["หมวดหมู่"];
-      const fDate = formatDate(selectedEvent["วันที่"]);
-      const fTime = formatTime(selectedEvent["เวลา"]);
-      document.getElementById("detailEventDateTime").textContent = `${fDate} เวลา ${fTime}`;
-      const booked = Number(selectedEvent["คิว"]) || 0;
-      const total = Number(selectedEvent["จำนวน"]) || 0;
-      document.getElementById("detailEventQueue").textContent = `${booked}/${total}`;
-      document.getElementById("detailEventPrice").textContent = selectedEvent["ราคา"];
-      document.getElementById("detailEventDesc").textContent = selectedEvent["รายละเอียด"];
-      document.getElementById("detailEventDesc2").textContent = selectedEvent["รายละเอียด-2"];
-      const gallery = document.getElementById("detailGallery"); gallery.innerHTML="";
-      ["รูปประกอบ-1","รูปประกอบ-2","รูปประกอบ-3","รูปประกอบ-4"].forEach(key => {
-        if(selectedEvent[key]){
-          const thumb=document.createElement("img"); thumb.src=selectedEvent[key]; thumb.className="w-20 h-20 object-cover rounded-2xl cursor-pointer";
-          thumb.onclick=()=>document.getElementById("detailMainImg").src=selectedEvent[key]; gallery.appendChild(thumb);
+    function populateDetail(){
+      showStep('step2');
+      document.getElementById('detailMainImg').src=selectedEvent['รูปภาพ'];
+      document.getElementById('detailEventName').textContent=selectedEvent['ชื่อ'];
+      document.getElementById('detailEventCategory').textContent=selectedEvent['หมวดหมู่'];
+      const fd=formatDate(selectedEvent['วันที่']),ft=formatTime(selectedEvent['เวลา']);
+      document.getElementById('detailEventDateTime').textContent=`${fd} เวลา ${ft}`;
+      const bk=Number(selectedEvent['คิว'])||0,tt=Number(selectedEvent['จำนวน'])||0;
+      document.getElementById('detailEventQueue').textContent=`${bk}/${tt}`;
+      document.getElementById('detailEventPrice').textContent=selectedEvent['ราคา'];
+      document.getElementById('detailEventDesc').textContent=selectedEvent['รายละเอียด'];
+      document.getElementById('detailEventDesc2').textContent=selectedEvent['รายละเอียด-2'];
+      const gal=document.getElementById('detailGallery');gal.innerHTML='';
+      ['รูปประกอบ-1','รูปประกอบ-2','รูปประกอบ-3','รูปประกอบ-4'].forEach(k=>{
+        if(selectedEvent[k]){
+          const t=document.createElement('img');t.src=selectedEvent[k];t.className='w-20 h-20 object-cover rounded-2xl cursor-pointer';t.onclick=()=>document.getElementById('detailMainImg').src=selectedEvent[k];gal.appendChild(t);
         }
       });
     }
 
-    function populateBookingForm() {
-      showStep("step3");
-      document.getElementById("bookEventId").value=selectedEvent["ไอดีกิจกรรม"];
-      document.getElementById("bookEventName").value=selectedEvent["ชื่อ"];
-      document.getElementById("bookEventCategory").value=selectedEvent["หมวดหมู่"];
-      document.getElementById("bookEventPrice").value=selectedEvent["ราคา"];
-      document.getElementById("bookEventDate").value=formatDate(selectedEvent["วันที่"]);
-      document.getElementById("bookEventTime").value=formatTime(selectedEvent["เวลา"]);
+    function populateBookingForm(){
+      showStep('step3');
+      document.getElementById('bookEventId').value=selectedEvent['ไอดีกิจกรรม'];
+      document.getElementById('bookEventName').value=selectedEvent['ชื่อ'];
+      document.getElementById('bookEventCategory').value=selectedEvent['หมวดหมู่'];
+      document.getElementById('bookEventPrice').value=selectedEvent['ราคา'];
+      document.getElementById('bookEventDate').value=formatDate(selectedEvent['วันที่']);
+      document.getElementById('bookEventTime').value=formatTime(selectedEvent['เวลา']);
     }
 
-    function showStep(id){["step1","step2","step3"].forEach(s=>document.getElementById(s).classList.add("hidden"));document.getElementById(id).classList.remove("hidden");}
+    function showStep(id){['step1','step2','step3'].forEach(s=>document.getElementById(s).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
 
     async function submitBooking(){
       showLoading();
       const payload={
-        eventId:document.getElementById("bookEventId").value,
-        eventName:document.getElementById("bookEventName").value,
-        category:document.getElementById("bookEventCategory").value,
-        price:document.getElementById("bookEventPrice").value,
-        date:document.getElementById("bookEventDate").value,
-        time:document.getElementById("bookEventTime").value,
-        queue:document.getElementById("bookQueue").value,
-        renterName:document.getElementById("bookRenterName").value,
-        phone:document.getElementById("bookPhone").value,
-        email:document.getElementById("bookEmail").value,
-        note:document.getElementById("bookNote").value,
-        userLineId:document.getElementById("bookUserLineId").value
+        eventId:document.getElementById('bookEventId').value,
+        eventName:document.getElementById('bookEventName').value,
+        category:document.getElementById('bookEventCategory').value,
+        price:document.getElementById('bookEventPrice').value,
+        date:document.getElementById('bookEventDate').value,
+        time:document.getElementById('bookEventTime').value,
+        queue:document.getElementById('bookQueue').value,
+        renterName:document.getElementById('bookRenterName').value,
+        phone:document.getElementById('bookPhone').value,
+        email:document.getElementById('bookEmail').value,
+        note:document.getElementById('bookNote').value,
+        userLineId:document.getElementById('bookUserLineId').value
       };
-      // แสดงข้อมูลก่อนบันทึก
-      document.getElementById("debugData").textContent = JSON.stringify(payload, null, 2);
+      document.getElementById('debugData').textContent=JSON.stringify(payload,null,2);
       try{
         const res=await fetch(API_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-        const txt=await res.text();
-        alert('Response: '+txt);
+        const json=await res.json();
+        alert('Response: '+JSON.stringify(json));
         liff.close();
-      }catch(e){
-        console.error('Submit failed:',e);
-        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
-      }finally{hideLoading();}
+      }catch(e){console.error(e);alert('Error');}
+      finally{hideLoading();}
     }
   </script>
 </body>
