@@ -46,7 +46,7 @@
     </style>
 </head>
 
-<body class="bg-gradient-to-b from-blue-200 via-purple-100 to-white min-h-screen relative">
+<body class="bg-gray-50 min-h-screen relative">
     <!-- Loading Overlay -->
     <div id="loadingOverlay"
         class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
@@ -220,11 +220,11 @@
 
                 const title = document.createElement("div");
                 title.textContent = evt["ชื่อ"] || "Eventname";
-                title.className = "text-lg font-bold text-[#0D1C4D]";
+                title.className = "text-md font-bold text-[#0D1C4D]";
 
                 const status = document.createElement("div");
                 status.textContent = `${booked}/${total}`;
-                status.className = "text-[#0D1C4D] font-bold";
+                status.className = "text-[#0D1C4D] text-sm font-bold";
 
                 topRow.append(title, status);
 
@@ -235,18 +235,43 @@
                 const dateTime = document.createElement("div");
                 dateTime.className = "flex flex-col justify-center";
                 dateTime.innerHTML = `
-                  <div class="text-xs">${formatDate(evt["วันที่"])}</div>
-                  <div class="text-xs">${formatTime(evt["เวลา"])}</div>
-                `;
+
+                    <div class="flex text-xs">
+                    <div class="mr-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none">
+                        <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    </div>
+                    <div class="mr-1">${formatDate(evt["วันที่"])}</div>
+                    </div>
+                    <div class="flex text-xs">
+                    <div class="mr-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
+                        <path d="M9.5 9.5L12.9999 12.9996M16 8L11 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg> 
+                    </div>
+                    <div class="mr-1">${formatTime(evt["เวลา"])}</div>        
+                    </div>
+                    `;
 
                 const btn = document.createElement("button");
+                if (booked >= total) {
+                btn.textContent = "เต็มแล้ว"; // แสดงเมื่อเต็มแล้ว
+                btn.disabled = true; // ปิดการใช้งานปุ่ม
+                btn.className = "mt-2 bg-gray-400 text-white px-4 py-2 rounded-2xl cursor-not-allowed"; // Disabled style
+                } else {
                 btn.textContent = "เลือก";
-                btn.className = "bg-orange-500 text-white px-2 rounded-md text-sm w-12"; // fixed width
+                btn.className = "mt-2 bg-orange-500 text-white px-4 py-2 rounded-2xl";
                 btn.onclick = () => {
                     selectedEvent = evt;
                     showStep("step2");
                     populateDetail();
                 };
+                }
 
                 row.append(dateTime, btn);
                 content.append(topRow, row);
