@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -137,7 +138,7 @@
       // Fetch and bind events
       fetchAllEvents();
 
-      // Bind submit button after DOM loaded
+      // Bind buttons
       document.getElementById("submitBookingBtn").addEventListener("click", submitBooking);
       document.getElementById("detailBookBtn").addEventListener("click", populateBookingForm);
       document.getElementById("backToStep1").addEventListener("click", () => showStep("step1"));
@@ -172,7 +173,6 @@
         img.className = "w-full h-24 object-cover rounded-lg mb-2";
         img.onerror = () => { img.src = 'placeholder.png'; };
         const title = document.createElement("div"); title.textContent = evt["ชื่อ"];
-        // badge คิว
         const booked = Number(evt["คิว"]) || 0;
         const total  = Number(evt["จำนวน"]) || 0;
         const badge = document.createElement("div");
@@ -182,32 +182,29 @@
         btn.textContent = "เลือก";
         btn.className = "mt-2 bg-orange-500 text-white px-4 py-1 rounded-2xl";
         btn.onclick = () => { selectedEvent = evt; showStep("step2"); populateDetail(); };
-
         card.append(img, title, badge, btn);
         c.appendChild(card);
       });
     }
 
-    // Populate detail including formatted date/time and gallery
+    // Populate detail
     function populateDetail() {
       showStep("step2");
       document.getElementById("detailMainImg").src = selectedEvent["รูปภาพ"];
-      document.getElementById("detailMainImg").onerror = () => { document.getElementById("detailMainImg").src = 'placeholder.png'; };
+      document.getElementById("detailMainImg").onerror = () => {
+        document.getElementById("detailMainImg").src = 'placeholder.png';
+      };
       document.getElementById("detailEventName").textContent     = selectedEvent["ชื่อ"];
       document.getElementById("detailEventCategory").textContent = selectedEvent["หมวดหมู่"];
-      // format date/time
       const fDate = formatDate(selectedEvent["วันที่"]);
       const fTime = formatTime(selectedEvent["เวลา"]);
       document.getElementById("detailEventDateTime").textContent = `${fDate} เวลา ${fTime}`;
-      // queue
       const booked = Number(selectedEvent["คิว"]) || 0;
       const total  = Number(selectedEvent["จำนวน"]) || 0;
       document.getElementById("detailEventQueue").textContent = `${booked}/${total}`;
-      // price & desc
       document.getElementById("detailEventPrice").textContent = selectedEvent["ราคา"];
       document.getElementById("detailEventDesc").textContent  = selectedEvent["รายละเอียด"];
       document.getElementById("detailEventDesc2").textContent = selectedEvent["รายละเอียด-2"];
-      // gallery
       const gallery = document.getElementById("detailGallery");
       gallery.innerHTML = "";
       ["รูปประกอบ-1","รูปประกอบ-2","รูปประกอบ-3","รูปประกอบ-4"].forEach(key => {
@@ -231,6 +228,12 @@
       document.getElementById("bookEventPrice").value    = selectedEvent["ราคา"];
       document.getElementById("bookEventDate").value     = formatDate(selectedEvent["วันที่"]);
       document.getElementById("bookEventTime").value     = formatTime(selectedEvent["เวลา"]);
+    }
+
+    // Steps navigation
+    function showStep(id) {
+      ["step1","step2","step3"].forEach(s => document.getElementById(s).classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
     }
 
     // Submit booking
