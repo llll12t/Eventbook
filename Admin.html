@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -12,12 +11,30 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-slate-50 p-4 relative">
-
   <!-- Loading Overlay -->
   <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <span class="text-white text-xl">Loading...</span>
   </div>
-
+  <div class="mb-4 flex justify-between sm:flex-row gap-4">
+    <div>
+      <label class="block text-sm mb-1">สถานะ</label>
+      <select id="filter-status" class="border px-3 py-2 rounded w-full sm:w-48">
+        <option value="">ทั้งหมด</option>
+        <option value="รอดำเนินการ">รอดำเนินการ</option>
+        <option value="เตรียมร่วมกิจกรรม">เตรียมร่วมกิจกรรม</option>
+        <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+        <option value="ยกเลิก">ยกเลิก</option>
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm mb-1">วันที่</label>
+      <input type="date" id="filter-date" class="border px-3 py-2 rounded w-full sm:w-48" />
+    </div>
+    <!-- <div class="flex items-end">
+      <button onclick="renderGroups()" class="bg-blue-600 text-white px-4 py-2 rounded">ค้นหา</button>
+    </div> -->
+  </div>
+  
   <!-- Container สำหรับกลุ่มกิจกรรม -->
   <div id="groups-container" class="space-y-6"></div>
    <!-- Modals สำหรับอัพเดทรายการเดี่ยว -->
@@ -192,8 +209,24 @@
 
     // แสดงกลุ่ม พร้อมจำนวนจอง/จำนวนสูงสุด
     function renderGroups() {
-      const container = $('#groups-container').empty();
-      const groups = groupBy(tableData, 'eventId');
+        const container = $('#groups-container').empty();
+        const statusFilter = $('#filter-status').val();
+        const dateFilter = $('#filter-date').val();
+
+        let filtered = tableData;
+
+        if (statusFilter) {
+            filtered = filtered.filter(x => x.status === statusFilter);
+        }
+
+        if (dateFilter) {
+            const [yyyy, mm, dd] = dateFilter.split("-");
+            const formatted = `${dd}-${mm}-${yyyy}`;
+            filtered = filtered.filter(x => x.date === formatted);
+            }
+
+
+        const groups = groupBy(filtered, 'eventId');
 
       for (const [eventId, items] of Object.entries(groups)) {
         const h = items[0];
@@ -226,7 +259,7 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="bg-gray-100">
-                  <th class="px-2 py-1">ชื่อผู้จอง</th>
+                  <th class="px-2 py-1">ชื่อ-สกุล</th>
                   <th class="px-2 py-1">ชำระเงิน</th>
                   <th class="px-2 py-1">สถานะยืนยัน</th>
                   <th class="px-2 py-1">เพิ่มเติม</th>
@@ -458,6 +491,7 @@ function openPaymentModal(id) {
         .fail(()=> Swal.fire('Error','ไม่สำเร็จ','error'))
         .always(stopLoading);
     });
+    $('#filter-status, #filter-date').on('change', renderGroups);
 
     window.onload = fetchData;
     $(window).on('load', fetchData);
