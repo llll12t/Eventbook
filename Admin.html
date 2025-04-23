@@ -20,7 +20,7 @@
 
   <!-- Container สำหรับกลุ่มกิจกรรม -->
   <div id="groups-container" class="space-y-6"></div>
- <!-- Modals สำหรับอัพเดทรายการเดี่ยว -->
+   <!-- Modals สำหรับอัพเดทรายการเดี่ยว -->
   <!-- 1. ชำระเงิน -->
   <div id="update-payment-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
     <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
@@ -127,6 +127,7 @@
       </form>
     </div>
   </div>
+
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzh9QtkmwySAx7dk2f5brlMnsYPl8IY4WdQhev5s7pzuuDPvc3GxPa7bAempFu5r71Yw/exec';
     let tableData = [];
@@ -153,16 +154,25 @@
         tableData = appointments.slice(1).map(r => ({
           id:           String(r[0]),
           eventId:      String(r[1]),
-          activityName: r[2],
-          category:     r[3],
-          price:        r[4],
-          date:         r[5],
-          time:         r[6],
-          queue:        r[7],
-          bookerName:   r[8],
-          payment:      r[16],
-          confirmStatus:r[18],
-          // ... fields ตามเดิม
+          activityName:  r[2],
+          category:      r[3],
+          price:         r[4],
+          date:          r[5],
+          time:          r[6],
+          queue:         r[7],
+          bookerName:    r[8],
+          bookerENG:     r[9],
+          idCard:        r[10],
+          address:       r[11],
+          phone:         r[12],
+          email:         r[13],
+          note:          r[14],
+          status:        r[15],
+          payment:       r[16],
+          joinStatus:    r[17],
+          confirmStatus: r[18],
+          additionalNotes:r[19],
+          useridline:    r[20]
         }));
 
         renderGroups();
