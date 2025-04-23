@@ -20,7 +20,113 @@
 
   <!-- Container สำหรับกลุ่มกิจกรรม -->
   <div id="groups-container" class="space-y-6"></div>
+ <!-- Modals สำหรับอัพเดทรายการเดี่ยว -->
+  <!-- 1. ชำระเงิน -->
+  <div id="update-payment-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
+      <h2 class="text-lg font-bold mb-4">อัพเดทการชำระเงิน</h2>
+      <form id="update-payment-form">
+        <input type="hidden" id="payment-update-id">
+        <div class="mb-2">
+          <label class="block text-sm">การชำระเงิน</label>
+          <select id="update-payment-select" class="w-full border px-2 py-1 rounded">
+            <option value="ชำระเงินแล้ว">ชำระเงินแล้ว</option>
+            <option value="รอการชำระเงิน">รอการชำระเงิน</option>
+            <option value="ยกเลิก">ยกเลิก</option>
+          </select>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" onclick="closePaymentModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
+  <!-- 2. แจ้งเข้าร่วม -->
+  <div id="update-join-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
+      <h2 class="text-lg font-bold mb-4">อัพเดทแจ้งเข้าร่วม</h2>
+      <form id="update-join-form">
+        <input type="hidden" id="join-update-id">
+        <div class="mb-2">
+          <label class="block text-sm">แจ้งเข้าร่วม</label>
+          <select id="update-join-select" class="w-full border px-2 py-1 rounded">
+            <option value="แจ้งแล้ว">แจ้งแล้ว</option>
+            <option value="ยังไม่แจ้ง">ยังไม่แจ้ง</option>
+          </select>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" onclick="closeJoinModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. สถานะยืนยัน -->
+  <div id="update-confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
+      <h2 class="text-lg font-bold mb-4">อัพเดทสถานะยืนยัน</h2>
+      <form id="update-confirm-form">
+        <input type="hidden" id="confirm-update-id">
+        <div class="mb-2">
+          <label class="block text-sm">สถานะยืนยัน</label>
+          <select id="update-confirm-select" class="w-full border px-2 py-1 rounded">
+            <option value="ยืนยันแล้ว">ยืนยันแล้ว</option>
+            <option value="ยกเลิก">ยกเลิก</option>
+          </select>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" onclick="closeConfirmModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modals สำหรับอัพเดทกลุ่มทั้งหมด -->
+  <!-- 4. แจ้งเข้าร่วม ทั้งกลุ่ม -->
+  <div id="update-group-join-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
+      <h2 class="text-lg font-bold mb-4">อัพเดทแจ้งเข้าร่วม (กลุ่ม)</h2>
+      <form id="update-group-join-form">
+        <input type="hidden" id="group-join-update-id">
+        <div class="mb-2">
+          <label class="block text-sm">แจ้งเข้าร่วม</label>
+          <select id="update-group-join-select" class="w-full border px-2 py-1 rounded">
+            <option value="แจ้งแล้ว">แจ้งแล้ว</option>
+            <option value="ยังไม่แจ้ง">ยังไม่แจ้ง</option>
+          </select>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" onclick="closeGroupJoinModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. สถานะยืนยัน ทั้งกลุ่ม -->
+  <div id="update-group-confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
+      <h2 class="text-lg font-bold mb-4">อัพเดทสถานะยืนยัน (กลุ่ม)</h2>
+      <form id="update-group-confirm-form">
+        <input type="hidden" id="group-confirm-update-id">
+        <div class="mb-2">
+          <label class="block text-sm">สถานะยืนยัน</label>
+          <select id="update-group-confirm-select" class="w-full border px-2 py-1 rounded">
+            <option value="ยืนยันแล้ว">ยืนยันแล้ว</option>
+            <option value="ยกเลิก">ยกเลิก</option>
+          </select>
+        </div>
+        <div class="flex justify-end">
+          <button type="button" onclick="closeGroupConfirmModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <script>
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzh9QtkmwySAx7dk2f5brlMnsYPl8IY4WdQhev5s7pzuuDPvc3GxPa7bAempFu5r71Yw/exec';
     let tableData = [];
