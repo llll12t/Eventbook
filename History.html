@@ -2,177 +2,173 @@
 <html lang="th">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>ประวัติการจองกิจกรรม</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- config.js สำหรับ API_URL -->
-    <script src="config.js"></script>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ประวัติการจองกิจกรรม</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- config.js สำหรับ API_URL -->
+  <script src="config.js"></script>
 </head>
 
 <body class="bg-slate-50 p-4 relative">
-    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <span class="text-white text-xl">Loading...</span>
+  <div id="loading-overlay"
+       class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <span class="text-white text-xl">Loading...</span>
+  </div>
+  <div class="mb-4 flex justify-between sm:flex-row gap-4">
+    <div>
+      <label class="block text-sm mb-1">สถานะ</label>
+      <select id="filter-status" class="border px-3 py-2 rounded w-full sm:w-48">
+        <option value="">ทั้งหมด</option>
+        <option value="รอดำเนินการ">รอดำเนินการ</option>
+        <option value="เตรียมร่วมกิจกรรม">เตรียมร่วมกิจกรรม</option>
+        <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+        <option value="ยกเลิก">ยกเลิก</option>
+      </select>
     </div>
-    <div class="mb-4 flex justify-between sm:flex-row gap-4">
-        <div>
-            <label class="block text-sm mb-1">สถานะ</label>
-            <select id="filter-status" class="border px-3 py-2 rounded w-full sm:w-48">
-                <option value="">ทั้งหมด</option>
-                <option value="รอดำเนินการ">รอดำเนินการ</option>
-                <option value="เตรียมร่วมกิจกรรม">เตรียมร่วมกิจกรรม</option>
-                <option value="เสร็จสิ้น">เสร็จสิ้น</option>
-                <option value="ยกเลิก">ยกเลิก</option>
-            </select>
-        </div>
-        <div>
-            <label class="block text-sm mb-1">วันที่</label>
-            <input type="date" id="filter-date" class="border px-3 py-2 rounded w-full sm:w-48" />
-        </div>
-        <!-- <div class="flex items-end">
-          <button onclick="renderGroups()" class="bg-blue-600 text-white px-4 py-2 rounded">ค้นหา</button>
-        </div> -->
+    <div>
+      <label class="block text-sm mb-1">วันที่</label>
+      <input type="date" id="filter-date" class="border px-3 py-2 rounded w-full sm:w-48" />
     </div>
+    <!-- <div class="flex items-end">
+      <button onclick="renderGroups()" class="bg-blue-600 text-white px-4 py-2 rounded">ค้นหา</button>
+    </div> -->
+  </div>
+  <div id="groups-container" class="space-y-6"></div>
+<script>
+  let tableData    = [];   // ของ user
+  let allGroups    = {};   // ของทุกคน
+  let eventCaps    = {};   // capacity จาก Events
+  let currentUserId;
 
-    <div id="groups-container" class="space-y-6"></div>
-    <script>
-        let tableData = [];   // ของ user
-        let allGroups = {};   // ของทุกคน
-        let eventCaps = {};   // capacity จาก Events
-        let currentUserId;
+  function startLoading() { $('#loading-overlay').removeClass('hidden'); }
+  function stopLoading()  { $('#loading-overlay').addClass('hidden'); }
 
-        function startLoading() { $('#loading-overlay').removeClass('hidden'); }
-        function stopLoading() { $('#loading-overlay').addClass('hidden'); }
+  async function initLIFF() {
+    await liff.init({ liffId: "2007305761-pnRkn7MM" });
+    if (!liff.isLoggedIn()) return liff.login();
+    const profile = await liff.getProfile();
+    currentUserId = profile.userId;
+    fetchData();
+  }
 
-        async function initLIFF() {
-            await liff.init({ liffId: "2007305761-pnRkn7MM" });
-            if (!liff.isLoggedIn()) return liff.login();
-            const profile = await liff.getProfile();
-            currentUserId = profile.userId;
-            fetchData();
+  async function fetchData() {
+    startLoading();
+    try {
+      const resp = await fetch(WEB_APP_URL);
+      const { appointments, events } = await resp.json();
+
+      // 1) สร้าง map capacity
+      eventCaps = {};
+      events.slice(1).forEach(r => {
+        const [ id, , , cap ] = r;
+        eventCaps[String(id)] = Number(cap) || 0;
+      });
+
+      // 2) แปลง appointments ทั้งหมด → allAppointments
+      const allAppointments = appointments.slice(1).map(r => ({
+        id:            String(r[0]),
+        eventId:       String(r[1]),
+        activityName:  r[2],
+        category:      r[3],
+        price:         r[4],
+        date:          r[5],
+        time:          r[6],
+        queue:         r[7],
+        bookerName:    r[8],
+        bookerENG:     r[9],
+        idCard:        r[10],
+        address:       r[11],
+        phone:         r[12],
+        email:         r[13],
+        note:          r[14],
+        status:        r[15],
+        payment:       r[16],
+        joinStatus:    r[17],
+        confirmStatus: r[18],
+        additionalNotes:r[19],
+        useridline:    r[20]
+      }));
+
+      // 3) สร้าง allGroups เพื่อคำนวณ booked ไม่กรอง user
+      allGroups = allAppointments.reduce((acc, cur) => {
+        (acc[cur.eventId] = acc[cur.eventId]||[]).push(cur);
+        return acc;
+      }, {});
+
+      // 4) กรองแถวที่จะโชว์ สำหรับ currentUserId
+      tableData = allAppointments.filter(x => x.useridline === currentUserId);
+
+      renderGroups();
+    } catch (e) {
+      console.error(e);
+      Swal.fire('Error','ไม่สามารถโหลดข้อมูลได้','error');
+    } finally {
+      stopLoading();
+    }
+  }
+
+  function groupBy(arr, key) {
+    return arr.reduce((acc, cur) => {
+      (acc[cur[key]] = acc[cur[key]]||[]).push(cur);
+      return acc;
+    }, {});
+  }
+
+  function renderGroups() {
+    const container = $('#groups-container').empty();
+        const statusFilter = $('#filter-status').val();
+        const dateFilter = $('#filter-date').val();
+
+        let filtered = tableData;
+
+        if (statusFilter) {
+            filtered = filtered.filter(x => x.status === statusFilter);
         }
 
-        async function fetchData() {
-            startLoading();
-            try {
-                const resp = await fetch(WEB_APP_URL);
-                const { appointments, events } = await resp.json();
+        if (dateFilter) {
+            const [yyyy, mm, dd] = dateFilter.split("-");
+            const formatted = `${dd}-${mm}-${yyyy}`;
+            filtered = filtered.filter(x => x.date === formatted);
+            }    // group only user data
+    const userGroups = groupBy(tableData, 'eventId');
 
-                // 1) สร้าง map capacity
-                eventCaps = {};
-                events.slice(1).forEach(r => {
-                    const [id, , , cap] = r;
-                    eventCaps[String(id)] = Number(cap) || 0;
-                });
+    for (const [eid, items] of Object.entries(userGroups)) {
+      const h      = items[0];
+      const booked = (allGroups[eid] || []).length;   // ← ไม่กรอง user
+      const cap    = eventCaps[eid] || 0;
 
-                // 2) แปลง appointments ทั้งหมด → allAppointments
-                const allAppointments = appointments.slice(1).map(r => ({
-                    id: String(r[0]),
-                    eventId: String(r[1]),
-                    activityName: r[2],
-                    category: r[3],
-                    price: r[4],
-                    date: r[5],
-                    time: r[6],
-                    queue: r[7],
-                    bookerName: r[8],
-                    bookerENG: r[9],
-                    idCard: r[10],
-                    address: r[11],
-                    phone: r[12],
-                    email: r[13],
-                    note: r[14],
-                    status: r[15],
-                    payment: r[16],
-                    joinStatus: r[17],
-                    confirmStatus: r[18],
-                    additionalNotes: r[19],
-                    useridline: r[20]
-                }));
+      const box = $(`
+        <div class="p-4 bg-white rounded-xl shadow">
+          <div class="flex justify-between items-center mb-2">
+            <div class="font-bold">
+              ${eid} ${h.activityName}
+              <span class="text-sm text-gray-600">(${booked}/${cap})</span><br>
+              ${h.date} ${h.time}
+            </div>
+          </div>
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="px-2 py-1">ชื่อผู้จอง</th>
+                <th class="px-2 py-1">ชำระเงิน</th>
+                <th class="px-2 py-1">สถานะยืนยัน</th>
+                <th class="px-2 py-1">เพิ่มเติม</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      `);
 
-                // 3) สร้าง allGroups เพื่อคำนวณ booked ไม่กรอง user
-                allGroups = allAppointments.reduce((acc, cur) => {
-                    (acc[cur.eventId] = acc[cur.eventId] || []).push(cur);
-                    return acc;
-                }, {});
-
-                // 4) กรองแถวที่จะโชว์ สำหรับ currentUserId
-                tableData = allAppointments.filter(x => x.useridline === currentUserId);
-
-                renderGroups();
-            } catch (e) {
-                console.error(e);
-                Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลได้', 'error');
-            } finally {
-                stopLoading();
-            }
-        }
-
-        function groupBy(arr, key) {
-            return arr.reduce((acc, cur) => {
-                (acc[cur[key]] = acc[cur[key]] || []).push(cur);
-                return acc;
-            }, {});
-        }
-
-        // แสดงกลุ่ม พร้อมจำนวนจอง/จำนวนสูงสุด
-        function renderGroups() {
-            const container = $('#groups-container').empty();
-            const statusFilter = $('#filter-status').val();
-            const dateFilter = $('#filter-date').val();
-
-            let filtered = tableData;
-
-            if (statusFilter) {
-                filtered = filtered.filter(x => x.status === statusFilter);
-            }
-
-            if (dateFilter) {
-                const [yyyy, mm, dd] = dateFilter.split("-");
-                const formatted = `${dd}-${mm}-${yyyy}`;
-                filtered = filtered.filter(x => x.date === formatted);
-            }
-
-
-            const groups = groupBy(filtered, 'eventId');
-
-
-            for (const [eid, items] of Object.entries(userGroups)) {
-                const h = items[0];
-                const booked = (allGroups[eid] || []).length;   // ← ไม่กรอง user
-                const cap = eventCaps[eid] || 0;
-
-                const box = $(`
-                            <div class="p-4 bg-white rounded-xl shadow">
-                            <div class="flex justify-between items-center mb-2">
-                                <div class="font-bold">
-                                ${eid} ${h.activityName}
-                                <span class="text-sm text-gray-600">(${booked}/${cap})</span><br>
-                                ${h.date} ${h.time}
-                                </div>
-                            </div>
-                            <table class="w-full text-sm">
-                                <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="px-2 py-1">ชื่อผู้จอง</th>
-                                    <th class="px-2 py-1">ชำระเงิน</th>
-                                    <th class="px-2 py-1">สถานะยืนยัน</th>
-                                    <th class="px-2 py-1">เพิ่มเติม</th>
-                                </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                            </div>
-                        `);
-
-                const tbody = box.find('tbody');
-                items.forEach(it => {
-                    tbody.append(`
+      const tbody = box.find('tbody');
+      items.forEach(it => {
+        tbody.append(`
           <tr data-id="${it.id}">
             <td class="border px-2 py-1">${it.bookerName}</td>
             <td class="border px-2 py-1">${it.payment}</td>
@@ -184,21 +180,21 @@
               </button>
             </td>
           </tr>`);
-                });
+      });
 
-                container.append(box);
-            }
-        }
+      container.append(box);
+    }
+  }
 
 
-        function toggleDetailsInGroup(itemId, btn) {
-            const row = btn.closest('tr');
-            if (row.nextElementSibling && row.nextElementSibling.classList.contains('details-row')) {
-                row.nextElementSibling.remove();
-                return;
-            }
-            const it = tableData.find(x => x.id === itemId);
-            const html = `
+    function toggleDetailsInGroup(itemId, btn) {
+      const row = btn.closest('tr');
+      if (row.nextElementSibling && row.nextElementSibling.classList.contains('details-row')) {
+        row.nextElementSibling.remove();
+        return;
+      }
+      const it = tableData.find(x => x.id === itemId);
+      const html = `
         <tr class="details-row bg-gray-50">
           <td colspan="4" class="p-3 border-t">
             <div class="space-y-1 text-sm">
@@ -219,17 +215,17 @@
               <div><strong>ชำระเงิน:</strong> ${it.payment}</div>
               <div><strong>แจ้งเข้าร่วม:</strong> ${it.joinStatus}</div>
               <div><strong>สถานะยืนยัน:</strong> ${it.confirmStatus}</div>
-              <div><strong>บันทึกเพิ่มเติม:</strong> ${it.additionalNotes || '-'}</div>
+              <div><strong>บันทึกเพิ่มเติม:</strong> ${it.additionalNotes||'-'}</div>
             </div>
             
           </td>
         </tr>`;
-            row.insertAdjacentHTML('afterend', html);
-        }
-        window.onload = initLIFF;
-        $('#filter-status, #filter-date').on('change', renderGroups); 
+      row.insertAdjacentHTML('afterend', html);
+    }
 
-    </script>
+    window.onload = initLIFF;
+    $('#filter-status, #filter-date').on('change', renderGroups);
+
+  </script>
 </body>
-
 </html>
