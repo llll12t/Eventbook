@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/th.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Swiper.js CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <!-- config.js สำหรับ API_URL -->
     <script src="config.js"></script>
     <!-- LIFF SDK -->
@@ -53,11 +56,19 @@
         class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
         <div class="loader"></div>
     </div>
-
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
-    <!-- <h1 class="text-xl font-bold text-center mb-4">เลือกกิจกรรม</h1> -->
-    <div class="px-2 py-6 mb-4 border rounded-2xl shadow-sm">
+    <!-- Swiper Banner -->
+    <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
+      <div class="swiper-wrapper" id="bannerWrapper">
+        <!-- แทรกรูปแบนเนอร์ด้วย JS -->
+      </div>
+      <!-- Indicator / Navigation -->
+      <div class="swiper-pagination"></div>
+      <div class="swiper-button-prev text-white"></div>
+      <div class="swiper-button-next text-white"></div>
+    </div>    
+    <div class="px-2 py-4 mb-4">
     <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center"></div>
  </div>
         <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
@@ -213,19 +224,58 @@
         function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
 
-        async function fetchAllEvents() {
-            showLoading();
-            try {
-                const res = await fetch(API_URL);
-                eventsData = await res.json();
-                renderCategoryButtons(eventsData);
-                renderEventList(eventsData);
-            } catch (e) {
-                console.error('Fetch events failed:', e);
-            } finally {
-                hideLoading();
-            }
+        let swiperInstance;
+
+async function fetchAllEvents() {
+    showLoading();
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        eventsData = data.events;
+        bannersData = data.banners;
+
+        renderCategoryButtons(eventsData);
+        renderEventList(eventsData);
+        renderBannersWithSwiper(bannersData);
+    } catch (e) {
+        console.error('Fetch events failed:', e);
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderBannersWithSwiper(banners) {
+    const wrapper = document.getElementById('bannerWrapper');
+    wrapper.innerHTML = '';
+
+    banners.forEach(b => {
+        const slide = document.createElement('div');
+        slide.className = "swiper-slide";
+        slide.innerHTML = `<img src="${b['รูปแบนเนอร์']}" alt="banner" class="w-full h-24 object-cover" />`;
+        wrapper.appendChild(slide);
+    });
+
+    // Destroy เก่า (ถ้ามี)
+    if (swiperInstance) swiperInstance.destroy(true, true);
+
+    // สร้าง Swiper ใหม่
+    swiperInstance = new Swiper(".mySwiper", {
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev"
         }
+    });
+}
+
         function renderEventList(events) {
             const c = document.getElementById("step1EventList");
             c.innerHTML = "";
@@ -384,7 +434,7 @@
             // เพิ่มปุ่ม "ทั้งหมด"
             const allBtn = document.createElement("button");
             allBtn.textContent = "ทั้งหมด";
-            allBtn.className = "bg-[#071d4a] text-white px-3 py-1 rounded-full text-sm";
+            allBtn.className = "bg-[#071d4a] text-white px-3 py-2 rounded-2xl text-sm";
             allBtn.onclick = () => renderEventList(events);
             catContainer.appendChild(allBtn);
 
@@ -392,7 +442,7 @@
             allCategories.forEach(cat => {
                 const btn = document.createElement("button");
                 btn.textContent = cat;
-                btn.className = "bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-full text-sm";
+                btn.className = "bg-gray-200 hover:bg-gray-400 px-3 py-2 rounded-xl text-sm";
                 btn.onclick = () => {
                     const filtered = events.filter(evt => evt["หมวดหมู่"] === cat);
                     renderEventList(filtered);
