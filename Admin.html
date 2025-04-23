@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin จัดการจองกิจกรรม</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-
 <body class="bg-slate-50 p-4 relative">
+
   <!-- Loading Overlay -->
   <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <span class="text-white text-xl">Loading...</span>
@@ -21,117 +20,10 @@
   <!-- Container สำหรับกลุ่มกิจกรรม -->
   <div id="groups-container" class="space-y-6"></div>
 
-  <!-- Modals สำหรับอัพเดทรายการเดี่ยว -->
-  <!-- 1. ชำระเงิน -->
-  <div id="update-payment-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
-      <h2 class="text-lg font-bold mb-4">อัพเดทการชำระเงิน</h2>
-      <form id="update-payment-form">
-        <input type="hidden" id="payment-update-id">
-        <div class="mb-2">
-          <label class="block text-sm">การชำระเงิน</label>
-          <select id="update-payment-select" class="w-full border px-2 py-1 rounded">
-            <option value="ชำระเงินแล้ว">ชำระเงินแล้ว</option>
-            <option value="รอการชำระเงิน">รอการชำระเงิน</option>
-            <option value="ยกเลิก">ยกเลิก</option>
-          </select>
-        </div>
-        <div class="flex justify-end">
-          <button type="button" onclick="closePaymentModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
-          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- 2. แจ้งเข้าร่วม -->
-  <div id="update-join-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
-      <h2 class="text-lg font-bold mb-4">อัพเดทแจ้งเข้าร่วม</h2>
-      <form id="update-join-form">
-        <input type="hidden" id="join-update-id">
-        <div class="mb-2">
-          <label class="block text-sm">แจ้งเข้าร่วม</label>
-          <select id="update-join-select" class="w-full border px-2 py-1 rounded">
-            <option value="แจ้งแล้ว">แจ้งแล้ว</option>
-            <option value="ยังไม่แจ้ง">ยังไม่แจ้ง</option>
-          </select>
-        </div>
-        <div class="flex justify-end">
-          <button type="button" onclick="closeJoinModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
-          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- 3. สถานะยืนยัน -->
-  <div id="update-confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
-      <h2 class="text-lg font-bold mb-4">อัพเดทสถานะยืนยัน</h2>
-      <form id="update-confirm-form">
-        <input type="hidden" id="confirm-update-id">
-        <div class="mb-2">
-          <label class="block text-sm">สถานะยืนยัน</label>
-          <select id="update-confirm-select" class="w-full border px-2 py-1 rounded">
-            <option value="ยืนยันแล้ว">ยืนยันแล้ว</option>
-            <option value="ยกเลิก">ยกเลิก</option>
-          </select>
-        </div>
-        <div class="flex justify-end">
-          <button type="button" onclick="closeConfirmModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
-          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modals สำหรับอัพเดทกลุ่มทั้งหมด -->
-  <!-- 4. แจ้งเข้าร่วม ทั้งกลุ่ม -->
-  <div id="update-group-join-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
-      <h2 class="text-lg font-bold mb-4">อัพเดทแจ้งเข้าร่วม (กลุ่ม)</h2>
-      <form id="update-group-join-form">
-        <input type="hidden" id="group-join-update-id">
-        <div class="mb-2">
-          <label class="block text-sm">แจ้งเข้าร่วม</label>
-          <select id="update-group-join-select" class="w-full border px-2 py-1 rounded">
-            <option value="แจ้งแล้ว">แจ้งแล้ว</option>
-            <option value="ยังไม่แจ้ง">ยังไม่แจ้ง</option>
-          </select>
-        </div>
-        <div class="flex justify-end">
-          <button type="button" onclick="closeGroupJoinModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
-          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- 5. สถานะยืนยัน ทั้งกลุ่ม -->
-  <div id="update-group-confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-    <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
-      <h2 class="text-lg font-bold mb-4">อัพเดทสถานะยืนยัน (กลุ่ม)</h2>
-      <form id="update-group-confirm-form">
-        <input type="hidden" id="group-confirm-update-id">
-        <div class="mb-2">
-          <label class="block text-sm">สถานะยืนยัน</label>
-          <select id="update-group-confirm-select" class="w-full border px-2 py-1 rounded">
-            <option value="ยืนยันแล้ว">ยืนยันแล้ว</option>
-            <option value="ยกเลิก">ยกเลิก</option>
-          </select>
-        </div>
-        <div class="flex justify-end">
-          <button type="button" onclick="closeGroupConfirmModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
-          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzh9QtkmwySAx7dk2f5brlMnsYPl8IY4WdQhev5s7pzuuDPvc3GxPa7bAempFu5r71Yw/exec'; // เปลี่ยนเป็น URL ของคุณ
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzzh9QtkmwySAx7dk2f5brlMnsYPl8IY4WdQhev5s7pzuuDPvc3GxPa7bAempFu5r71Yw/exec';
     let tableData = [];
+    let eventCaps = {};  // เก็บ capacity ของแต่ละ eventId
 
     function startLoading() { $('#loading-overlay').removeClass('hidden'); }
     function stopLoading()  { $('#loading-overlay').addClass('hidden'); }
@@ -141,31 +33,33 @@
       startLoading();
       try {
         const resp = await fetch(WEB_APP_URL);
-        const rows = await resp.json();
-        tableData = rows.slice(1).map(r => ({
-          id: String(r[0]),
-          eventId: r[1],
+        const { appointments, events } = await resp.json();
+
+        // สร้าง map ของ capacity: { A1:5, A2:15, ... }
+        eventCaps = {};
+        events.slice(1).forEach(row => {
+          const [ eventId, , , cap ] = row;
+          eventCaps[String(eventId)] = Number(cap) || 0;
+        });
+
+        // แปลง appointments
+        tableData = appointments.slice(1).map(r => ({
+          id:           String(r[0]),
+          eventId:      String(r[1]),
           activityName: r[2],
-          category: r[3],
-          price: r[4],
-          date: r[5],
-          time: r[6],
-          queue: r[7],
-          bookerName: r[8],
-          bookerENG: r[9],
-          idCard: r[10],
-          address: r[11],
-          phone: r[12],
-          email: r[13],
-          note: r[14],
-          status: r[15],
-          payment: r[16],
-          joinStatus: r[17],
-          confirmStatus: r[18],
-          additionalNotes: r[19]
+          category:     r[3],
+          price:        r[4],
+          date:         r[5],
+          time:         r[6],
+          queue:        r[7],
+          bookerName:   r[8],
+          payment:      r[16],
+          confirmStatus:r[18],
+          // ... fields ตามเดิม
         }));
+
         renderGroups();
-      } catch {
+      } catch (err) {
         Swal.fire('Error','ไม่สามารถโหลดข้อมูลได้','error');
       } finally {
         stopLoading();
@@ -179,17 +73,25 @@
       }, {});
     }
 
-    // แสดงกลุ่ม
+    // แสดงกลุ่ม พร้อมจำนวนจอง/จำนวนสูงสุด
     function renderGroups() {
       const container = $('#groups-container').empty();
       const groups = groupBy(tableData, 'eventId');
+
       for (const [eventId, items] of Object.entries(groups)) {
         const h = items[0];
+        const booked = items.length;
+        const cap    = eventCaps[eventId] || 0;
+
         const box = $(`
           <div class="p-4 bg-white rounded-xl shadow">
             <div class="flex justify-between items-center mb-2">
-              <div class="font-bold">${eventId} ${h.activityName}<br>${h.date} ${h.time}</div>
-              <div class="flex justify-end flex-row space-x-2">
+              <div class="font-bold">
+                ${eventId} ${h.activityName}<br>
+                ${h.date} ${h.time}
+                <span class="ml-2 text-sm text-gray-600">(${booked}/${cap})</span>
+              </div>
+<div class="flex justify-end flex-row space-x-2">
                 <button class="bg-yellow-500 text-white py-1 px-3 rounded" onclick="openGroupJoinModal('${eventId}')">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="#FFFFFF" fill="none">
                       <path d="M5.15837 11.491C5.08489 12.887 5.16936 14.373 3.92213 15.3084C3.34164 15.7438 3 16.427 3 17.1527C3 18.1508 3.7818 19 4.8 19H19.2C20.2182 19 21 18.1508 21 17.1527C21 16.427 20.6584 15.7438 20.0779 15.3084C18.8306 14.373 18.9151 12.887 18.8416 11.491C18.6501 7.85223 15.6438 5 12 5C8.35617 5 5.34988 7.85222 5.15837 11.491Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -203,18 +105,20 @@
                     <path d="M8.5 9.5L12 13L21.0002 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
                 </button>
-              </div>
-            </div>
+              </div>            </div>
             <table class="w-full text-sm">
-              <thead><tr class="bg-gray-100">
-                <th class="px-2 py-1">ชื่อผู้จอง</th>
-                <th class="px-2 py-1">ชำระเงิน</th>
-                <th class="px-2 py-1">สถานะยืนยัน</th>
-                <th class="px-2 py-1">เพิ่มเติม</th>
-              </tr></thead>
+              <thead>
+                <tr class="bg-gray-100">
+                  <th class="px-2 py-1">ชื่อผู้จอง</th>
+                  <th class="px-2 py-1">ชำระเงิน</th>
+                  <th class="px-2 py-1">สถานะยืนยัน</th>
+                  <th class="px-2 py-1">เพิ่มเติม</th>
+                </tr>
+              </thead>
               <tbody></tbody>
             </table>
           </div>`);
+
         const tbody = box.find('tbody');
         items.forEach(it => {
           tbody.append(`
@@ -229,12 +133,13 @@
               </td>
             </tr>`);
         });
+
         container.append(box);
       }
     }
 
-    // ขยายรายละเอียดของแต่ละแถว
-    function toggleDetailsInGroup(itemId, btn) {
+     // ขยายรายละเอียดของแต่ละแถว
+     function toggleDetailsInGroup(itemId, btn) {
       const row = btn.closest('tr');
       if (row.nextElementSibling && row.nextElementSibling.classList.contains('details-row')) {
         row.nextElementSibling.remove();
