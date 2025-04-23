@@ -120,24 +120,26 @@
         }
 
         function renderGroups() {
-            const container = $('#groups-container').empty();
-            const statusFilter = $('#filter-status').val();
-            const dateFilter = $('#filter-date').val();
+                const container = $('#groups-container').empty();
+                const statusFilter = $('#filter-status').val();
+                const dateFilter = $('#filter-date').val();
 
-            let filtered = tableData;
+                let filtered = tableData;
 
-            if (statusFilter) {
-                filtered = filtered.filter(x => x.status === statusFilter);
-            }
+                if (statusFilter) {
+                    filtered = filtered.filter(x => x.status === statusFilter);
+                }
 
-            if (dateFilter) {
-                const [yyyy, mm, dd] = dateFilter.split("-");
-                const formatted = `${dd}-${mm}-${yyyy}`;
-                filtered = filtered.filter(x => x.date === formatted);
-            }    // group only user data
-            const userGroups = groupBy(tableData, 'eventId');
+                if (dateFilter) {
+                    const [yyyy, mm, dd] = dateFilter.split("-");
+                    const formatted = `${dd}-${mm}-${yyyy}`;
+                    filtered = filtered.filter(x => x.date === formatted);
+                }
 
-            for (const [eid, items] of Object.entries(userGroups)) {
+                // ✅ ใช้ filtered ที่ผ่านการกรอง
+                const userGroups = groupBy(filtered, 'eventId');
+
+                for (const [eid, items] of Object.entries(userGroups)) {
                 const h = items[0];
                 const booked = (allGroups[eid] || []).length;   // ← ไม่กรอง user
                 const cap = eventCaps[eid] || 0;
