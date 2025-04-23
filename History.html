@@ -59,11 +59,23 @@
             id:            String(r[0]),
             eventId:       String(r[1]),
             activityName:  r[2],
+            category:      r[3],
+            price:         r[4],
             date:          r[5],
             time:          r[6],
+            queue:         r[7],
             bookerName:    r[8],
+            bookerENG:     r[9],
+            idCard:        r[10],
+            address:       r[11],
+            phone:         r[12],
+            email:         r[13],
+            note:          r[14],
+            status:        r[15],
             payment:       r[16],
+            joinStatus:    r[17],
             confirmStatus: r[18],
+            additionalNotes:r[19],
             useridline:    r[20]
           }))
           .filter(x => x.useridline === currentUserId);
