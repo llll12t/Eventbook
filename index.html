@@ -509,9 +509,10 @@ function renderBannersWithSwiper(banners) {
         // ปิด LIFF ถ้าอยู่ใน LIFF
         if (liff && liff.isInClient()) {
             liff.close();
-        } else {
-            showStep('step1');
-        }
+        } 
+        // else {
+        //     showStep('step1');
+        // }
 
     } catch (e) {
         console.error('Submit failed:', e);
