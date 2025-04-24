@@ -493,7 +493,7 @@ function renderBannersWithSwiper(banners) {
         userLineId: document.getElementById('bookUserLineId').value
     };
 
-    document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
 
     try {
         await fetch(API_URL, {
