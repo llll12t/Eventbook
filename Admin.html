@@ -31,7 +31,15 @@
     </div>
     <div>
       <label class="block text-sm mb-1">วันที่</label>
-      <input type="date" id="filter-date" class="border px-3 py-2 bg-white rounded-xl w-full" style="-webkit-appearance:none; -moz-appearance:none; appearance:none;"/>
+      <input
+        id="filter-date"
+        type="text"
+        placeholder="เลือกวันที่"
+        class="border px-3 py-2 bg-white rounded-xl w-full appearance-none"
+        style="-webkit-appearance:none; -moz-appearance:none; appearance:none;"
+        onfocus="this.type='date'"
+        onblur="if (!this.value) this.type='text'"
+      />
     </div>
     <!-- <div class="flex items-end">
       <button onclick="renderGroups()" class="bg-blue-600 text-white px-4 py-2 rounded">ค้นหา</button>
