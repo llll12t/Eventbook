@@ -9,25 +9,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <!-- config.js สำหรับ API_URL -->
   <script src="config.js"></script>
-<style>
-    .selected {
-      background-color: #283448 !important;
-      color: white;
-    }
-    /* Custom select style */
-    .custom-select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' fill='currentColor' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.75rem center;
-      background-size: 1em;
-      padding-right: 2.5rem;
-    }
-</style>
+
 </head>
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed p-4">
   <!-- Loading Overlay -->
@@ -37,7 +23,7 @@
   <div class="mb-4 flex justify-between sm:flex-row gap-4">
     <div>
       <label class="block text-sm mb-1">สถานะ</label>
-      <select id="filter-status" class="custom-select border px-3 py-2 rounded w-full sm:w-48">
+      <select id="filter-status" class=" border px-3 py-2 rounded w-full sm:w-48">
         <option value="">ทั้งหมด</option>
         <option value="รอดำเนินการ">รอดำเนินการ</option>
         <option value="เตรียมร่วมกิจกรรม">เตรียมร่วมกิจกรรม</option>
@@ -47,7 +33,7 @@
     </div>
     <div>
       <label class="block text-sm mb-1">วันที่</label>
-      <input type="date" id="filter-date" class="custom-select border px-3 py-2 rounded w-full sm:w-48" placeholder="วัน-เดือน-ปี"/>
+      <input type="date" id="filter-date" class="border px-3 py-2 rounded w-full sm:w-48" />
     </div>
     <!-- <div class="flex items-end">
       <button onclick="renderGroups()" class="bg-blue-600 text-white px-4 py-2 rounded">ค้นหา</button>
@@ -511,6 +497,12 @@ function openPaymentModal(id) {
     });
     $('#filter-status, #filter-date').on('change', renderGroups);
 
+
+    flatpickr("#custom-date", {
+    dateFormat: "d-m-Y"
+    });
+
+    
     window.onload = fetchData;
     $(window).on('load', fetchData);
   </script>
