@@ -148,7 +148,7 @@
                     <input type="text" id="bookEventTime" class="w-full border-b" readonly />
                 </div>
             </div>
-            <div class="hidden">
+            <div >
                 <label class="block text-sm font-semibold mb-1">สำหรับ / ท่าน</label>
                 <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1" readonly />
             </div>
@@ -185,7 +185,7 @@
                 บันทึกการจอง
             </button>
         </form>
-        <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40 hidden" ></pre>
+        <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40 " ></pre>
     </div>
 
     <script>
@@ -493,7 +493,7 @@ function renderBannersWithSwiper(banners) {
         userLineId: document.getElementById('bookUserLineId').value
     };
 
-    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+     document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
 
     try {
         await fetch(API_URL, {
