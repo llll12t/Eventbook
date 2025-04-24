@@ -493,33 +493,30 @@ function renderBannersWithSwiper(banners) {
         userLineId: document.getElementById('bookUserLineId').value
     };
 
-     document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
 
-    try {
-        await fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+  try {
+  await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 
-        await fetchAllEvents();
-        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+  await fetchAllEvents();
+  alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
 
-        // ปิด LIFF ถ้าอยู่ใน LIFF
-        if (liff && liff.isInClient()) {
-            liff.close();
-        } 
-        // else {
-        //     showStep('step1');
-        // }
-
-    } catch (e) {
-        console.error('Submit failed:', e);
-        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
-    } finally {
-        hideLoading();
-    }
+  // ถ้าอยู่ใน LIFF จริงๆ ให้ปิดหน้าต่าง
+  if (liff && liff.isInClient()) {
+    liff.closeWindow();  // <-- เปลี่ยนตรงนี้
+    return;              // <-- คืนก่อนจะไป showStep('step1')
+  }
+  // ถ้าไม่ใช่ LIFF (เช็คในเบราว์เซอร์) ให้กลับไปหน้าแรก
+  showStep('step1');
+} catch (e) {
+  console.error('Submit failed:', e);
+  alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+} finally {
+  hideLoading();
 }
 
 
