@@ -499,7 +499,7 @@
                 userLineId: document.getElementById('bookUserLineId').value
             };
 
-            fetch(API_URL, {
+            fetch('https://script.google.com/macros/s/AKfycbzJ1VvqlIg_vKgmLnzzsBqdaUPSDNUV4BEhqLjYAxamOqd_OHxR1wH8mfogLJL6T0Aa7A/exec', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
