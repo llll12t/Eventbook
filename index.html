@@ -505,13 +505,7 @@ function renderBannersWithSwiper(banners) {
 
         await fetchAllEvents();
         alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
-
-        // ปิด LIFF ถ้าอยู่ใน LIFF
-        if (liff && liff.isInClient()) {
-            liff.close();
-        } else {
-            showStep('step1');
-        }
+        liff.close();
 
     } catch (e) {
         console.error('Submit failed:', e);
