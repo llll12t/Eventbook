@@ -148,7 +148,7 @@
                     <input type="text" id="bookEventTime" class="w-full border-b" readonly />
                 </div>
             </div>
-            <div class="hidden>
+            <div class="hidden">
                 <label class="block text-sm font-semibold mb-1">สำหรับ / ท่าน</label>
                 <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1" readonly />
             </div>
@@ -496,24 +496,33 @@ function renderBannersWithSwiper(banners) {
     // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
 
     try {
-        await fetch(API_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+    await fetch(API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
 
-        await fetchAllEvents();
-        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
-        liff.close();
+    await fetchAllEvents();
 
-    } catch (e) {
-        console.error('Submit failed:', e);
-        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
-    } finally {
-        hideLoading();
-    }
+    // ให้ alert ทำงาน แล้วค่อยปิด LIFF หลังผู้ใช้กด "ตกลง"
+    alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+
+    setTimeout(() => {
+        if (liff && liff.isInClient()) {
+            liff.close();
+        } else {
+            showStep('step1');
+        }
+    }, 100); // รอเล็กน้อยให้ alert ปิดก่อน
+
+} catch (e) {
+    console.error('Submit failed:', e);
+    alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+} finally {
+    hideLoading();
 }
+
 
 
     </script>
