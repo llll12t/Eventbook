@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex">
+
+<!-- Sidebar -->
+<aside class="w-64 bg-white shadow flex flex-col">
+  <div class="p-4 font-bold text-lg border-b">Dashboard Event</div>
+  <nav class="flex-1 space-y-2 mt-4">
+    <a href="index.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Booking</a>
+    <a href="event.html" class="block px-4 py-2 text-white bg-slate-700">Event</a>
+    <a href="member.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Member</a>
+    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Setting</a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="flex-1 flex flex-col">
+  <div class="container mx-auto px-4">
+    <div class="flex justify-end items-center my-4">
+      <button class="bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-md"
+        onclick="showAddForm()">เพิ่มกิจกรรม</button>
+    </div>
+
+    <!-- ฟอร์มบันทึก/แก้ไขข้อมูล -->
+    <section id="formSection" class="bg-white shadow rounded p-4 hidden">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-semibold text-gray-700" id="formTitle">บันทึกกิจกรรม</h2>
+        <button class="text-red-500" onclick="hideForm()">ปิด</button>
+      </div>
+      <form id="eventForm" class="space-y-4">
+        <!-- ฟิลด์ข้อมูลพื้นฐาน -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600">ไอดีกิจกรรม</label>
+            <input type="text" name="ไอดีกิจกรรม" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm"
+              placeholder="ระบบจะสร้างถ้าไม่ระบุ">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-600">ชื่อ</label>
+            <input type="text" name="ชื่อ" required
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="ชื่อกิจกรรม">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600">หมวดหมู่</label>
+            <input type="text" name="หมวดหมู่" required
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="เช่น การบิน, ดนตรี">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600">จำนวนจำกัด</label>
+            <input type="number" name="จำนวนจำกัด"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="จำกัดผู้เข้าร่วม">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600">ราคา</label>
+            <input type="number" name="ราคา" required
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="ราคา">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600">วันที่</label>
+            <input type="date" name="วันที่"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600">เวลา</label>
+            <input type="time" name="เวลา"
+              class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm">
+          </div>
+        </div>
+
+        <!-- อัปโหลดรูปภาพปก -->
+        <div>
+            <label class="block text-sm font-medium text-gray-600">รูปปกกิจกรรม</label>
+            <input type="file" id="coverInput" name="รูปภาพ" accept="image/*" class="mt-1 block w-full text-sm">
+            <img id="coverPreview" src="" alt="Preview" class="mt-2 w-32 h-20 object-cover border rounded hidden">
+            <input type="hidden" name="รูปภาพOLD" id="รูปภาพOLD">
+          </div>
+  
+          <!-- อัปโหลดรูปประกอบเพิ่มเติม -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-600">รูปประกอบ-1</label>
+              <input type="file" id="image1Input" name="รูปประกอบ-1" accept="image/*" class="w-full">
+              <img id="image1Preview" class="hidden mt-2 w-32 h-20 object-cover rounded">
+              <input type="hidden" name="รูปประกอบ-1OLD" id="รูปประกอบ-1OLD">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">รูปประกอบ-2</label>
+              <input type="file" id="image2Input" name="รูปประกอบ-2" accept="image/*" class="w-full">
+              <img id="image2Preview" class="hidden mt-2 w-32 h-20 object-cover rounded">
+              <input type="hidden" name="รูปประกอบ-2OLD" id="รูปประกอบ-2OLD">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">รูปประกอบ-3</label>
+              <input type="file" id="image3Input" name="รูปประกอบ-3" accept="image/*" class="w-full">
+              <img id="image3Preview" class="hidden mt-2 w-32 h-20 object-cover rounded">
+              <input type="hidden" name="รูปประกอบ-3OLD" id="รูปประกอบ-3OLD">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-600">รูปประกอบ-4</label>
+              <input type="file" id="image4Input" name="รูปประกอบ-4" accept="image/*" class="w-full">
+              <img id="image4Preview" class="hidden mt-2 w-32 h-20 object-cover rounded">
+              <input type="hidden" name="รูปประกอบ-4OLD" id="รูปประกอบ-4OLD">
+            </div>
+          </div>
+  
+          <!-- รายละเอียดกิจกรรม -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">รายละเอียด</label>
+            <textarea name="รายละเอียด" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm"
+              placeholder="รายละเอียดกิจกรรม"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600">รายละเอียด-2</label>
+            <textarea name="รายละเอียด-2" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm"
+              placeholder="รายละเอียดเพิ่มเติม"></textarea>
+          </div>
+  
+          <!-- สถานะ -->
+          <div>
+            <label class="block text-sm font-medium text-gray-600">สถานะ</label>
+            <select name="สถานะ" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-sm">
+              <option value="">-- เลือกสถานะ --</option>
+              <option value="พร้อมบริการ">พร้อมบริการ</option>
+              <option value="ไม่พร้อมบริการ">ไม่พร้อมบริการ</option>
+              <option value="เต็มแล้ว">เต็มแล้ว</option>
+            </select>
+          </div>
+  
+          <!-- ปุ่มบันทึก -->
+          <div>
+            <button type="submit"
+              class="w-full bg-slate-700 hover:bg-slate-600 text-white py-2 px-4 rounded-md text-lg">
+              บันทึกข้อมูล
+            </button>
+          </div>
+        </form>
+      </section>
+  
+      <!-- ตารางรายการกิจกรรม -->
+      <section class="bg-white shadow rounded p-4 mb-4">
+        <h2 class="text-2xl font-semibold mb-4 text-gray-700">รายการกิจกรรม</h2>
+        <div id="eventTable" class="overflow-x-auto"></div>
+      </section>
+    </div>
+  
+  <!-- เริ่มต้น Script -->
+  <script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbzDavZyxlkOmsQMX0DRINwH1BvGxhyazOAPuXE3OOewSylu1J_64LjNIVlNDMnw-GjZKQ/exec";
+  
+  // ฟังก์ชันแสดง preview ของไฟล์ภาพ
+  function setupPreview(fileInputId, previewImgId) {
+    document.getElementById(fileInputId).addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const preview = document.getElementById(previewImgId);
+          preview.src = e.target.result;
+          preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+  
+  // ตั้งค่าพรีวิว
+  setupPreview('coverInput', 'coverPreview');
+  setupPreview('image1Input', 'image1Preview');
+  setupPreview('image2Input', 'image2Preview');
+  setupPreview('image3Input', 'image3Preview');
+  setupPreview('image4Input', 'image4Preview');
+  
+// แปลงไฟล์เป็น base64 พร้อม fallback
+function processFilePromise(inputId, oldFieldId, base64Key, mimeKey, actualField, dataObj) {
+  return new Promise((resolve, reject) => {
+    const fileInput = document.getElementById(inputId);
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target.result;
+        const base64Data = dataUrl.split(',')[1];
+        const mimeType = file.type;
+        dataObj[base64Key] = base64Data;
+        dataObj[mimeKey] = mimeType;
+        resolve();
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    } else {
+      dataObj[base64Key] = "";
+      dataObj[mimeKey] = "";
+      dataObj[actualField] = document.getElementById(oldFieldId).value;
+      resolve();
+    }
+  });
+}
+
+// โหลดกิจกรรม
+function loadEvents() {
+  fetch(API_URL + "?action=fetchData")
+    .then(res => res.json())
+    .then(events => {
+      let html = `<table class="min-w-full text-sm">
+        <thead class="bg-slate-800 text-white">
+          <tr>
+            <th class="p-2 text-left">ชื่อ</th>
+            <th class="p-2 text-left">หมวดหมู่</th>
+            <th class="p-2 text-left">วันที่</th>
+            <th class="p-2 text-left">เวลา</th>
+            <th class="p-2 text-left">ราคา</th>
+            <th class="p-2 text-left">สถานะ</th>
+            <th class="p-2 text-left">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y">`;
+
+      events.forEach(event => {
+        html += `
+        <tr>
+          <td class="p-2">${event["ชื่อ"]}</td>
+          <td class="p-2">${event["หมวดหมู่"]}</td>
+          <td class="p-2">${event["วันที่"]}</td>
+          <td class="p-2">${event["เวลา"]}</td>
+          <td class="p-2">${event["ราคา"]}</td>
+          <td class="p-2">${event["สถานะ"]}</td>
+          <td class="p-2 space-x-1">
+            <button class="bg-sky-600 text-white px-2 py-1 rounded text-xs" onclick="showDetails('${event["ไอดีกิจกรรม"]}')">ดู</button>
+            <button class="bg-yellow-500 text-white px-2 py-1 rounded text-xs" onclick="editEvent('${event["ไอดีกิจกรรม"]}')">แก้ไข</button>
+            <button class="bg-red-500 text-white px-2 py-1 rounded text-xs" onclick="deleteEvent('${event["ไอดีกิจกรรม"]}')">ลบ</button>
+          </td>
+        </tr>`;
+      });
+
+      html += `</tbody></table>`;
+      document.getElementById("eventTable").innerHTML = html;
+    });
+}
+
+// ส่งฟอร์ม
+document.getElementById("eventForm").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const data = {};
+
+  Promise.all([
+    processFilePromise("coverInput", "รูปภาพOLD", "รูปภาพBase64", "รูปภาพMimeType", "รูปภาพ", data),
+    processFilePromise("image1Input", "รูปประกอบ-1OLD", "รูปประกอบ-1Base64", "รูปประกอบ-1MimeType", "รูปประกอบ-1", data),
+    processFilePromise("image2Input", "รูปประกอบ-2OLD", "รูปประกอบ-2Base64", "รูปประกอบ-2MimeType", "รูปประกอบ-2", data),
+    processFilePromise("image3Input", "รูปประกอบ-3OLD", "รูปประกอบ-3Base64", "รูปประกอบ-3MimeType", "รูปประกอบ-3", data),
+    processFilePromise("image4Input", "รูปประกอบ-4OLD", "รูปประกอบ-4Base64", "รูปประกอบ-4MimeType", "รูปประกอบ-4", data)
+  ]).then(() => {
+    const formData = new FormData(this);
+    formData.forEach((value, key) => {
+      if (!key.includes("OLD") && !key.includes("Base64") && !key.includes("MimeType")) {
+        data[key] = value;
+      }
+    });
+
+    fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "insertOrUpdate", data })
+    })
+    .then(res => res.json())
+    .then(result => {
+      Swal.fire("สำเร็จ", result.message, "success");
+      this.reset();
+      hideForm();
+      loadEvents();
+    })
+    .catch(err => {
+      Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+    });
+  });
+});
+
+// ลบกิจกรรม
+function deleteEvent(id) {
+  Swal.fire({
+    title: "ลบกิจกรรมนี้?",
+    text: "ไม่สามารถกู้คืนได้!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "ลบเลย",
+    cancelButtonText: "ยกเลิก"
+  }).then(result => {
+    if (result.isConfirmed) {
+      fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({ action: "delete", id })
+      })
+      .then(res => res.json())
+      .then(result => {
+        Swal.fire("ลบเรียบร้อย", result.message, "success");
+        loadEvents();
+      });
+    }
+  });
+}
+
+// แก้ไขกิจกรรม
+function editEvent(id) {
+  fetch(API_URL + "?action=fetchData")
+    .then(res => res.json())
+    .then(events => {
+      const ev = events.find(e => e["ไอดีกิจกรรม"] === id);
+      if (ev) {
+        const form = document.getElementById("eventForm");
+        for (let key in ev) {
+          if (form.elements[key]) {
+            form.elements[key].value = ev[key];
+          }
+        }
+        document.getElementById("รูปภาพOLD").value = ev["รูปภาพ"] || "";
+        document.getElementById("รูปประกอบ-1OLD").value = ev["รูปประกอบ-1"] || "";
+        document.getElementById("รูปประกอบ-2OLD").value = ev["รูปประกอบ-2"] || "";
+        document.getElementById("รูปประกอบ-3OLD").value = ev["รูปประกอบ-3"] || "";
+        document.getElementById("รูปประกอบ-4OLD").value = ev["รูปประกอบ-4"] || "";
+        form.elements["ไอดีกิจกรรม"].readOnly = true;
+        document.getElementById("formTitle").textContent = "แก้ไขกิจกรรม";
+        document.getElementById("formSection").classList.remove("hidden");
+      }
+    });
+}
+
+// แสดงรายละเอียดกิจกรรม
+function showDetails(id) {
+  fetch(API_URL + "?action=fetchData")
+    .then(res => res.json())
+    .then(events => {
+      const ev = events.find(e => e["ไอดีกิจกรรม"] === id);
+      if (ev) {
+        let gallery = '';
+        for (let i = 1; i <= 4; i++) {
+          if (ev[`รูปประกอบ-${i}`]) {
+            gallery += `<img src="${ev[`รูปประกอบ-${i}`]}" class="w-16 h-16 object-cover inline-block border rounded mr-2 cursor-pointer" onclick="document.getElementById('swalMainImage').src='${ev[`รูปประกอบ-${i}`]}'">`;
+          }
+        }
+
+        Swal.fire({
+          title: ev["ชื่อ"],
+          html: `
+            <div class="text-left">
+              <img id="swalMainImage" src="${ev["รูปภาพ"]}" class="w-full object-cover rounded mb-3">
+              <div class="mb-3">${gallery}</div>
+              <p><strong>หมวดหมู่:</strong> ${ev["หมวดหมู่"]}</p>
+              <p><strong>วันที่:</strong> ${ev["วันที่"]} เวลา ${ev["เวลา"]}</p>
+              <p><strong>จำนวนจำกัด:</strong> ${ev["จำนวนจำกัด"]}</p>
+              <p><strong>ราคา:</strong> ${ev["ราคา"]} บาท</p>
+              <p class="mt-2"><strong>รายละเอียด:</strong><br>${ev["รายละเอียด"]}</p>
+              <p class="mt-2"><strong>เพิ่มเติม:</strong><br>${ev["รายละเอียด-2"]}</p>
+              <p><strong>สถานะ:</strong> ${ev["สถานะ"]}</p>
+            </div>
+          `,
+          width: "600px",
+          showCloseButton: true,
+          showConfirmButton: false
+        });
+      }
+    });
+}
+
+// ฟังก์ชันเปิด/ปิดฟอร์ม
+function showAddForm() {
+  const form = document.getElementById("eventForm");
+  form.reset();
+  form.elements["ไอดีกิจกรรม"].readOnly = false;
+  ["coverPreview", "image1Preview", "image2Preview", "image3Preview", "image4Preview"].forEach(id => {
+    let img = document.getElementById(id);
+    img.src = "";
+    img.classList.add("hidden");
+  });
+  document.getElementById("formTitle").textContent = "เพิ่มกิจกรรมใหม่";
+  document.getElementById("formSection").classList.remove("hidden");
+}
+
+function hideForm() {
+  document.getElementById("formSection").classList.add("hidden");
+}
+
+// โหลดกิจกรรมเมื่อเปิดหน้า
+loadEvents();
+</script>
+</body>
+</html>
