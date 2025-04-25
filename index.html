@@ -2,9 +2,9 @@
 <html lang="th">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>EVENT Booking</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -58,19 +58,19 @@
     </div>
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
-        <!-- Swiper Banner -->
-        <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
-            <div class="swiper-wrapper" id="bannerWrapper">
-                <!-- แทรกรูปแบนเนอร์ด้วย JS -->
-            </div>
-            <!-- Indicator / Navigation -->
-            <div class="swiper-pagination"></div>
-            <!--       <div class="swiper-button-prev text-white"></div>
+    <!-- Swiper Banner -->
+    <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
+      <div class="swiper-wrapper" id="bannerWrapper">
+        <!-- แทรกรูปแบนเนอร์ด้วย JS -->
+      </div>
+      <!-- Indicator / Navigation -->
+      <div class="swiper-pagination"></div>
+<!--       <div class="swiper-button-prev text-white"></div>
       <div class="swiper-button-next text-white"></div> -->
-        </div>
-        <div class="px-2 py-4 mb-4">
-            <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center"></div>
-        </div>
+    </div>    
+    <div class="px-2 py-4 mb-4">
+    <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center"></div>
+ </div>
         <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
     </div>
 
@@ -105,8 +105,7 @@
         </div>
         <div class="flex justify-between items-center mb-2">
             <div id="detailEventQueue"
-                class="w-40 text-center mr-4 rounded-full border-2 border-red-500 px-4 py-2 font-bold text-red-500">
-            </div>
+                class="w-40 text-center mr-4 rounded-full border-2 px-4 py-2 font-bold text-red-500"></div>
             <div class="w-full">
                 <button id="detailBookBtn" class="w-full px-4 py-2 rounded-2xl text-white bg-[#071d4a]">
                     จองกิจกรรมนี้
@@ -149,10 +148,9 @@
                     <input type="text" id="bookEventTime" class="w-full border-b" readonly />
                 </div>
             </div>
-            <div class="hidden">
+            <div class="hidden>
                 <label class="block text-sm font-semibold mb-1">สำหรับ / ท่าน</label>
-                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1"
-                    readonly />
+                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1" readonly />
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">ชื่อ-สกุล</label>
@@ -228,55 +226,55 @@
 
         let swiperInstance;
 
-        async function fetchAllEvents() {
-            showLoading();
-            try {
-                const res = await fetch(API_URL);
-                const data = await res.json();
-                eventsData = data.events;
-                bannersData = data.banners;
+async function fetchAllEvents() {
+    showLoading();
+    try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        eventsData = data.events;
+        bannersData = data.banners;
 
-                renderCategoryButtons(eventsData);
-                renderEventList(eventsData);
-                renderBannersWithSwiper(bannersData);
-            } catch (e) {
-                console.error('Fetch events failed:', e);
-            } finally {
-                hideLoading();
-            }
+        renderCategoryButtons(eventsData);
+        renderEventList(eventsData);
+        renderBannersWithSwiper(bannersData);
+    } catch (e) {
+        console.error('Fetch events failed:', e);
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderBannersWithSwiper(banners) {
+    const wrapper = document.getElementById('bannerWrapper');
+    wrapper.innerHTML = '';
+
+    banners.forEach(b => {
+        const slide = document.createElement('div');
+        slide.className = "swiper-slide";
+        slide.innerHTML = `<img src="${b['รูปแบนเนอร์']}" alt="banner" class="w-full h-24 object-cover" />`;
+        wrapper.appendChild(slide);
+    });
+
+    // Destroy เก่า (ถ้ามี)
+    if (swiperInstance) swiperInstance.destroy(true, true);
+
+    // สร้าง Swiper ใหม่
+    swiperInstance = new Swiper(".mySwiper", {
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev"
         }
-
-        function renderBannersWithSwiper(banners) {
-            const wrapper = document.getElementById('bannerWrapper');
-            wrapper.innerHTML = '';
-
-            banners.forEach(b => {
-                const slide = document.createElement('div');
-                slide.className = "swiper-slide";
-                slide.innerHTML = `<img src="${b['รูปแบนเนอร์']}" alt="banner" class="w-full h-24 object-cover" />`;
-                wrapper.appendChild(slide);
-            });
-
-            // Destroy เก่า (ถ้ามี)
-            if (swiperInstance) swiperInstance.destroy(true, true);
-
-            // สร้าง Swiper ใหม่
-            swiperInstance = new Swiper(".mySwiper", {
-                loop: true,
-                autoplay: {
-                    delay: 4000,
-                    disableOnInteraction: false
-                },
-                pagination: {
-                    el: ".swiper-pagination",
-                    clickable: true
-                },
-                navigation: {
-                    nextEl: ".swiper-button-next",
-                    prevEl: ".swiper-button-prev"
-                }
-            });
-        }
+    });
+}
 
         function renderEventList(events) {
             const c = document.getElementById("step1EventList");
@@ -318,7 +316,7 @@
 
                 const status = document.createElement("div");
                 status.textContent = `${booked}/${total}`;
-                status.className = "text-[#EB8012] text-sm font-bold";
+                status.className = "text-[#0D1C4D] text-sm font-bold";
 
                 topRow.append(title, status);
 
@@ -453,77 +451,77 @@
             });
         }
 
-        document.getElementById('submitBookingBtn').onclick = submitBooking;
-        async function submitBooking() {
-            showLoading();
+    async function submitBooking() {
+    showLoading();
 
-            const btn = document.getElementById("submitBookingBtn");
-            btn.disabled = true;
-            btn.textContent = "กำลังบันทึก...";
+    // Validate required fields
+    const requiredFields = [
+        { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
+        { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
+        { id: 'bookEventId', label: 'รหัสกิจกรรม' },
+        { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
+        { id: 'bookEventDate', label: 'วันที่' },
+        { id: 'bookEventTime', label: 'เวลา' },
+        { id: 'bookUserLineId', label: 'LINE ID' },
+    ];
 
-            const requiredFields = [
-                { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
-                { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
-                { id: 'bookEventId', label: 'รหัสกิจกรรม' },
-                { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
-                { id: 'bookEventDate', label: 'วันที่' },
-                { id: 'bookEventTime', label: 'เวลา' },
-                { id: 'bookUserLineId', label: 'LINE ID' },
-            ];
-
-            for (const field of requiredFields) {
-                const val = document.getElementById(field.id).value.trim();
-                if (!val) {
-                    hideLoading();
-                    alert(`กรุณากรอก ${field.label}`);
-                    document.getElementById(field.id).focus();
-                    return;
-                }
-            }
-
-            const payload = {
-                eventId: document.getElementById('bookEventId').value,
-                eventName: document.getElementById('bookEventName').value,
-                category: document.getElementById('bookEventCategory').value,
-                price: document.getElementById('bookEventPrice').value,
-                date: document.getElementById('bookEventDate').value,
-                time: document.getElementById('bookEventTime').value,
-                queue: "1",
-                renterName: document.getElementById('bookRenterName').value,
-                renterNameEn: document.getElementById('bookRenterNameEn').value,
-                citizenId: document.getElementById('bookCitizenId').value,
-                address: document.getElementById('bookAddress').value,
-                phone: document.getElementById('bookPhone').value,
-                email: document.getElementById('bookEmail').value,
-                note: document.getElementById('bookNote').value,
-                userLineId: document.getElementById('bookUserLineId').value
-            };
-
-            fetch("https://script.google.com/macros/s/AKfycbzJ1VvqlIg_vKgmLnzzsBqdaUPSDNUV4BEhqLjYAxamOqd_OHxR1wH8mfogLJL6T0Aa7A/exec", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-            })
-                .then((response) => response.text())
-                .then((data) => {
-                    console.log("Response:", data);
-                    alert("บันทึกการจองเรียบร้อย");
-                    hideLoading();
-
-                    if (liff && liff.isInClient()) {
-                        liff.close();
-                    } else {
-                        showStep("step1");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    alert("เกิดข้อผิดพลาดขณะส่งข้อมูล");
-                    hideLoading();
-                    btn.disabled = false;
-                    btn.textContent = "บันทึกการจอง";
-                });
+    for (const field of requiredFields) {
+        const val = document.getElementById(field.id).value.trim();
+        if (!val) {
+            hideLoading();
+            alert(`กรุณากรอก ${field.label}`);
+            document.getElementById(field.id).focus();
+            return;
         }
+    }
+
+    const payload = {
+        eventId: document.getElementById('bookEventId').value,
+        eventName: document.getElementById('bookEventName').value,
+        category: document.getElementById('bookEventCategory').value,
+        price: document.getElementById('bookEventPrice').value,
+        date: document.getElementById('bookEventDate').value,
+        time: document.getElementById('bookEventTime').value,
+        queue: "1", // คิวตายตัว
+        renterName: document.getElementById('bookRenterName').value,
+        renterNameEn: document.getElementById('bookRenterNameEn').value,
+        citizenId: document.getElementById('bookCitizenId').value,
+        address: document.getElementById('bookAddress').value,
+        phone: document.getElementById('bookPhone').value,
+        email: document.getElementById('bookEmail').value,
+        note: document.getElementById('bookNote').value,
+        userLineId: document.getElementById('bookUserLineId').value
+    };
+
+    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+
+    try {
+        await fetch(API_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        await fetchAllEvents();
+        alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+
+        // ปิด LIFF ถ้าอยู่ใน LIFF
+        if (liff && liff.isInClient()) {
+            liff.close();
+        } else {
+            showStep('step1');
+        }
+
+    } catch (e) {
+        console.error('Submit failed:', e);
+        alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+    } finally {
+        hideLoading();
+    }
+}
+
+
     </script>
 </body>
 
