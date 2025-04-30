@@ -1,362 +1,337 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Member Dashboard</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <!-- config.js สำหรับ API_URL -->
-      <script src="config.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Member Dashboard</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="config.js"></script>
 </head>
-
 <body class="bg-slate-100 min-h-screen flex">
 
-    <!-- Side Navigation -->
-    <aside class="w-64 bg-white shadow flex flex-col">
-        <div class="p-4 font-bold text-lg border-b">Dashboard Member</div>
-        <nav class="flex-1 space-y-2 mt-4">
-            <a href="index.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Booking</a>
-            <a href="room.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Room</a>
-            <a href="#" class="block px-4 py-2 text-white bg-gray-800">Member</a>
-            <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Setting</a>
-        </nav>
-    </aside>
+  <!-- Side Navigation -->
+  <aside class="w-64 bg-white shadow flex flex-col">
+    <div class="p-4 font-bold text-lg border-b">Dashboard</div>
+    <nav class="flex-1 mt-4">
+      <a href="Dashboard.html" class="block p-4 text-gray-700 bg-gray-200">Dashboard</a>
+      <a href="addevent.html" class="block p-4 text-gray-700 bg-gray-200">Event</a>
+      <a href="#" class="block p-4 text-gray-100 bg-gray-800">Member</a>
+    </nav>
+  </aside>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-        <div class="container mx-auto p-4">
-            <!-- Filters -->
-            <div class="flex flex-col md:flex-row md:space-x-4 mb-4">
-                <div class="flex-1">
-                    <label class="block text-sm">ค้นหาชื่อสกุล</label>
-                    <input id="filter-name" type="text" placeholder="ชื่อสกุล" class="mt-1 w-full border rounded p-2" />
-                </div>
-                <div class="flex-1">
-                    <label class="block text-sm">ค้นหา useridline</label>
-                    <input id="filter-userline" type="text" placeholder="useridline"
-                        class="mt-1 w-full border rounded p-2" />
-                </div>
-                <div class="flex-1">
-                    <label class="block text-sm">ค้นหา บัตรปชช</label>
-                    <input id="filter-idcard" type="text" placeholder="บัตรประชาชน"
-                        class="mt-1 w-full border rounded p-2" />
-                </div>
-            </div>
-
-            <!-- Table -->
-            <table id="data-table" class="min-w-full bg-white rounded shadow text-xs">
-                <thead class="bg-gray-200 text-gray-800">
-                    <tr>
-                        <th class="py-2 px-3 border-b">ไอดี</th>
-                        <th class="py-2 px-3 border-b">ชื่อสกุล</th>
-                        <th class="py-2 px-3 border-b">ชื่อสกุล(ENG)</th>
-                        <th class="py-2 px-3 border-b">เบอร์ติดต่อ</th>
-                        <th class="py-2 px-3 border-b">อีเมล</th>
-                        <th class="py-2 px-3 border-b text-center">Action</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm"></tbody>
-            </table>
-
-            <!-- Pagination -->
-            <div id="pagination" class="mt-4 flex justify-center space-x-2"></div>
+  <!-- Main Content -->
+  <div class="flex-1 flex flex-col">
+    <div class="container max-w-5xl mx-auto p-4">
+      <!-- Filters -->
+      <div class="flex flex-col md:flex-row md:space-x-4 mb-4">
+        <div class="flex-1">
+          <label class="block text-sm">ค้นหาชื่อสกุล</label>
+          <input id="filter-name" type="text" placeholder="ชื่อสกุล" class="mt-1 w-full border rounded p-2" />
         </div>
-    </div>
-
-    <!-- Profile Modal -->
-    <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg w-3/4 max-w-xl">
-            <h2 class="text-xl font-bold mb-4">ข้อมูลสมาชิก</h2>
-            <div id="profile-content" class="space-y-2 text-sm"></div>
-            <div class="text-right mt-4">
-                <button onclick="closeProfileModal()" class="px-4 py-2 bg-gray-500 text-white rounded">ปิด</button>
-            </div>
+        <div class="flex-1">
+          <label class="block text-sm">ค้นหา เบอร์ติดต่อ</label>
+          <input id="filter-phone" type="text" placeholder="เบอร์ติดต่อ" class="mt-1 w-full border rounded p-2" />
         </div>
-    </div>
-
-    <!-- Edit Modal -->
-    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg w-3/4 max-w-2xl">
-            <h2 class="text-xl font-bold mb-4">แก้ไขข้อมูลสมาชิก</h2>
-            <form id="edit-form" class="grid grid-cols-2 gap-4 text-sm">
-                <input type="hidden" id="edit-id" />
-
-                <div>
-                    <label>ชื่อสกุล</label>
-                    <input id="edit-name" type="text" class="w-full border rounded p-2" required />
-                </div>
-                <div>
-                    <label>ชื่อสกุล(ENG)</label>
-                    <input id="edit-name-en" type="text" class="w-full border rounded p-2" required />
-                </div>
-                <div>
-                    <label>บัตรปชช</label>
-                    <input id="edit-idcard" type="text" class="w-full border rounded p-2" required />
-                </div>
-                <div>
-                    <label>ที่อยู่</label>
-                    <input id="edit-address" type="text" class="w-full border rounded p-2" required />
-                </div>
-                <div>
-                    <label>เบอร์ติดต่อ</label>
-                    <input id="edit-phone" type="text" class="w-full border rounded p-2" required />
-                </div>
-                <div>
-                    <label>อีเมล</label>
-                    <input id="edit-email" type="email" class="w-full border rounded p-2"  />
-                </div>
-                <div>
-                    <label>useridline</label>
-                    <input id="edit-userline" type="text" class="w-full border rounded p-2"  />
-                </div>
-                <div>
-                    <label>คะแนน</label>
-                    <input id="edit-score" type="number" class="w-full border rounded p-2"  />
-                </div>
-
-                <div class="col-span-2 text-right space-x-2 mt-4">
-                    <button type="button" onclick="closeEditModal()"
-                        class="px-4 py-2 bg-red-500 text-white rounded">ยกเลิก</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">บันทึก</button>
-                </div>
-            </form>
+        <div class="flex-1">
+          <label class="block text-sm">ค้นหา บัตรปชช</label>
+          <input id="filter-idcard" type="text" placeholder="บัตรประชาชน" class="mt-1 w-full border rounded p-2" />
         </div>
+      </div>
+
+      <!-- Table -->
+      <table id="data-table" class="min-w-full bg-white rounded shadow text-xs">
+        <thead class="bg-gray-200 text-gray-800">
+          <tr>
+            <th class="py-2 px-3 border-b">ไอดี</th>
+            <th class="py-2 px-3 border-b">ชื่อสกุล</th>
+            <th class="py-2 px-3 border-b">ชื่อสกุล(ENG)</th>
+            <th class="py-2 px-3 border-b">เบอร์ติดต่อ</th>
+            <th class="py-2 px-3 border-b">อีเมล</th>
+            <th class="py-2 px-3 border-b text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm"></tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div id="pagination" class="mt-4 flex justify-center space-x-2"></div>
     </div>
+  </div>
 
-    <script>
-        const rowsPerPage = 10;
-        let tableData = [], filteredData = [], currentPage = 1;
-        // แปลง ISO string เป็น "dd-mm-yyyy HH:mm"
-        function formatDateTime(iso) {
-            const d = new Date(iso);
-            const dd = String(d.getDate()).padStart(2, '0');
-            const mm = String(d.getMonth() + 1).padStart(2, '0');
-            const yyyy = d.getFullYear();
-            const HH = String(d.getHours()).padStart(2, '0');
-            const MM = String(d.getMinutes()).padStart(2, '0');
-            return `${dd}-${mm}-${yyyy} ${HH}:${MM}`;
-        }
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg w-3/4 max-w-xl">
+      <h2 class="text-xl font-bold mb-4">ข้อมูลสมาชิก</h2>
+      <div id="profile-content" class="space-y-2 text-sm"></div>
+      <div class="text-right mt-4">
+        <button onclick="closeProfileModal()" class="px-4 py-2 bg-gray-500 text-white rounded">ปิด</button>
+      </div>
+    </div>
+  </div>
 
-        // ดึงข้อมูลจาก Google Apps Script
-        async function fetchData() {
-            const res = await fetch(`${MEMBER_URL}?action=fetchData`);
-            const data = await res.json();
-            tableData = data.slice(1); // ข้าม header
-            applyFilters();
-            setupPagination();
-        }
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg w-3/4 max-w-2xl">
+      <h2 class="text-xl font-bold mb-4">แก้ไขข้อมูลสมาชิก</h2>
+      <form id="edit-form" class="grid grid-cols-2 gap-4 text-sm">
+        <input type="hidden" id="edit-id" />
+        <div>
+          <label>ชื่อสกุล</label>
+          <input id="edit-name" type="text" class="w-full border rounded p-2" required />
+        </div>
+        <div>
+          <label>ชื่อสกุล(ENG)</label>
+          <input id="edit-name-en" type="text" class="w-full border rounded p-2" required />
+        </div>
+        <div>
+          <label>บัตรปชช</label>
+          <input id="edit-idcard" type="text" class="w-full border rounded p-2" required />
+        </div>
+        <div>
+          <label>ที่อยู่</label>
+          <input id="edit-address" type="text" class="w-full border rounded p-2" required />
+        </div>
+        <div>
+          <label>เบอร์ติดต่อ</label>
+          <input id="edit-phone" type="text" class="w-full border rounded p-2" required />
+        </div>
+        <div>
+          <label>อีเมล</label>
+          <input id="edit-email" type="email" class="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label>useridline</label>
+          <input id="edit-userline" type="text" class="w-full border rounded p-2" />
+        </div>
+        <div>
+          <label>คะแนน</label>
+          <input id="edit-score" type="number" class="w-full border rounded p-2" />
+        </div>
+        <div class="col-span-2 text-right space-x-2 mt-4">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-red-500 text-white rounded">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-        // แสดงหน้า
-        function displayPage(page) {
-            const start = (page - 1) * rowsPerPage;
-            const pageRows = filteredData.slice(start, start + rowsPerPage);
-            const tbody = document.querySelector('#data-table tbody');
-            tbody.innerHTML = '';
+  <script>
+    // —————– Helper Loading —————–
+    function showLoading(text = 'กำลังโหลด...') {
+      Swal.fire({
+        title: text,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+    }
+    function closeLoading() {
+      Swal.close();
+    }
 
-            pageRows.forEach(row => {
-                if (row.every(c => c === '')) return;
-                const tr = document.createElement('tr');
+    // —————– Core Variables —————–
+    const rowsPerPage = 10;
+    let tableData = [], filteredData = [], currentPage = 1;
 
-                // แสดงเฉพาะคอลัมน์ที่ต้องการ: [0]=ไอดี, [1]=ชื่อสกุล, [2]=ชื่อสกุล(ENG), [5]=เบอร์ติดต่อ, [6]=อีเมล
-                [0, 1, 2, 5, 6].forEach(i => {
-                    const td = document.createElement('td');
-                    td.className = 'py-2 px-3 border-b';
-                    td.textContent = row[i] || '';
-                    tr.appendChild(td);
-                });
+    // —————– Fetch Data —————–
+    async function fetchData() {
+      showLoading('กำลังโหลดข้อมูลสมาชิก...');
+      try {
+        const res = await fetch(`${MEMBER_URL}?action=fetchData`);
+        const data = await res.json();
+        tableData = data.slice(1);
+        applyFilters();
+        setupPagination();
+      } catch (e) {
+        console.error(e);
+        Swal.fire('ผิดพลาด', 'โหลดข้อมูลไม่สำเร็จ', 'error');
+      } finally {
+        closeLoading();
+      }
+    }
 
-                // Action column
-                const actionTd = document.createElement('td');
-                actionTd.className = 'py-2 px-3 border-b text-center space-x-1';
+    // —————– Display Page —————–
+    function displayPage(page) {
+      const start = (page - 1) * rowsPerPage;
+      const pageRows = filteredData.slice(start, start + rowsPerPage);
+      const tbody = document.querySelector('#data-table tbody');
+      tbody.innerHTML = '';
 
-                const btnView = document.createElement('button');
-                btnView.textContent = 'ดูโปรไฟล์';
-                btnView.className = 'px-2 py-1 bg-green-500 text-white rounded hover:bg-green-700';
-                btnView.onclick = () => viewProfile(row);
-
-                const btnEdit = document.createElement('button');
-                btnEdit.textContent = 'แก้ไข';
-                btnEdit.className = 'px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-700';
-                btnEdit.onclick = () => openEditModal(row);
-
-                const btnDelete = document.createElement('button');
-                btnDelete.textContent = 'ลบ';
-                btnDelete.className = 'px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700';
-                btnDelete.onclick = () => confirmDelete(row[0]);
-
-                actionTd.appendChild(btnView);
-                actionTd.appendChild(btnEdit);
-                actionTd.appendChild(btnDelete);
-                tr.appendChild(actionTd);
-
-                tbody.appendChild(tr);
-            });
-        }
-
-
-        // Pagination
-        function setupPagination() {
-            const pageCount = Math.ceil(filteredData.length / rowsPerPage);
-            const container = document.getElementById('pagination');
-            container.innerHTML = '';
-            for (let i = 1; i <= pageCount; i++) {
-                const btn = document.createElement('button');
-                btn.textContent = i;
-                btn.className = i === currentPage
-                    ? 'px-3 py-1 bg-gray-800 text-white rounded'
-                    : 'px-3 py-1 bg-gray-300 text-gray-800 rounded';
-                btn.onclick = () => { currentPage = i; displayPage(i); setupPagination(); };
-                container.appendChild(btn);
-            }
-            displayPage(currentPage);
-        }
-
-        // Filters
-        ['name', 'userline', 'idcard'].forEach(id => {
-            document.getElementById(`filter-${id}`).addEventListener('input', applyFilters);
+      pageRows.forEach(row => {
+        if (row.every(c => c === '')) return;
+        const tr = document.createElement('tr');
+        [0,1,2,5,6].forEach(i => {
+          const td = document.createElement('td');
+          td.className = 'py-2 px-3 border-b';
+          td.textContent = row[i] || '';
+          tr.appendChild(td);
         });
-        function applyFilters() {
-            const nameValue = document.getElementById('filter-name').value.trim().toLowerCase();
-            const userlineValue = document.getElementById('filter-userline').value.trim().toLowerCase();
-            const idcardValue = document.getElementById('filter-idcard').value.trim().toLowerCase();
+        const actionTd = document.createElement('td');
+        actionTd.className = 'py-2 px-3 border-b text-center space-x-1';
 
-            filteredData = tableData.filter(r => {
-                // r[1]=ชื่อสกุล, r[7]=useridline, r[3]=บัตรปชช
-                const nameCell = (r[1] || '').toString().toLowerCase();
-                const userlineCell = (r[7] || '').toString().toLowerCase();
-                const idcardCell = (r[3] || '').toString().toLowerCase();
+        const btnView = document.createElement('button');
+        btnView.textContent = 'ดูโปรไฟล์';
+        btnView.className = 'px-2 py-1 bg-green-500 text-white rounded hover:bg-green-700';
+        btnView.onclick = () => viewProfile(row);
 
-                return nameCell.includes(nameValue)
-                    && userlineCell.includes(userlineValue)
-                    && idcardCell.includes(idcardValue);
-            });
+        const btnEdit = document.createElement('button');
+        btnEdit.textContent = 'แก้ไข';
+        btnEdit.className = 'px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-700';
+        btnEdit.onclick = () => openEditModal(row);
 
-            currentPage = 1;
-            setupPagination();
+        const btnDelete = document.createElement('button');
+        btnDelete.textContent = 'ลบ';
+        btnDelete.className = 'px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700';
+        btnDelete.onclick = () => confirmDelete(row[0]);
+
+        actionTd.appendChild(btnView);
+        actionTd.appendChild(btnEdit);
+        actionTd.appendChild(btnDelete);
+        tr.appendChild(actionTd);
+        tbody.appendChild(tr);
+      });
+    }
+
+    // —————– Pagination —————–
+    function setupPagination() {
+      const pageCount = Math.ceil(filteredData.length / rowsPerPage);
+      const container = document.getElementById('pagination');
+      container.innerHTML = '';
+      for (let i = 1; i <= pageCount; i++) {
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = i === currentPage
+          ? 'px-3 py-1 bg-gray-800 text-white rounded'
+          : 'px-3 py-1 bg-gray-300 text-gray-800 rounded';
+        btn.onclick = () => { currentPage = i; displayPage(i); setupPagination(); };
+        container.appendChild(btn);
+      }
+      displayPage(currentPage);
+    }
+
+    // —————– Filters —————–
+    ['name','phone','idcard'].forEach(id => {
+      document.getElementById(`filter-${id}`).addEventListener('input', applyFilters);
+    });
+    function applyFilters() {
+      const nameValue = document.getElementById('filter-name').value.trim().toLowerCase();
+      const phoneValue = document.getElementById('filter-phone').value.trim().toLowerCase();
+      const idcardValue = document.getElementById('filter-idcard').value.trim().toLowerCase();
+
+      filteredData = tableData.filter(r => {
+        const nameCell = (r[1] || '').toString().toLowerCase();
+        const phoneCell = (r[5] || '').toString().toLowerCase();
+        const idcardCell = (r[3] || '').toString().toLowerCase();
+        return nameCell.includes(nameValue)
+            && phoneCell.includes(phoneValue)
+            && idcardCell.includes(idcardValue);
+      });
+
+      currentPage = 1;
+      setupPagination();
+    }
+
+    // —————– View Profile —————–
+    function viewProfile(row) {
+      const keys = ['ไอดี','ชื่อสกุล','ชื่อสกุล(ENG)','บัตรปชช','ที่อยู่','เบอร์ติดต่อ','อีเมล','useridline','คะแนน'];
+      let html = '';
+      keys.forEach((key,i) => {
+        const val = row[i];
+        if (val !== undefined && val !== '') {
+          html += `<p><strong>${key}:</strong> ${val}</p>`;
         }
+      });
+      document.getElementById('profile-content').innerHTML = html;
+      document.getElementById('profile-modal').classList.remove('hidden');
+    }
+    function closeProfileModal() {
+      document.getElementById('profile-modal').classList.add('hidden');
+    }
 
+    // —————– Edit Modal —————–
+    function openEditModal(row) {
+      const fields = ['id','name','name-en','idcard','address','phone','email','userline','score'];
+      fields.forEach((field,i) => {
+        document.getElementById(`edit-${field}`).value = row[i] || '';
+      });
+      document.getElementById('edit-modal').classList.remove('hidden');
+    }
+    function closeEditModal() {
+      document.getElementById('edit-modal').classList.add('hidden');
+    }
 
-        // View Profile
-        function viewProfile(row) {
-            const keys = [
-                'ไอดี',
-                'ชื่อสกุล',
-                'ชื่อสกุล(ENG)',
-                'บัตรปชช',
-                'ที่อยู่',
-                'เบอร์ติดต่อ',
-                'อีเมล',
-                'useridline',
-                'คะแนน'
-            ];
-
-            const html = row.map((v, i) => {
-                let display = v;
-                // ถ้าเป็นคอลัมน์เวลาบันทึก (index 9) แปลงก่อน
-                if (i === 9) {
-                    display = formatDateTime(v);
-                }
-                return `<p><strong>${keys[i]}:</strong> ${display}</p>`;
-            }).join('');
-
-            document.getElementById('profile-content').innerHTML = html;
-            document.getElementById('profile-modal').classList.remove('hidden');
-        }
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.add('hidden');
-        }
-
-        // Edit
-        // เปิด modal และเติมข้อมูลลงฟิลด์ที่เหลือ (ไม่มี timestamp)
-        function openEditModal(row) {
-            const fields = [
-                'id',         // row[0]
-                'name',       // row[1]
-                'name-en',    // row[2]
-                'idcard',     // row[3]
-                'address',    // row[4]
-                'phone',      // row[5]
-                'email',      // row[6]
-                'userline',   // row[7]
-                'score'       // row[8]
-            ];
-            fields.forEach((field, i) => {
-                document.getElementById(`edit-${field}`).value = row[i] || '';
-            });
-            document.getElementById('edit-modal').classList.remove('hidden');
-        }
-
-        // ปิด modal
-        function closeEditModal() {
-            document.getElementById('edit-modal').classList.add('hidden');
-        }
-
-        // เมื่อกดบันทึก: ส่งเฉพาะฟิลด์ที่แก้ไขได้
-        document.getElementById('edit-form').addEventListener('submit', async e => {
-            e.preventDefault();
-            const params = {
-                method: 'updateData',
-                id: document.getElementById('edit-id').value,
-                nameTh: document.getElementById('edit-name').value,
-                nameEn: document.getElementById('edit-name-en').value,
-                idCard: document.getElementById('edit-idcard').value,
-                address: document.getElementById('edit-address').value,
-                phone: document.getElementById('edit-phone').value,
-                email: document.getElementById('edit-email').value,
-                userlineId: document.getElementById('edit-userline').value,
-                score: document.getElementById('edit-score').value
-                // ไม่ส่ง timestamp มาเลย
-            };
-            const formBody = new URLSearchParams(params).toString();
-            const res = await fetch(MEMBER_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formBody
-            });
-            const msg = await res.text();
-            Swal.fire('สำเร็จ', msg, 'success');
-            closeEditModal();
-            fetchData();
+    // —————– Submit Edit —————–
+    document.getElementById('edit-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      showLoading('กำลังบันทึกการแก้ไข...');
+      try {
+        const params = {
+          method: 'updateData',
+          id: document.getElementById('edit-id').value,
+          nameTh: document.getElementById('edit-name').value,
+          nameEn: document.getElementById('edit-name-en').value,
+          idCard: document.getElementById('edit-idcard').value,
+          address: document.getElementById('edit-address').value,
+          phone: document.getElementById('edit-phone').value,
+          email: document.getElementById('edit-email').value,
+          userlineId: document.getElementById('edit-userline').value,
+          score: document.getElementById('edit-score').value
+        };
+        const formBody = new URLSearchParams(params).toString();
+        const res = await fetch(MEMBER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: formBody
         });
-        // ฟังก์ชันลบข้อมูลสมาชิก
-        async function deleteData(id) {
-            const response = await fetch(MEMBER_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `method=deleteData&id=${id}`
-            });
-            const result = await response.text();
-            Swal.fire({
-                title: "ลบเรียบร้อย",
-                text: result,
-                icon: "success",
-                confirmButtonText: "ตกลง",
-            });
-            await fetchData();
-        }
+        const msg = await res.text();
+        Swal.fire('สำเร็จ', msg, 'success');
+        closeEditModal();
+        fetchData();
+      } catch (e) {
+        console.error(e);
+        Swal.fire('ผิดพลาด', 'บันทึกไม่สำเร็จ', 'error');
+      } finally {
+        closeLoading();
+      }
+    });
 
-        function confirmDelete(id) {
-            Swal.fire({
-                title: "คุณแน่ใจหรือไม่?",
-                text: "คุณต้องการลบข้อมูลนี้หรือไม่?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "ใช่, ลบเลย!",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteData(id);
-                }
-            });
-        }
-        // Init
-        window.onload = fetchData;
-    </script>
+    // —————– Delete Data —————–
+    async function deleteData(id) {
+      showLoading('กำลังลบข้อมูล...');
+      try {
+        const response = await fetch(MEMBER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: `method=deleteData&id=${id}`
+        });
+        const result = await response.text();
+        Swal.fire('ลบเรียบร้อย', result, 'success');
+        fetchData();
+      } catch (e) {
+        console.error(e);
+        Swal.fire('ผิดพลาด', 'ลบไม่สำเร็จ', 'error');
+      } finally {
+        closeLoading();
+      }
+    }
+    function confirmDelete(id) {
+      Swal.fire({
+        title: "คุณแน่ใจหรือไม่?",
+        text: "คุณต้องการลบข้อมูลนี้หรือไม่?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "ใช่, ลบเลย!"
+      }).then(result => {
+        if (result.isConfirmed) deleteData(id);
+      });
+    }
+
+    // —————– Initialize —————–
+    window.onload = fetchData;
+  </script>
 </body>
-
 </html>
