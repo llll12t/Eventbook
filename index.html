@@ -495,30 +495,28 @@ function renderBannersWithSwiper(banners) {
 
     // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
 
-    try {
-    await fetch(EVENT_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-    });
+try {
+  await fetch(EVENT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
 
-    await fetchAllEvents();
+  await fetchAllEvents();
 
-    // ให้ alert ทำงาน แล้วค่อยปิด LIFF หลังผู้ใช้กด "ตกลง"
-    alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
+  alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
 
-    setTimeout(() => {
-        if (liff && liff.isInClient()) {
-            liff.close();
-        } else {
-            showStep('step1');
-        }
-    }, 100); // รอเล็กน้อยให้ alert ปิดก่อน
+  // หลัง alert จึงสั่งปิด
+  if (liff && liff.isInClient()) {
+    liff.closeWindow();      // <-- เรียกเมธอดนี้
+  } else {
+    showStep('step1');       // กลับสู่หน้าแรกถ้าไม่ใช่ใน LINE client
+  }
 
 } catch (e) {
-    console.error('Submit failed:', e);
-    alert('ไม่สามารถจองได้ กรุณาลองใหม่');
+  console.error('Submit failed:', e);
+  alert('ไม่สามารถจองได้ กรุณาลองใหม่');
 } finally {
-    hideLoading();
+  hideLoading();
 }
 
     }
