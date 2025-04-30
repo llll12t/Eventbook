@@ -2,9 +2,9 @@
 <html lang="th">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>EVENT TEST</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -19,26 +19,58 @@
     <script src="config.js"></script>
     <!-- LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <style>
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
+      <!-- กำหนดธีมสีใน :root (3 ค่าสี) -->
+  <style>
+    :root {
+      --primary-color: #ffffff;
+      --secondary-color: #0A164D;
+      --accent-color: #EB8012;
+    }
 
-            100% {
-                transform: rotate(360deg);
-            }
-        }
+    .flying-image {
+      position: absolute;
+      padding-top: -20px;
+      width: 100px;
+      animation: fly 5s linear infinite, tilt 1s ease-in-out infinite alternate;
+    }
 
-        .loader {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #071d4a;
-            border-radius: 50%;
-            width: 64px;
-            height: 64px;
-            animation: spin 1s linear infinite;
-        }
+    @keyframes fly {
+      0% {
+        transform: translate(0, 0);
+      }
 
+      25% {
+        transform: translate(100px, -50px);
+      }
+
+      50% {
+        transform: translate(200px, 50px);
+      }
+
+      75% {
+        transform: translate(100px, 100px);
+      }
+
+      100% {
+        transform: translate(0, 0);
+      }
+    }
+
+    @keyframes tilt {
+      0% {
+        transform: rotate(5deg);
+      }
+
+      100% {
+        transform: rotate(-5deg);
+      }
+    }
+
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
         .glass {
             background: rgba(255, 255, 255, 0.5);
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -52,29 +84,29 @@
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed">
     <!-- Loading Overlay -->
-    <div id="loadingOverlay"
-        class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
-        <div class="loader"></div>
-    </div>
-
+    <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#F5F8FD] z-50">
+        <div class="text-center">
+          <div class="relative flex w-48">
+            <div class="flex-1 mb-40">
+              <img src="https://lh5.googleusercontent.com/d/1MoIcHrUlOtTV46t5CI3bYwT0cGQBh7PB" alt="Flying Object"
+                class="flying-image w-48 mx-auto">
+            </div>
+          </div>
+        </div>
+      </div>
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
-    <!-- Swiper Banner -->
-    <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
-      <div class="swiper-wrapper" id="bannerWrapper">
-        <!-- แทรกรูปแบนเนอร์ด้วย JS -->
-      </div>
-      <!-- Indicator / Navigation -->
-      <div class="swiper-pagination"></div>
-<!--       <div class="swiper-button-prev text-white"></div>
-      <div class="swiper-button-next text-white"></div> -->
-    </div>    
-    <div class="px-2 py-4 mb-4">
-    <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center"></div>
- </div>
+        <!-- Swiper Banner -->
+        <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
+            <div class="swiper-wrapper" id="bannerWrapper">
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+        <div class="px-2 py-4 mb-4">
+            <div id="categoryFilter" class="flex flex-wrap gap-2 justify-center"></div>
+        </div>
         <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
     </div>
-
     <!-- STEP 2: รายละเอียดกิจกรรม -->
     <div id="step2" class="hidden p-4 max-w-md mx-auto">
         <button id="backToStep1" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
@@ -106,7 +138,8 @@
         </div>
         <div class="flex justify-between items-center mb-2">
             <div id="detailEventQueue"
-                class="w-40 text-center mr-4 rounded-full border-2 border-orange-500 px-4 py-2 font-bold text-orange-500"></div>
+                class="w-40 text-center mr-4 rounded-full border-2 border-orange-500 px-4 py-2 font-bold text-orange-500">
+            </div>
             <div class="w-full">
                 <button id="detailBookBtn" class="w-full px-4 py-2 rounded-2xl text-white bg-[#071d4a]">
                     จองกิจกรรมนี้
@@ -151,7 +184,8 @@
             </div>
             <div class="hidden">
                 <label class="block text-sm font-semibold mb-1">สำหรับ / ท่าน</label>
-                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1" readonly />
+                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1"
+                    readonly />
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">ชื่อ-สกุล</label>
@@ -187,7 +221,8 @@
             </button>
         </form>
         <!-- ตรงก่อน </body> -->
-        <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+        <div id="toast"
+            class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
         </div>
 
         <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40 hidden"></pre>
@@ -231,55 +266,55 @@
 
         let swiperInstance;
 
-async function fetchAllEvents() {
-    showLoading();
-    try {
-        const res = await fetch(EVENT_URL);
-        const data = await res.json();
-        eventsData = data.events;
-        bannersData = data.banners;
+        async function fetchAllEvents() {
+            showLoading();
+            try {
+                const res = await fetch(EVENT_URL);
+                const data = await res.json();
+                eventsData = data.events;
+                bannersData = data.banners;
 
-        renderCategoryButtons(eventsData);
-        renderEventList(eventsData);
-        renderBannersWithSwiper(bannersData);
-    } catch (e) {
-        console.error('Fetch events failed:', e);
-    } finally {
-        hideLoading();
-    }
-}
-
-function renderBannersWithSwiper(banners) {
-    const wrapper = document.getElementById('bannerWrapper');
-    wrapper.innerHTML = '';
-
-    banners.forEach(b => {
-        const slide = document.createElement('div');
-        slide.className = "swiper-slide";
-        slide.innerHTML = `<img src="${b['รูปแบนเนอร์']}" alt="banner" class="w-full h-24 object-cover" />`;
-        wrapper.appendChild(slide);
-    });
-
-    // Destroy เก่า (ถ้ามี)
-    if (swiperInstance) swiperInstance.destroy(true, true);
-
-    // สร้าง Swiper ใหม่
-    swiperInstance = new Swiper(".mySwiper", {
-        loop: true,
-        autoplay: {
-            delay: 4000,
-            disableOnInteraction: false
-        },
-        pagination: {
-            el: ".swiper-pagination",
-            clickable: true
-        },
-        navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev"
+                renderCategoryButtons(eventsData);
+                renderEventList(eventsData);
+                renderBannersWithSwiper(bannersData);
+            } catch (e) {
+                console.error('Fetch events failed:', e);
+            } finally {
+                hideLoading();
+            }
         }
-    });
-}
+
+        function renderBannersWithSwiper(banners) {
+            const wrapper = document.getElementById('bannerWrapper');
+            wrapper.innerHTML = '';
+
+            banners.forEach(b => {
+                const slide = document.createElement('div');
+                slide.className = "swiper-slide";
+                slide.innerHTML = `<img src="${b['รูปแบนเนอร์']}" alt="banner" class="w-full h-24 object-cover" />`;
+                wrapper.appendChild(slide);
+            });
+
+            // Destroy เก่า (ถ้ามี)
+            if (swiperInstance) swiperInstance.destroy(true, true);
+
+            // สร้าง Swiper ใหม่
+            swiperInstance = new Swiper(".mySwiper", {
+                loop: true,
+                autoplay: {
+                    delay: 4000,
+                    disableOnInteraction: false
+                },
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true
+                },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev"
+                }
+            });
+        }
 
         function renderEventList(events) {
             const c = document.getElementById("step1EventList");
@@ -455,86 +490,86 @@ function renderBannersWithSwiper(banners) {
                 catContainer.appendChild(btn);
             });
         }
-    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
-    function showToast(msg, duration = 500) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      // แสดง
-      t.classList.remove('opacity-0');
-      t.classList.add('opacity-100');
-      // ซ่อนหลังเวลา duration
-      setTimeout(() => {
-        t.classList.remove('opacity-100');
-        t.classList.add('opacity-0');
-      }, duration);
-    }
-    async function submitBooking() {
-    showLoading();
-
-    // Validate required fields
-    const requiredFields = [
-        { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
-        { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
-        { id: 'bookEventId', label: 'รหัสกิจกรรม' },
-        { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
-        { id: 'bookEventDate', label: 'วันที่' },
-        { id: 'bookEventTime', label: 'เวลา' },
-        { id: 'bookUserLineId', label: 'LINE ID' },
-    ];
-
-    for (const field of requiredFields) {
-        const val = document.getElementById(field.id).value.trim();
-        if (!val) {
-            hideLoading();
-            alert(`กรุณากรอก ${field.label}`);
-            document.getElementById(field.id).focus();
-            return;
+        // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+        function showToast(msg, duration = 500) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            // แสดง
+            t.classList.remove('opacity-0');
+            t.classList.add('opacity-100');
+            // ซ่อนหลังเวลา duration
+            setTimeout(() => {
+                t.classList.remove('opacity-100');
+                t.classList.add('opacity-0');
+            }, duration);
         }
-    }
+        async function submitBooking() {
+            showLoading();
 
-    const payload = {
-        eventId: document.getElementById('bookEventId').value,
-        eventName: document.getElementById('bookEventName').value,
-        category: document.getElementById('bookEventCategory').value,
-        price: document.getElementById('bookEventPrice').value,
-        date: document.getElementById('bookEventDate').value,
-        time: document.getElementById('bookEventTime').value,
-        queue: "1", // คิวตายตัว
-        renterName: document.getElementById('bookRenterName').value,
-        renterNameEn: document.getElementById('bookRenterNameEn').value,
-        citizenId: document.getElementById('bookCitizenId').value,
-        address: document.getElementById('bookAddress').value,
-        phone: document.getElementById('bookPhone').value,
-        email: document.getElementById('bookEmail').value,
-        note: document.getElementById('bookNote').value,
-        userLineId: document.getElementById('bookUserLineId').value
-    };
+            // Validate required fields
+            const requiredFields = [
+                { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
+                { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
+                { id: 'bookEventId', label: 'รหัสกิจกรรม' },
+                { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
+                { id: 'bookEventDate', label: 'วันที่' },
+                { id: 'bookEventTime', label: 'เวลา' },
+                { id: 'bookUserLineId', label: 'LINE ID' },
+            ];
+
+            for (const field of requiredFields) {
+                const val = document.getElementById(field.id).value.trim();
+                if (!val) {
+                    hideLoading();
+                    alert(`กรุณากรอก ${field.label}`);
+                    document.getElementById(field.id).focus();
+                    return;
+                }
+            }
+
+            const payload = {
+                eventId: document.getElementById('bookEventId').value,
+                eventName: document.getElementById('bookEventName').value,
+                category: document.getElementById('bookEventCategory').value,
+                price: document.getElementById('bookEventPrice').value,
+                date: document.getElementById('bookEventDate').value,
+                time: document.getElementById('bookEventTime').value,
+                queue: "1", // คิวตายตัว
+                renterName: document.getElementById('bookRenterName').value,
+                renterNameEn: document.getElementById('bookRenterNameEn').value,
+                citizenId: document.getElementById('bookCitizenId').value,
+                address: document.getElementById('bookAddress').value,
+                phone: document.getElementById('bookPhone').value,
+                email: document.getElementById('bookEmail').value,
+                note: document.getElementById('bookNote').value,
+                userLineId: document.getElementById('bookUserLineId').value
+            };
 
 
 
- try {
-    await fetch(EVENT_URL, { method:'POST', body: JSON.stringify(payload) });
-    await fetchAllEvents();
+            try {
+                await fetch(EVENT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                await fetchAllEvents();
 
-    // แสดง toast แล้วปิด LIFF หลัง 500ms
-    showToast('จองสำเร็จ 🎉');
-    setTimeout(() => {
-      if (liff.isInClient()) {
-        liff.closeWindow();
-      } else {
-        showStep('step1');
-      }
-    }, 500);
+                // แสดง toast แล้วปิด LIFF หลัง 500ms
+                showToast('จองสำเร็จ 🎉');
+                setTimeout(() => {
+                    if (liff.isInClient()) {
+                        liff.closeWindow();
+                    } else {
+                        showStep('step1');
+                    }
+                }, 500);
 
-  } catch (e) {
-    console.error(e);
-    showToast('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
-  } finally {
-    hideLoading();
-  }
-}
+            } catch (e) {
+                console.error(e);
+                showToast('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
+            } finally {
+                hideLoading();
+            }
+        }
 
-    
+
 
     </script>
 </body>
