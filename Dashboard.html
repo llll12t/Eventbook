@@ -15,61 +15,61 @@
 
 <body class="bg-slate-200 min-h-screen flex">
   <!-- Side Navigation -->
-     <aside class="w-64 bg-white shadow flex flex-col">
-      <div class="p-4 font-bold text-lg border-b">Dashboard</div>
-      <nav class="flex-1 mt-4">
-          <a href="#" class="block p-4  text-gray-100 bg-gray-800">Dashboard</a>
-          <a href="addevent.html" class="block p-4 text-gray-700 bg-gray-200">Event</a>
-          <a href="Member.html" class="block p-4 text-gray-700 bg-gray-200">Member</a>
-      </nav>
+  <aside class="w-64 bg-white shadow flex flex-col">
+    <div class="p-4 font-bold text-lg border-b">Dashboard</div>
+    <nav class="flex-1 mt-4">
+      <a href="#" class="block p-4 text-gray-100 bg-[#0A164D] mb-1">Dashboard</a>
+      <a href="addevent.html" class="block p-4 text-gray-700 bg-gray-200 hover:bg-gray-100 mb-1">Event</a>
+      <a href="Member.html" class="block p-4 text-gray-700 bg-gray-200 hover:bg-gray-100">Member</a>
+    </nav>
   </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 p-10">
-      <!-- Header & Filters + Metrics -->
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <!-- Filters -->
-        <div class="flex space-x-4">
-          <div>
+  <!-- Main Content -->
+  <main class="flex-1 p-10">
+    <!-- Header & Filters + Metrics -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+      <!-- Filters -->
+      <div class="flex space-x-4">
+        <div>
           <label class="block text-sm mb-1">สถานะ</label>
           <select id="filter-status" class="border px-3 py-2 bg-white rounded-xl w-40 h-10 appearance-none">
             <option value="">ทั้งหมด</option>
             <option value="จอง">จอง</option>
             <option value="เข้าร่วม">เข้าร่วม</option>
             <option value="ยกเลิก">ยกเลิก</option>
-            <option value="ปิดกิจกรรม">ปิดกิจกรรม</option> <!-- เพิ่มตรงนี้ -->  
+            <option value="ปิดกิจกรรม">ปิดกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
           </select>
 
-          </div>
-          <div>
-            <label class="block text-sm mb-1">วันที่</label>
-            <input type="date" id="filter-date" class="border px-3 py-2 bg-white rounded-xl w-40 h-10 appearance-none">
-          </div>
         </div>
-        <!-- Metrics Cards -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 sm:mt-0">
-          <div class="bg-white shadow rounded-lg p-4">
-            <div class="text-sm text-gray-500">ยอดจองทั้งหมด</div>
-            <div id="metric-total" class="text-2xl font-bold">0</div>
-          </div>
-          <div class="bg-white shadow rounded-lg p-4">
-            <div class="text-sm text-gray-500">เข้าร่วม</div>
-            <div id="metric-pending" class="text-2xl font-bold">0</div>
-          </div>
-          <div class="bg-white shadow rounded-lg p-4">
-            <div class="text-sm text-gray-500">ยกเลิก</div>
-            <div id="metric-cancle" class="text-2xl font-bold">0</div>
-          </div>
-          <div class="bg-white shadow rounded-lg p-4">
-            <div class="text-sm text-gray-500">เสร็จสิ้น</div>
-            <div id="metric-done" class="text-2xl font-bold">0</div>
-          </div>
+        <div>
+          <label class="block text-sm mb-1">วันที่</label>
+          <input type="date" id="filter-date" class="border px-3 py-2 bg-white rounded-xl w-40 h-10 appearance-none">
         </div>
       </div>
+      <!-- Metrics Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 sm:mt-0">
+        <div class="bg-white shadow rounded-lg p-4">
+          <div class="text-sm text-gray-500">ยอดจองทั้งหมด</div>
+          <div id="metric-total" class="text-2xl font-bold">0</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4">
+          <div class="text-sm text-gray-500">เข้าร่วม</div>
+          <div id="metric-pending" class="text-2xl font-bold">0</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4">
+          <div class="text-sm text-gray-500">ยกเลิก</div>
+          <div id="metric-cancle" class="text-2xl font-bold">0</div>
+        </div>
+        <div class="bg-white shadow rounded-lg p-4">
+          <div class="text-sm text-gray-500">เสร็จสิ้น</div>
+          <div id="metric-done" class="text-2xl font-bold">0</div>
+        </div>
+      </div>
+    </div>
 
-      <!-- Groups Container -->
-      <div id="groups-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
-    </main>
+    <!-- Groups Container -->
+    <div id="groups-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+  </main>
   </div>
 
   <!-- Modals -->
@@ -249,39 +249,39 @@
     }
 
     function renderGroups() {
-  // ดึงค่าตัวกรอง
-  const statusFilter = $('#filter-status').val();
-  const dateFilter   = $('#filter-date').val();
+      // ดึงค่าตัวกรอง
+      const statusFilter = $('#filter-status').val();
+      const dateFilter = $('#filter-date').val();
 
-  // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
-  //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
-  let filtered;
-  if (statusFilter) {
-    filtered = tableData.filter(x => x.status === statusFilter);
-  } else {
-    filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
-  }
+      // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
+      //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
+      let filtered;
+      if (statusFilter) {
+        filtered = tableData.filter(x => x.status === statusFilter);
+      } else {
+        filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
+      }
 
-  // 2) กรองตามวันที่ (ถ้ามี)
-  if (dateFilter) {
-    const [y, m, d] = dateFilter.split('-');
-    filtered = filtered.filter(x => x.date === `${d}-${m}-${y}`);
-  }
+      // 2) กรองตามวันที่ (ถ้ามี)
+      if (dateFilter) {
+        const [y, m, d] = dateFilter.split('-');
+        filtered = filtered.filter(x => x.date === `${d}-${m}-${y}`);
+      }
 
-  // 3) จัดกลุ่มตาม eventId
-  const groups = groupBy(filtered, 'eventId');
+      // 3) จัดกลุ่มตาม eventId
+      const groups = groupBy(filtered, 'eventId');
 
-  // 4) ล้าง container แล้วเริ่ม render ใหม่
-  const cont = $('#groups-container').empty();
+      // 4) ล้าง container แล้วเริ่ม render ใหม่
+      const cont = $('#groups-container').empty();
 
-  for (const [eid, items] of Object.entries(groups)) {
-    // ข้อมูล header ของกลุ่ม
-    const h       = items[0];
-    const booked  = items.length;
-    const cap     = eventCaps[eid] || 0;
+      for (const [eid, items] of Object.entries(groups)) {
+        // ข้อมูล header ของกลุ่ม
+        const h = items[0];
+        const booked = items.length;
+        const cap = eventCaps[eid] || 0;
 
-    // สร้างกล่องการ์ด
-    const box = $(`
+        // สร้างกล่องการ์ด
+        const box = $(`
       <div class="bg-white rounded-xl shadow p-4">
         <div class="flex justify-between items-center">
           <div>
@@ -312,9 +312,9 @@
       </div>
     `);
 
-    // เติมรายการแต่ละคนลงใน tbody
-    items.forEach(it => {
-      box.find('tbody').append(`
+        // เติมรายการแต่ละคนลงใน tbody
+        items.forEach(it => {
+          box.find('tbody').append(`
         <tr data-id="${it.id}">
           <td class="border px-2 py-1">${it.bookerName}</td>
           <td class="border px-2 py-1">${it.status}</td>
@@ -326,12 +326,12 @@
           </td>
         </tr>
       `);
-    });
+        });
 
-    // แปะกล่องลงใน container
-    cont.append(box);
-  }
-}
+        // แปะกล่องลงใน container
+        cont.append(box);
+      }
+    }
 
 
     function toggleDetailsInGroup(id, btn) {
