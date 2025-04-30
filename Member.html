@@ -126,7 +126,6 @@
     </div>
 
     <script>
-        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyTGVFsuEyk3RPaQDun0vq-MaTMpZIfdSin13CcneDQDh_h1x7D2Vv5DkxQgvvnf6nj/exec';
         const rowsPerPage = 10;
         let tableData = [], filteredData = [], currentPage = 1;
         // แปลง ISO string เป็น "dd-mm-yyyy HH:mm"
@@ -142,7 +141,7 @@
 
         // ดึงข้อมูลจาก Google Apps Script
         async function fetchData() {
-            const res = await fetch(`${WEB_APP_URL}?action=fetchData`);
+            const res = await fetch(`${MEMBER_URL}?action=fetchData`);
             const data = await res.json();
             tableData = data.slice(1); // ข้าม header
             applyFilters();
@@ -311,7 +310,7 @@
                 // ไม่ส่ง timestamp มาเลย
             };
             const formBody = new URLSearchParams(params).toString();
-            const res = await fetch(WEB_APP_URL, {
+            const res = await fetch(MEMBER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formBody
@@ -323,7 +322,7 @@
         });
         // ฟังก์ชันลบข้อมูลสมาชิก
         async function deleteData(id) {
-            const response = await fetch(WEB_APP_URL, {
+            const response = await fetch(MEMBER_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: `method=deleteData&id=${id}`

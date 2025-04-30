@@ -194,7 +194,7 @@
     async function fetchData() {
       startLoading();
       try {
-        const resp = await fetch(WEB_APP_URL);
+        const resp = await fetch(ADMIN_URL);
         const { appointments, events } = await resp.json();
 
         // capacity map
@@ -328,7 +328,7 @@
     $('#update-payment-form').on('submit', e => {
       e.preventDefault(); startLoading();
       const id = $('#payment-update-id').val(), payment = $('#update-payment-select').val();
-      $.post(WEB_APP_URL, { method: 'updatePaymentData', id, payment })
+      $.post(ADMIN_URL, { method: 'updatePaymentData', id, payment })
         .done(() => { Swal.fire('สำเร็จ', 'อัพเดทชำระเงินแล้ว', 'success'); fetchData(); closePaymentModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สามารถอัพเดทได้', 'error'))
         .always(stopLoading);
@@ -339,7 +339,7 @@
     $('#update-join-form').on('submit', e => {
       e.preventDefault(); startLoading();
       const id = $('#join-update-id').val(), joinStatus = $('#update-join-select').val();
-      $.post(WEB_APP_URL, { method: 'updateJoinData', id, joinStatus })
+      $.post(ADMIN_URL, { method: 'updateJoinData', id, joinStatus })
         .done(() => { Swal.fire('สำเร็จ', 'อัพเดทแจ้งเข้าร่วมแล้ว', 'success'); fetchData(); closeJoinModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สามารถอัพเดทได้', 'error'))
         .always(stopLoading);
@@ -350,7 +350,7 @@
     $('#update-confirm-form').on('submit', e => {
       e.preventDefault(); startLoading();
       const id = $('#confirm-update-id').val(), confirmStatus = $('#update-confirm-select').val();
-      $.post(WEB_APP_URL, { method: 'updateConfirmData', id, confirmStatus })
+      $.post(ADMIN_URL, { method: 'updateConfirmData', id, confirmStatus })
         .done(() => { Swal.fire('สำเร็จ', 'อัพเดทสถานะยืนยันแล้ว', 'success'); fetchData(); closeConfirmModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สามารถอัพเดทได้', 'error'))
         .always(stopLoading);
@@ -361,7 +361,7 @@
     $('#update-group-join-form').on('submit', e => {
       e.preventDefault(); startLoading();
       const eventId = $('#group-join-update-id').val(), joinStatus = $('#update-group-join-select').val();
-      $.post(WEB_APP_URL, { method: 'updateGroupJoinData', eventId, joinStatus })
+      $.post(ADMIN_URL, { method: 'updateGroupJoinData', eventId, joinStatus })
         .done(() => { Swal.fire('สำเร็จ', 'อัพเดทแจ้งเข้าร่วมกลุ่มเรียบร้อย', 'success'); fetchData(); closeGroupJoinModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สำเร็จ', 'error'))
         .always(stopLoading);
@@ -372,7 +372,7 @@
     $('#update-group-confirm-form').on('submit', e => {
       e.preventDefault(); startLoading();
       const eventId = $('#group-confirm-update-id').val(), confirmStatus = $('#update-group-confirm-select').val();
-      $.post(WEB_APP_URL, { method: 'updateGroupConfirmData', eventId, confirmStatus })
+      $.post(ADMIN_URL, { method: 'updateGroupConfirmData', eventId, confirmStatus })
         .done(() => { Swal.fire('สำเร็จ', 'อัพเดทสถานะยืนยันกลุ่มเรียบร้อย', 'success'); fetchData(); closeGroupConfirmModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สำเร็จ', 'error'))
         .always(stopLoading);
@@ -419,7 +419,7 @@
         email: $('#edit-email').val(),
         note: $('#edit-note').val()
       };
-      $.post(WEB_APP_URL, { method: 'editAppointmentData', ...params })
+      $.post(ADMIN_URL, { method: 'editAppointmentData', ...params })
         .done(() => { Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อย', 'success'); fetchData(); closeEditModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สามารถแก้ไขได้', 'error'))
         .always(stopLoading);
@@ -430,7 +430,7 @@
         .then(res => {
           if (res.isConfirmed) {
             startLoading();
-            $.post(WEB_APP_URL, { method: 'deleteAppointmentData', id })
+            $.post(ADMIN_URL, { method: 'deleteAppointmentData', id })
               .done(() => { Swal.fire('ลบแล้ว', 'success'); fetchData(); })
               .fail(() => Swal.fire('Error', 'ไม่สามารถลบได้', 'error'))
               .always(stopLoading);

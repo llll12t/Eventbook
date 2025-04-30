@@ -45,7 +45,7 @@
         function stopLoading() { $('#loading-overlay').addClass('hidden'); }
 
         async function initLIFF() {
-            await liff.init({ liffId: "2007305761-pnRkn7MM" });
+            await liff.init({ liffId: LIFF_HISTORY });
             if (!liff.isLoggedIn()) return liff.login();
             const profile = await liff.getProfile();
             currentUserId = profile.userId;
