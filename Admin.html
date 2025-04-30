@@ -123,22 +123,23 @@
     </div>
   </div>
 
-  <!-- 5. สถานะยืนยัน ทั้งกลุ่ม -->
-  <div id="update-group-confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+  <!-- 5) Update Group Confirm -->
+  <div id="update-group-confirm-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
     <div class="bg-white p-4 rounded-xl w-11/12 max-w-md">
-      <h2 class="text-lg font-bold mb-4">อัพเดทสถานะยืนยัน (กลุ่ม)</h2>
+      <h2 class="text-lg font-bold mb-4">อัพเดทเปิด-ปิด กิจกรรม(กลุ่ม)</h2>
       <form id="update-group-confirm-form">
         <input type="hidden" id="group-confirm-update-id">
         <div class="mb-2">
           <label class="block text-sm">สถานะยืนยัน</label>
           <select id="update-group-confirm-select" class="w-full border px-2 py-1 rounded">
-            <option value="ยืนยันแล้ว">ยืนยันแล้ว</option>
-            <option value="ยกเลิก">ยกเลิก</option>
+            <option value="ยืนยันแล้ว">เปิดกิจกรรม</option>
+            <option value="ยกเลิก">ยกเลิกกิจกรรม</option>
           </select>
         </div>
         <div class="flex justify-end">
-          <button type="button" onclick="closeGroupConfirmModal()" class="bg-gray-500 text-white py-1 px-3 rounded mr-2">ยกเลิก</button>
-          <button type="submit" class="bg-blue-500 text-white py-1 px-3 rounded">บันทึก</button>
+          <button type="button" onclick="closeGroupConfirmModal()"
+            class="bg-gray-500 text-white px-3 py-1 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">บันทึก</button>
         </div>
       </form>
     </div>
