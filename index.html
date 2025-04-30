@@ -15,7 +15,7 @@
     <!-- Swiper.js CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <!-- config.js สำหรับ API_URL -->
+    <!-- config.js สำหรับ EVENT_URL -->
     <script src="config.js"></script>
     <!-- LIFF SDK -->
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
@@ -229,7 +229,7 @@
 async function fetchAllEvents() {
     showLoading();
     try {
-        const res = await fetch(API_URL);
+        const res = await fetch(EVENT_URL);
         const data = await res.json();
         eventsData = data.events;
         bannersData = data.banners;
@@ -496,7 +496,7 @@ function renderBannersWithSwiper(banners) {
     // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
 
     try {
-    await fetch(API_URL, {
+    await fetch(EVENT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
