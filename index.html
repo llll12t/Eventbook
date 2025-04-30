@@ -56,6 +56,7 @@
         class="fixed inset-0 flex items-center justify-center bg-[#071d4a] bg-opacity-50 z-50 hidden">
         <div class="loader"></div>
     </div>
+
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
     <!-- Swiper Banner -->
@@ -185,6 +186,10 @@
                 บันทึกการจอง
             </button>
         </form>
+        <!-- ตรงก่อน </body> -->
+        <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
+        </div>
+
         <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40 hidden"></pre>
     </div>
 
@@ -494,29 +499,39 @@ function renderBannersWithSwiper(banners) {
     };
 
     // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+    function showToast(msg, duration = 2000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      // แสดง
+      t.classList.remove('opacity-0');
+      t.classList.add('opacity-100');
+      // ซ่อนหลังเวลา duration
+      setTimeout(() => {
+        t.classList.remove('opacity-100');
+        t.classList.add('opacity-0');
+      }, duration);
+    }
 
-try {
-  await fetch(EVENT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload)
-  });
+ try {
+    await fetch(EVENT_URL, { method:'POST', body: JSON.stringify(payload) });
+    await fetchAllEvents();
 
-  await fetchAllEvents();
+    // แสดง toast แล้วปิด LIFF หลัง 500ms
+    showToast('จองสำเร็จ 🎉');
+    setTimeout(() => {
+      if (liff.isInClient()) {
+        liff.closeWindow();
+      } else {
+        showStep('step1');
+      }
+    }, 500);
 
-  alert('จองสำเร็จ ขอบคุณที่ใช้บริการ');
-
-  // หลัง alert จึงสั่งปิด
-  if (liff && liff.isInClient()) {
-    liff.closeWindow();      // <-- เรียกเมธอดนี้
-  } else {
-    showStep('step1');       // กลับสู่หน้าแรกถ้าไม่ใช่ใน LINE client
+  } catch (e) {
+    console.error(e);
+    showToast('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
+  } finally {
+    hideLoading();
   }
-
-} catch (e) {
-  console.error('Submit failed:', e);
-  alert('ไม่สามารถจองได้ กรุณาลองใหม่');
-} finally {
-  hideLoading();
 }
 
     }
