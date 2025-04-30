@@ -247,61 +247,90 @@
     }
 
     function renderGroups() {
-      let filtered = tableData;
-      const sf = $('#filter-status').val();
-      const df = $('#filter-date').val();
-      if (sf) filtered = filtered.filter(x => x.status === sf);
-      if (df) {
-        const [y, m, d] = df.split('-');
-        filtered = filtered.filter(x => x.date === `${d}-${m}-${y}`);
-      }
-      const groups = groupBy(filtered, 'eventId');
-      const cont = $('#groups-container').empty();
-      for (const [eid, items] of Object.entries(groups)) {
-        const h = items[0], booked = items.length, cap = eventCaps[eid] || 0;
-        const box = $(`
-          <div class="bg-white rounded-xl shadow p-4">
-            <div class="flex justify-between items-center ">
-              <div>
-                <span class="font-bold text-lg">${h.activityName}</span><br>
-                <span class="text-sm text-gray-600">${h.date} ${h.time}</span>
-                <span class="ml-2 text-sm text-gray-500">(${booked}/${cap})</span>
-              </div>
-              <div class="flex space-x-2">
-                <button class="bg-[#0A164D] text-white p-2 rounded" onclick="openGroupJoinModal('${eid}')">
-                  <span class="text-sm p-2">แจ้งการยืนยัน</span>
-                </button>
-                <button class="bg-[#EB8012] text-white p-2 rounded" onclick="openGroupConfirmModal('${eid}')">
-                  <span class="text-sm p-2">เปิด-ปิดกิจกรรม</span>
-                </button>
-              </div>
-            </div>
-            <table class="w-full text-sm">
-              <thead><tr class="bg-gray-100">
-                <th class="px-2 py-1">ชื่อ-สกุล</th>
-                <th class="px-2 py-1">สถานะ</th>
-                <th class="px-2 py-1">สถานะยืนยัน</th>
-                <th class="px-2 py-1"></th>
-              </tr></thead>
-              <tbody></tbody>
-            </table>
-          </div>`);
-        items.forEach(it => {
-          box.find('tbody').append(`
-            <tr data-id="${it.id}">
-              <td class="border px-2 py-1">${it.bookerName}</td>
-              <td class="border px-2 py-1">${it.status}</td>
-              <td class="border px-2 py-1">${it.confirmStatus}</td>
-              <td class="border px-2 py-1 text-center">
-                <button class="bg-[#071D4A] text-white px-2 py-1 rounded" onclick="toggleDetailsInGroup('${it.id}',this)">
-                  <span class="material-icons-round">expand_more</span>
-                </button>
-              </td>
-            </tr>`);
-        });
-        cont.append(box);
-      }
-    }
+  // ดึงค่าตัวกรอง
+  const statusFilter = $('#filter-status').val();
+  const dateFilter   = $('#filter-date').val();
+
+  // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
+  //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
+  let filtered;
+  if (statusFilter) {
+    filtered = tableData.filter(x => x.status === statusFilter);
+  } else {
+    filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
+  }
+
+  // 2) กรองตามวันที่ (ถ้ามี)
+  if (dateFilter) {
+    const [y, m, d] = dateFilter.split('-');
+    filtered = filtered.filter(x => x.date === `${d}-${m}-${y}`);
+  }
+
+  // 3) จัดกลุ่มตาม eventId
+  const groups = groupBy(filtered, 'eventId');
+
+  // 4) ล้าง container แล้วเริ่ม render ใหม่
+  const cont = $('#groups-container').empty();
+
+  for (const [eid, items] of Object.entries(groups)) {
+    // ข้อมูล header ของกลุ่ม
+    const h       = items[0];
+    const booked  = items.length;
+    const cap     = eventCaps[eid] || 0;
+
+    // สร้างกล่องการ์ด
+    const box = $(`
+      <div class="bg-white rounded-xl shadow p-4">
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="font-bold text-lg">${h.activityName}</span><br>
+            <span class="text-sm text-gray-600">${h.date} ${h.time}</span>
+            <span class="ml-2 text-sm text-gray-500">(${booked}/${cap})</span>
+          </div>
+          <div class="flex space-x-2">
+            <button class="bg-[#0A164D] text-white p-2 rounded" onclick="openGroupJoinModal('${eid}')">
+              <span class="text-sm p-2">แจ้งการยืนยัน</span>
+            </button>
+            <button class="bg-[#EB8012] text-white p-2 rounded" onclick="openGroupConfirmModal('${eid}')">
+              <span class="text-sm p-2">เปิด-ปิดกิจกรรม</span>
+            </button>
+          </div>
+        </div>
+        <table class="w-full text-sm mt-4">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-2 py-1">ชื่อ-สกุล</th>
+              <th class="px-2 py-1">สถานะ</th>
+              <th class="px-2 py-1">สถานะยืนยัน</th>
+              <th class="px-2 py-1"></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    `);
+
+    // เติมรายการแต่ละคนลงใน tbody
+    items.forEach(it => {
+      box.find('tbody').append(`
+        <tr data-id="${it.id}">
+          <td class="border px-2 py-1">${it.bookerName}</td>
+          <td class="border px-2 py-1">${it.status}</td>
+          <td class="border px-2 py-1">${it.confirmStatus}</td>
+          <td class="border px-2 py-1 text-center">
+            <button class="bg-[#071D4A] text-white px-2 py-1 rounded" onclick="toggleDetailsInGroup('${it.id}', this)">
+              <span class="material-icons-round">expand_more</span>
+            </button>
+          </td>
+        </tr>
+      `);
+    });
+
+    // แปะกล่องลงใน container
+    cont.append(box);
+  }
+}
+
 
     function toggleDetailsInGroup(id, btn) {
       const row = $(btn).closest('tr');
