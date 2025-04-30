@@ -455,7 +455,19 @@ function renderBannersWithSwiper(banners) {
                 catContainer.appendChild(btn);
             });
         }
-
+    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
+    function showToast(msg, duration = 2000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      // แสดง
+      t.classList.remove('opacity-0');
+      t.classList.add('opacity-100');
+      // ซ่อนหลังเวลา duration
+      setTimeout(() => {
+        t.classList.remove('opacity-100');
+        t.classList.add('opacity-0');
+      }, duration);
+    }
     async function submitBooking() {
     showLoading();
 
@@ -498,19 +510,7 @@ function renderBannersWithSwiper(banners) {
         userLineId: document.getElementById('bookUserLineId').value
     };
 
-    // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
-    function showToast(msg, duration = 2000) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      // แสดง
-      t.classList.remove('opacity-0');
-      t.classList.add('opacity-100');
-      // ซ่อนหลังเวลา duration
-      setTimeout(() => {
-        t.classList.remove('opacity-100');
-        t.classList.add('opacity-0');
-      }, duration);
-    }
+
 
  try {
     await fetch(EVENT_URL, { method:'POST', body: JSON.stringify(payload) });
@@ -534,7 +534,7 @@ function renderBannersWithSwiper(banners) {
   }
 }
 
-    }
+    
 
     </script>
 </body>
