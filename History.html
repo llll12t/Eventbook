@@ -55,7 +55,7 @@
         async function fetchData() {
             startLoading();
             try {
-                const resp = await fetch(WEB_APP_URL);
+                const resp = await fetch(ADMIN_URL);
                 const { appointments, events } = await resp.json();
 
                 // 1) สร้าง map capacity
