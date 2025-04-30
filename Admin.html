@@ -133,7 +133,8 @@
         <div class="mb-2">
           <label class="block text-sm">สถานะยืนยัน</label>
           <select id="update-group-confirm-select" class="w-full border px-2 py-1 rounded">
-            <option value="ยืนยันแล้ว">เปิดกิจกรรม</option>
+            <option value="เปิดกิจกรรม">เปิดกิจกรรม</option>
+            <option value="ปิดกิจกรรม">ปิดกิจกรรม</option>
             <option value="ยกเลิก">ยกเลิกกิจกรรม</option>
           </select>
         </div>
@@ -251,10 +252,10 @@
           </div>
           <div class="flex space-x-2">
             <button class="bg-[#0A164D] text-white p-2 rounded" onclick="openGroupJoinModal('${eid}')">
-              <span class="text-sm p-2">แจ้งการยืนยัน</span>
+              <span class="text-sm p-2">ยืนยัน</span>
             </button>
             <button class="bg-[#EB8012] text-white p-2 rounded" onclick="openGroupConfirmModal('${eid}')">
-              <span class="text-sm p-2">เปิด-ปิดกิจกรรม</span>
+              <span class="text-sm p-2">กิจกรรม</span>
             </button>
           </div>
         </div>
