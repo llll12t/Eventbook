@@ -237,7 +237,7 @@
       const total = tableData.length;
       const pending = tableData.filter(x => x.status === 'เข้าร่วม').length;
       const cancle = tableData.filter(x => x.status === 'ยกเลิก').length;
-      const done = tableData.filter(x => x.status === 'เสร็จสิ้น').length;
+      const done = tableData.filter(x => x.status === 'ปิดกิจกรรม').length;
       $('#metric-total').text(total);
       $('#metric-pending').text(pending);
       $('#metric-cancle').text(cancle);
