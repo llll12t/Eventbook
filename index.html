@@ -79,6 +79,12 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.18);
         }
+  #toast.error {
+    /* Tailwind utility ผ่าน @apply ไม่ได้บน CDN เลยใส่เต็มๆ */
+    background-color: #dc2626; /* bg-red-600 */
+    color: white;
+  }
+
     </style>
 </head>
 
@@ -491,19 +497,22 @@
                 catContainer.appendChild(btn);
             });
         }
-        // document.getElementById('debugData').textContent = JSON.stringify(payload, null, 2);
-        function showToast(msg, duration = 500) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            // แสดง
-            t.classList.remove('opacity-0');
-            t.classList.add('opacity-100');
-            // ซ่อนหลังเวลา duration
-            setTimeout(() => {
-                t.classList.remove('opacity-100');
-                t.classList.add('opacity-0');
-            }, duration);
-        }
+        function showToast(msg, type = 'success', duration = 1500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  // รีเซ็ตคลาสเดิมทั้งหมด แล้วใส่ใหม่
+  t.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg opacity-100 transition-opacity duration-300 z-50 ${ 
+    type === 'error'
+      ? 'error' // จะใช้สไตล์จาก #toast.error 
+      : 'bg-black bg-opacity-75 text-white'
+  }`;
+
+  // ซ่อนหลังหมดเวลา
+  setTimeout(() => {
+    t.classList.add('opacity-0');
+  }, duration);
+}
+
         async function submitBooking() {
             showLoading();
 
