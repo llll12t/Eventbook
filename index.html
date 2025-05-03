@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>EVENT TEST</title>
+    <title>EVENT</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Flatpickr CSS & JS -->
@@ -256,7 +256,7 @@
         let selectedEvent = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await liff.init({ liffId: LIFF_EVENT });
+            //await liff.init({ liffId: LIFF_EVENT });
             if (!liff.isLoggedIn()) liff.login();
             const profile = await liff.getProfile();
             document.getElementById('bookUserLineId').value = profile.userId;
@@ -271,15 +271,16 @@
 
         function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+        
         function showAlert(message, icon = "") {
         document.getElementById("alertMessage").textContent = message;
         document.getElementById("alertIcon").textContent = icon;
         document.getElementById("customAlert").classList.remove("hidden");
-      }
+          }
 
-      function hideAlert() {
-        document.getElementById("customAlert").classList.add("hidden");
-      }
+          function hideAlert() {
+            document.getElementById("customAlert").classList.add("hidden");
+          }
 
 
         let swiperInstance;
@@ -533,11 +534,9 @@
                 { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
                 { id: 'bookEventDate', label: 'วันที่' },
                 { id: 'bookEventTime', label: 'เวลา' },
-                { id: 'bookRenterName', label: 'ชื่อ' },
                 { id: 'bookRenterNameEn', label: 'ชื่อภาษาอังกฤษ' },
                 { id: 'bookCitizenId', label: 'เลขประจำตัว' },
                 { id: 'bookAddress', label: 'ที่อยู่' },
-                { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
                 { id: 'bookEmail', label: 'อีเมล' },
                 { id: 'bookUserLineId', label: 'LINE ID' },
             ];
@@ -593,6 +592,9 @@
                 hideLoading();
             }
         }
+
+
+
     </script>
 </body>
 
