@@ -504,6 +504,19 @@
         .always(stopLoading);
     });
 
+    function fileToBase64(fileInputId) {
+      return new Promise(resolve => {
+        const fileInput = document.getElementById(fileInputId);
+        const file = fileInput.files[0];
+        if (!file) return resolve('');
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // ตัด header
+        reader.readAsDataURL(file);
+      });
+    }
+
+
     // ลบ
     function deleteRecord(id) {
       Swal.fire({
