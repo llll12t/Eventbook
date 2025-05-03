@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <title>ยืนยันเข้าร่วม</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
-  <script>
-    window.onload = function () {
+ <script>
+  // ไม่ต้อง init liff สำหรับทดสอบแบบ web ปกติ
+  window.onload = function () {
     const urlParams = new URLSearchParams(window.location.search);
     const id = urlParams.get('id');
     const activity = urlParams.get('activity');
@@ -22,25 +23,22 @@
     document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
     document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
 
-   async function submitConfirm(status) {
-  const id = new URLSearchParams(window.location.search).get('id');
-  const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
-
-  try {
-    const res = await fetch(apiUrl, { method: 'GET' }); // ✅ ใช้ method=GET ตาม Apps Script
-    const text = await res.text();                      // อ่าน response เป็นข้อความ
-    alert(text);                                        // แสดงข้อความเช่น "✅ ยืนยันเข้าร่วมสำเร็จ"
-    
-    // ปิด LIFF ถ้าใช้ใน LINE
-    if (window.liff && liff.closeWindow) liff.closeWindow();
-  } catch (err) {
-    alert("❌ เกิดข้อผิดพลาด");
-    console.error(err);
- }
+    async function submitConfirm(status) {
+      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+      try {
+        const res = await fetch(apiUrl);
+        const text = await res.text();
+        alert(text);
+        // ปิด liff ได้ถ้ามี
+        if (window.liff && liff.closeWindow) liff.closeWindow();
+      } catch (err) {
+        alert("❌ ไม่สามารถส่งข้อมูลได้");
+        console.error(err);
+      }
     }
   }
+</script>
 
-  </script>
   <style>
     body { font-family: sans-serif; text-align: center; margin-top: 60px; }
     .info { margin: 10px 0; font-size: 18px; }
