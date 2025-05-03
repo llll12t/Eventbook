@@ -189,7 +189,57 @@
       </form>
     </div>
   </div>
+  <!-- 6) Edit Modal -->
+  <div id="edit-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl w-11/12 max-w-2xl overflow-y-auto max-h-[90vh]">
+      <h2 class="text-lg font-bold mb-4">แก้ไขข้อมูลการจอง</h2>
+      <form id="edit-form" class="space-y-3">
+        <input type="hidden" id="edit-id">
+        <div class="grid grid-cols-2 gap-4">
+          <input id="edit-eventId" class="border p-2 rounded" placeholder="Event ID">
+          <input id="edit-activityName" class="border p-2 rounded" placeholder="กิจกรรม">
+          <input id="edit-category" class="border p-2 rounded" placeholder="หมวดหมู่">
+          <input id="edit-price" class="border p-2 rounded" placeholder="ราคา">
+          <input id="edit-date" class="border p-2 rounded" placeholder="วันที่">
+          <input id="edit-time" class="border p-2 rounded" placeholder="เวลา">
+          <input id="edit-queue" class="border p-2 rounded" placeholder="คิว">
+          <input id="edit-bookerName" class="border p-2 rounded" placeholder="ชื่อผู้จอง">
+          <input id="edit-bookerENG" class="border p-2 rounded" placeholder="ชื่อ ENG">
+          <input id="edit-idCard" class="border p-2 rounded" placeholder="เลขบัตร ปชช.">
+          <input id="edit-address" class="border p-2 rounded" placeholder="ที่อยู่">
+          <input id="edit-phone" class="border p-2 rounded" placeholder="เบอร์โทร">
+          <input id="edit-email" class="border p-2 rounded" placeholder="อีเมล">
+          <!-- ใบแจ้งหนี้ -->
+          <div>
+            <label class="block text-sm">ใบแจ้งหนี้</label>
+            <input type="url" id="edit-invoice" class="border p-2 rounded w-full mb-1" placeholder="วางลิงก์ที่นี่">
+            <input type="file" id="upload-invoice" class="block w-full text-sm text-gray-700">
+          </div>
 
+          <!-- ใบเสร็จ -->
+          <div>
+            <label class="block text-sm">ใบเสร็จ</label>
+            <input type="url" id="edit-receipt" class="border p-2 rounded w-full mb-1" placeholder="วางลิงก์ที่นี่">
+            <input type="file" id="upload-receipt" class="block w-full text-sm text-gray-700">
+          </div>
+
+          <!-- ใบรับรอง -->
+          <div>
+            <label class="block text-sm">ใบรับรอง</label>
+            <input type="url" id="edit-certificate" class="border p-2 rounded w-full mb-1" placeholder="วางลิงก์ที่นี่">
+            <input type="file" id="upload-certificate" class="block w-full text-sm text-gray-700">
+          </div>
+
+        </div>
+        <textarea id="edit-note" rows="3" class="w-full border p-2 rounded" placeholder="หมายเหตุเพิ่มเติม"></textarea>
+        <div class="flex justify-end pt-4">
+          <button type="button" onclick="closeEditModal()"
+            class="bg-gray-500 text-white px-3 py-1 rounded mr-2">ยกเลิก</button>
+          <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
   <!-- Loading Overlay -->
   <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
     <span class="text-white text-xl">กรุณารอสักครู่...</span>
@@ -221,8 +271,10 @@
           price: r[4], date: r[5], time: r[6], queue: r[7], bookerName: r[8],
           bookerENG: r[9], idCard: r[10], address: r[11], phone: r[12], email: r[13],
           note: r[14], status: r[15], payment: r[16], joinStatus: r[17],
-          confirmStatus: r[18], additionalNotes: r[19]
+          confirmStatus: r[18], additionalNotes: r[19],
+          useridline: r[20], invoice: r[21], receipt: r[22], certificate: r[23]  // ✅ เพิ่มตรงนี้
         }));
+
 
         renderMetrics();
         renderGroups();
@@ -350,6 +402,10 @@
             <div><strong>ที่อยู่:</strong> ${it.address}</div>
             <div><strong>อีเมล:</strong> ${it.email}</div>
             <div><strong>หมายเหตุ:</strong> ${it.note || '-'}</div>
+            ${it.invoice ? `<div><strong>ใบแจ้งหนี้:</strong> <a href="${it.invoice}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+${it.receipt ? `<div><strong>ใบเสร็จ:</strong> <a href="${it.receipt}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+${it.certificate ? `<div><strong>ใบรับรอง:</strong> <a href="${it.certificate}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+
           </div>
           <div class="mt-3 flex flex-wrap gap-2">
             <button class="bg-blue-500 text-white px-3 py-1 rounded" onclick="openPaymentModal('${it.id}')">ชำระเงิน</button>
@@ -436,14 +492,24 @@
       $('#edit-phone').val(it.phone);
       $('#edit-email').val(it.email);
       $('#edit-note').val(it.note);
+      $('#edit-invoice').val(it.invoice || '');
+      $('#edit-receipt').val(it.receipt || '');
+      $('#edit-certificate').val(it.certificate || '');
+
       $('#edit-modal').removeClass('hidden');
     }
     function closeEditModal() {
       $('#edit-modal').addClass('hidden');
     }
-    $('#edit-form').on('submit', function (e) {
+    $('#edit-form').on('submit', async function (e) {
       e.preventDefault(); startLoading();
+
+      const invoiceBase64 = await fileToBase64('upload-invoice');
+      const receiptBase64 = await fileToBase64('upload-receipt');
+      const certificateBase64 = await fileToBase64('upload-certificate');
+
       const params = {
+        method: 'editAppointmentData',
         id: $('#edit-id').val(),
         eventId: $('#edit-eventId').val(),
         activityName: $('#edit-activityName').val(),
@@ -458,13 +524,34 @@
         address: $('#edit-address').val(),
         phone: $('#edit-phone').val(),
         email: $('#edit-email').val(),
-        note: $('#edit-note').val()
+        note: $('#edit-note').val(),
+        invoice: $('#edit-invoice').val(),
+        receipt: $('#edit-receipt').val(),
+        certificate: $('#edit-certificate').val(),
+        invoiceBase64,
+        receiptBase64,
+        certificateBase64
       };
-      $.post(ADMIN_URL, { method: 'editAppointmentData', ...params })
+
+      $.post(ADMIN_URL, params)
         .done(() => { Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อย', 'success'); fetchData(); closeEditModal(); })
         .fail(() => Swal.fire('Error', 'ไม่สามารถแก้ไขได้', 'error'))
         .always(stopLoading);
     });
+
+
+    function fileToBase64(fileInputId) {
+      return new Promise(resolve => {
+        const fileInput = document.getElementById(fileInputId);
+        const file = fileInput.files[0];
+        if (!file) return resolve('');
+
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // ตัด header
+        reader.readAsDataURL(file);
+      });
+    }
+
 
     function deleteRecord(id) {
       Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'ลบ', cancelButtonText: 'ยกเลิก' })
