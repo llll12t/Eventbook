@@ -27,7 +27,7 @@
         <option value="จอง">จอง</option>
         <option value="เข้าร่วม">เข้าร่วม</option>
         <option value="ยกเลิก">ยกเลิก</option>
-        <option value="ปิดกิจกรรม">ปิดกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
+        <option value="จบกิจกรรม">จบกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
       </select>
 
     </div>
@@ -145,7 +145,7 @@
           <label class="block text-sm">สถานะยืนยัน</label>
           <select id="update-group-confirm-select" class="w-full border px-2 py-1 rounded">
             <option value="เปิดกิจกรรม">เปิดกิจกรรม</option>
-            <option value="ปิดกิจกรรม">ปิดกิจกรรม</option>
+            <option value="จบกิจกรรม">จบกิจกรรม</option>
             <option value="ยกเลิก">ยกเลิกกิจกรรม</option>
           </select>
         </div>
@@ -269,7 +269,7 @@
       if (statusFilter) {
         filtered = tableData.filter(x => x.status === statusFilter);
       } else {
-        filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
+        filtered = tableData.filter(x => x.status !== 'จบกิจกรรม');
       }
 
       // 2) กรองตามวันที่ (ถ้ามี)
