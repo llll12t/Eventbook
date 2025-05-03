@@ -37,7 +37,7 @@
             <option value="จอง">จอง</option>
             <option value="เข้าร่วม">เข้าร่วม</option>
             <option value="ยกเลิก">ยกเลิก</option>
-            <option value="ปิดกิจกรรม">ปิดกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
+            <option value="จบกิจกรรม">จบกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
           </select>
 
         </div>
@@ -177,7 +177,7 @@
           <label class="block text-sm">สถานะยืนยัน</label>
           <select id="update-group-confirm-select" class="w-full border px-2 py-1 rounded">
             <option value="เปิดกิจกรรม">เปิดกิจกรรม</option>
-            <option value="ปิดกิจกรรม">ปิดกิจกรรม</option>
+            <option value="จบกิจกรรม">จบกิจกรรม</option>
             <option value="ยกเลิก">ยกเลิกกิจกรรม</option>
           </select>
         </div>
@@ -289,7 +289,7 @@
       const total = tableData.length;
       const pending = tableData.filter(x => x.status === 'เข้าร่วม').length;
       const cancle = tableData.filter(x => x.status === 'ยกเลิก').length;
-      const done = tableData.filter(x => x.status === 'ปิดกิจกรรม').length;
+      const done = tableData.filter(x => x.status === 'จบกิจกรรม').length;
       $('#metric-total').text(total);
       $('#metric-pending').text(pending);
       $('#metric-cancle').text(cancle);
@@ -306,12 +306,12 @@
       const dateFilter = $('#filter-date').val();
 
       // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
-      //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
+      //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'จบกิจกรรม'
       let filtered;
       if (statusFilter) {
         filtered = tableData.filter(x => x.status === statusFilter);
       } else {
-        filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
+        filtered = tableData.filter(x => x.status !== 'จบกิจกรรม');
       }
 
       // 2) กรองตามวันที่ (ถ้ามี)
