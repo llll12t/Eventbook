@@ -559,7 +559,7 @@ function showModal(msg) {
                 const val = document.getElementById(field.id).value.trim();
                 if (!val) {
                     hideLoading();
-                    alert(`กรุณากรอก ${field.label}`);
+                    showModal(`กรุณากรอก ${field.label}`);
                     document.getElementById(field.id).focus();
                     return;
                 }
