@@ -27,7 +27,7 @@
                   <option value="จอง">จอง</option>
                   <option value="เข้าร่วม">เข้าร่วม</option>
                   <option value="ยกเลิก">ยกเลิก</option>
-                  <option value="ปิดกิจกรรม">ปิดกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
+                  <option value="จบกิจกรรม">จบกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
                 </select>
         </div>
         <div>
@@ -108,12 +108,12 @@
 
   // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
   //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
-  let filtered;
-  if (statusFilter) {
-    filtered = tableData.filter(x => x.status === statusFilter);
-  } else {
-    filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
-  }
+  // let filtered;
+  // if (statusFilter) {
+  //   filtered = tableData.filter(x => x.status === statusFilter);
+  // } else {
+  //   filtered = tableData.filter(x => x.status !== 'จบดกิจกรรม');
+  // }
 
   // 2) กรองตามวันที่ (ถ้ามี)
   if (dateFilter) {
