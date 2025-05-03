@@ -1,64 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>ยืนยันการเข้าร่วม</title>
-<script>
-  // ไม่ต้อง init liff สำหรับทดสอบแบบ web ปกติ
-  window.onload = function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    const activity = urlParams.get('activity');
-    const bookerName = urlParams.get('bookerName');
-    const date = urlParams.get('date');
-    const time = urlParams.get('time');
-
-    // แสดงข้อมูลบนหน้า
-    document.getElementById('activity').textContent = decodeURIComponent(activity || '-');
-    document.getElementById('bookerName').textContent = decodeURIComponent(bookerName || '-');
-    document.getElementById('datetime').textContent = `${decodeURIComponent(date || '-')} เวลา ${decodeURIComponent(time || '-')}`;
-
-    // ปุ่มกดยืนยัน/ยกเลิก
-    document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
-    document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
-
-    async function submitConfirm(status) {
-      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
-      try {
-        const res = await fetch(apiUrl);
-        const text = await res.text();
-        alert(text);
-        // ปิด liff ได้ถ้ามี
-        if (window.liff && liff.closeWindow) liff.closeWindow();
-      } catch (err) {
-        alert("❌ ไม่สามารถส่งข้อมูลได้");
-        console.error(err);
+  <meta charset="UTF-8" />
+  <title>ยืนยันเข้าร่วม</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    // ไม่ต้อง init liff สำหรับทดสอบแบบ web ปกติ
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+      const activity = urlParams.get('activity');
+      const bookerName = urlParams.get('bookerName');
+      const date = urlParams.get('date');
+      const time = urlParams.get('time');
+  
+      // แสดงข้อมูลบนหน้า
+      document.getElementById('activity').textContent = decodeURIComponent(activity || '-');
+      document.getElementById('bookerName').textContent = decodeURIComponent(bookerName || '-');
+      document.getElementById('datetime').textContent = `${decodeURIComponent(date || '-')} เวลา ${decodeURIComponent(time || '-')}`;
+  
+      // ปุ่มกดยืนยัน/ยกเลิก
+      document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
+      document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
+  
+      async function submitConfirm(status) {
+        const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+        try {
+          const res = await fetch(apiUrl);
+          const text = await res.text();
+          alert(text);
+          // ปิด liff ได้ถ้ามี
+          if (window.liff && liff.closeWindow) liff.closeWindow();
+        } catch (err) {
+          alert("❌ ไม่สามารถส่งข้อมูลได้");
+          console.error(err);
+        }
       }
     }
-  }
-
   </script>
+  
   <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 50px; }
+    body { font-family: sans-serif; text-align: center; margin-top: 60px; }
+    .info { margin: 10px 0; font-size: 18px; }
     button {
-      padding: 12px 24px;
-      font-size: 18px;
       margin: 10px;
+      padding: 10px 25px;
+      font-size: 18px;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
     }
-    #yesBtn { background-color: #28a745; color: white; }
-    #noBtn { background-color: #dc3545; color: white; }
+    #yesBtn { background-color: #4CAF50; color: white; }
+    #noBtn { background-color: #f44336; color: white; }
   </style>
 </head>
 <body>
   <h2>📌 ยืนยันเข้าร่วมกิจกรรม</h2>
-  <p>กิจกรรม: <span id="activity"></span></p>
-  <p>ชื่อผู้จอง: <span id="bookerName"></span></p>
-  <p>วัน-เวลา: <span id="datetime"></span></p>
+  <div class="info">กิจกรรม: <span id="activity"></span></div>
+  <div class="info">ชื่อผู้ลงทะเบียน: <span id="bookerName"></span></div>
+  <div class="info">วันที่และเวลา: <span id="datetime"></span></div>
 
-  <button id="yesBtn" onclick="submitConfirm('ยืนยันแล้ว')">✅ ยืนยัน</button>
-  <button id="noBtn" onclick="submitConfirm('ยกเลิก')">❌ ยกเลิก</button>
+  <button id="yesBtn">✅ ยืนยัน</button>
+  <button id="noBtn">❌ ยกเลิก</button>
 </body>
 </html>
