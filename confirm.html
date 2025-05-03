@@ -1,81 +1,91 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>ยืนยันเข้าร่วม</title>
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
- <script>
-  window.onload = function () {
-  // ดึงค่า liff.state จาก query string จริง
-  const query = new URLSearchParams(window.location.search);
-  let actualQuery = query.get("liff.state") || window.location.search;
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ยืนยันเข้าร่วมกิจกรรม</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.onload = function () {
+      const query = new URLSearchParams(window.location.search);
+      let actualQuery = query.get("liff.state") || window.location.search;
 
-  // แก้กรณี liff.state ถูกเข้ารหัสซ้ำหลายชั้น
-  try {
-    while (actualQuery.includes("%")) {
-      const decoded = decodeURIComponent(actualQuery);
-      if (decoded === actualQuery) break;
-      actualQuery = decoded;
+      try {
+        while (actualQuery.includes("%")) {
+          const decoded = decodeURIComponent(actualQuery);
+          if (decoded === actualQuery) break;
+          actualQuery = decoded;
+        }
+      } catch (err) {
+        console.warn("Decode error:", err);
+      }
+
+      const urlParams = new URLSearchParams(actualQuery.replace(/^\?/, ''));
+      const id = urlParams.get('id');
+      const activity = urlParams.get('activity');
+      const bookerName = urlParams.get('bookerName');
+      const date = urlParams.get('date');
+      const time = urlParams.get('time');
+
+      document.getElementById('activity').textContent = activity || '-';
+      document.getElementById('bookerName').textContent = bookerName || '-';
+      document.getElementById('datetime').textContent = `${date || '-'} เวลา ${time || '-'}`;
+
+      document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว", id);
+      document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก", id);
+    };
+
+    async function submitConfirm(status, id) {
+      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+      try {
+        const res = await fetch(apiUrl);
+        const text = await res.text();
+        alert(text);
+        if (window.liff && liff.closeWindow) liff.closeWindow();
+      } catch (err) {
+        alert("❌ ไม่สามารถส่งข้อมูลได้");
+        console.error(err);
+      }
     }
-  } catch (err) {
-    console.warn("Decode error:", err);
-  }
-
-  // แปลงกลับมาเป็น query string
-  const urlParams = new URLSearchParams(actualQuery.replace(/^\?/, ''));
-  const id = urlParams.get('id');
-  const activity = urlParams.get('activity');
-  const bookerName = urlParams.get('bookerName');
-  const date = urlParams.get('date');
-  const time = urlParams.get('time');
-
-  // แสดงข้อมูล
-  document.getElementById('activity').textContent = activity || '-';
-  document.getElementById('bookerName').textContent = bookerName || '-';
-  document.getElementById('datetime').textContent = `${date || '-'} เวลา ${time || '-'}`;
-
-  // ปุ่มกดยืนยัน/ยกเลิก
-  document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว", id);
-  document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก", id);
-};
-
-async function submitConfirm(status, id) {
-  const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
-  try {
-    const res = await fetch(apiUrl);
-    const text = await res.text();
-    alert(text);
-    if (window.liff && liff.closeWindow) liff.closeWindow();
-  } catch (err) {
-    alert("❌ ไม่สามารถส่งข้อมูลได้");
-    console.error(err);
-  }
-}
-
-</script>
-
-  <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 60px; }
-    .info { margin: 10px 0; font-size: 18px; }
-    button {
-      margin: 10px;
-      padding: 10px 25px;
-      font-size: 18px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #yesBtn { background-color: #4CAF50; color: white; }
-    #noBtn { background-color: #f44336; color: white; }
-  </style>
+  </script>
 </head>
-<body>
-  <h2>📌 ยืนยันเข้าร่วมกิจกรรม</h2>
-  <div class="info">กิจกรรม: <span id="activity"></span></div>
-  <div class="info">ชื่อผู้ลงทะเบียน: <span id="bookerName"></span></div>
-  <div class="info">วันที่และเวลา: <span id="datetime"></span></div>
+<body class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-lg max-w-sm w-full overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-900 to-orange-400 p-4">
+      <h2 class="text-white text-lg font-semibold flex items-center">
+         ยืนยันเข้าร่วมกิจกรรม
+      </h2>
+    </div>
 
-  <button id="yesBtn">✅ ยืนยัน</button>
-  <button id="noBtn">❌ ยกเลิก</button>
+    <!-- Content -->
+    <div class="p-6 space-y-4">
+      <div class="flex justify-between">
+        <span class="text-gray-500">กิจกรรม</span>
+        <span id="activity" class="font-medium text-gray-800"></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">ชื่อผู้ลงทะเบียน</span>
+        <span id="bookerName" class="font-medium text-gray-800"></span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-gray-500">วันที่และเวลา</span>
+        <span id="datetime" class="font-medium text-gray-800"></span>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="px-6 pb-6 flex space-x-4">
+      <button id="yesBtn"
+        class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-medium transition">
+        ✅ ยืนยัน
+      </button>
+      <button id="noBtn"
+        class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-medium transition">
+        ❌ ยกเลิก
+      </button>
+    </div>
+  </div>
 </body>
 </html>
