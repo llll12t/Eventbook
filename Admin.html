@@ -232,28 +232,15 @@
 
         // แปลง appointments
         tableData = appointments.slice(1).map(r => ({
-          id: String(r[0]),
-          eventId: String(r[1]),
-          activityName: r[2],
-          category: r[3],
-          price: r[4],
-          date: r[5],
-          time: r[6],
-          queue: r[7],
-          bookerName: r[8],
-          bookerENG: r[9],
-          idCard: r[10],
-          address: r[11],
-          phone: r[12],
-          email: r[13],
-          note: r[14],
-          status: r[15],
-          payment: r[16],
-          joinStatus: r[17],
-          confirmStatus: r[18],
-          additionalNotes: r[19],
-          useridline: r[20]
+          id: String(r[0]), eventId: String(r[1]), activityName: r[2], category: r[3],
+          price: r[4], date: r[5], time: r[6], queue: r[7], bookerName: r[8],
+          bookerENG: r[9], idCard: r[10], address: r[11], phone: r[12], email: r[13],
+          note: r[14], status: r[15], payment: r[16], joinStatus: r[17],
+          confirmStatus: r[18], additionalNotes: r[19],
+          useridline: r[20], invoice: r[21], receipt: r[22], certificate: r[23]  // ✅ เพิ่มตรงนี้
         }));
+
+
 
         renderGroups();
       } catch (err) {
@@ -314,7 +301,7 @@
           </div>
           <div class="flex space-x-2">
             <button class="bg-[#0A164D] text-white p-2 rounded" onclick="openGroupJoinModal('${eid}')">
-              <span class="text-sm p-2">ยืนยัน</span>
+              <span class="text-sm p-2">ยืนยีน</span>
             </button>
             <button class="bg-[#EB8012] text-white p-2 rounded" onclick="openGroupConfirmModal('${eid}')">
               <span class="text-sm p-2">กิจกรรม</span>
@@ -386,7 +373,11 @@
               <div><strong>แจ้งเข้าร่วม:</strong> ${it.joinStatus}</div>
               <div><strong>สถานะยืนยัน:</strong> ${it.confirmStatus}</div>
               <div><strong>บันทึกเพิ่มเติม:</strong> ${it.additionalNotes || '-'}</div>
-            </div>
+            ${it.invoice ? `<div><strong>ใบแจ้งหนี้:</strong> <a href="${it.invoice}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+            ${it.receipt ? `<div><strong>ใบเสร็จ:</strong> <a href="${it.receipt}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+            ${it.certificate ? `<div><strong>ใบรับรอง:</strong> <a href="${it.certificate}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+
+              </div>
             <div class="mt-3 flex flex-wrap gap-2">
               <button class="bg-blue-500 text-white py-1 px-3 rounded" onclick="openPaymentModal('${it.id}')">ชำระเงิน</button>
               <button class="bg-green-500 text-white py-1 px-3 rounded" onclick="openJoinModal('${it.id}')">แจ้งเข้าร่วม</button>
@@ -474,6 +465,9 @@
       $('#edit-phone').val(it.phone);
       $('#edit-email').val(it.email);
       $('#edit-note').val(it.note);
+      $('#edit-invoice').val(it.invoice || '');
+      $('#edit-receipt').val(it.receipt || '');
+      $('#edit-certificate').val(it.certificate || '');
       $('#edit-modal').removeClass('hidden');
     }
     function closeEditModal() {
@@ -496,7 +490,13 @@
         address: $('#edit-address').val(),
         phone: $('#edit-phone').val(),
         email: $('#edit-email').val(),
-        note: $('#edit-note').val()
+        note: $('#edit-note').val(),
+        invoice: $('#edit-invoice').val(),
+        receipt: $('#edit-receipt').val(),
+        certificate: $('#edit-certificate').val(),
+        invoiceBase64,
+        receiptBase64,
+        certificateBase64
       };
       $.post(ADMIN_URL, { method: 'editAppointmentData', ...params })
         .done(() => { Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อย', 'success'); fetchData(); closeEditModal(); })
