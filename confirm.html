@@ -1,42 +1,60 @@
 <!DOCTYPE html>
-<html lang="th">
-
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ยืนยันเข้าร่วม</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
     async function main() {
-      await liff.init({ liffId: '2007305761-QGOV3Zww' }); // ← เปลี่ยนเป็น LIFF ID จริง
+      await liff.init({ liffId: '2007305761-QGOV3Zww' }); // 🔁 ใส่ LIFF ID จริง
 
       const urlParams = new URLSearchParams(window.location.search);
       const id = urlParams.get('id');
+      const activity = urlParams.get('activity');
+      const bookerName = urlParams.get('bookerName');
+      const date = urlParams.get('date');
+      const time = urlParams.get('time');
 
+      // ใส่ข้อความลง DOM
+      document.getElementById('activity').innerText = activity || '-';
+      document.getElementById('bookerName').innerText = bookerName || '-';
+      document.getElementById('datetime').innerText = `${date || '-'} เวลา ${time || '-'}`;
+
+      // ปุ่มกดส่งสถานะกลับ
       document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
       document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
 
       async function submitConfirm(status) {
-        const response = await fetch(`https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`);
-        const result = await response.text();
-        alert(result);
+        const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+        const res = await fetch(apiUrl);
+        const text = await res.text();
+        alert(text);
         liff.closeWindow();
       }
     }
     main();
   </script>
   <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 100px; }
+    body { font-family: sans-serif; text-align: center; margin-top: 60px; }
+    .info { margin: 10px 0; font-size: 18px; }
     button {
       margin: 10px;
-      padding: 10px 20px;
+      padding: 10px 25px;
       font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
     }
+    #yesBtn { background-color: #4CAF50; color: white; }
+    #noBtn { background-color: #f44336; color: white; }
   </style>
 </head>
 <body>
-  <h2>คุณต้องการยืนยันหรือไม่?</h2>
+  <h2>📌 ยืนยันเข้าร่วมกิจกรรม</h2>
+  <div class="info">กิจกรรม: <span id="activity"></span></div>
+  <div class="info">ชื่อผู้ลงทะเบียน: <span id="bookerName"></span></div>
+  <div class="info">วันที่และเวลา: <span id="datetime"></span></div>
+
   <button id="yesBtn">✅ ยืนยัน</button>
   <button id="noBtn">❌ ยกเลิก</button>
 </body>
