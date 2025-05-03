@@ -5,38 +5,53 @@
   <title>ยืนยันเข้าร่วม</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
  <script>
-  // ไม่ต้อง init liff สำหรับทดสอบแบบ web ปกติ
   window.onload = function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get('id');
-    const activity = urlParams.get('activity');
-    const bookerName = urlParams.get('bookerName');
-    const date = urlParams.get('date');
-    const time = urlParams.get('time');
+  // ดึงค่า liff.state จาก query string จริง
+  const query = new URLSearchParams(window.location.search);
+  let actualQuery = query.get("liff.state") || window.location.search;
 
-    // แสดงข้อมูลบนหน้า
-    document.getElementById('activity').textContent = decodeURIComponent(activity || '-');
-    document.getElementById('bookerName').textContent = decodeURIComponent(bookerName || '-');
-    document.getElementById('datetime').textContent = `${decodeURIComponent(date || '-')} เวลา ${decodeURIComponent(time || '-')}`;
-
-    // ปุ่มกดยืนยัน/ยกเลิก
-    document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
-    document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
-
-    async function submitConfirm(status) {
-      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
-      try {
-        const res = await fetch(apiUrl);
-        const text = await res.text();
-        alert(text);
-        // ปิด liff ได้ถ้ามี
-        if (window.liff && liff.closeWindow) liff.closeWindow();
-      } catch (err) {
-        alert("❌ ไม่สามารถส่งข้อมูลได้");
-        console.error(err);
-      }
+  // แก้กรณี liff.state ถูกเข้ารหัสซ้ำหลายชั้น
+  try {
+    while (actualQuery.includes("%")) {
+      const decoded = decodeURIComponent(actualQuery);
+      if (decoded === actualQuery) break;
+      actualQuery = decoded;
     }
+  } catch (err) {
+    console.warn("Decode error:", err);
   }
+
+  // แปลงกลับมาเป็น query string
+  const urlParams = new URLSearchParams(actualQuery.replace(/^\?/, ''));
+  const id = urlParams.get('id');
+  const activity = urlParams.get('activity');
+  const bookerName = urlParams.get('bookerName');
+  const date = urlParams.get('date');
+  const time = urlParams.get('time');
+
+  // แสดงข้อมูล
+  document.getElementById('activity').textContent = activity || '-';
+  document.getElementById('bookerName').textContent = bookerName || '-';
+  document.getElementById('datetime').textContent = `${date || '-'} เวลา ${time || '-'}`;
+
+  // ปุ่มกดยืนยัน/ยกเลิก
+  document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว", id);
+  document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก", id);
+};
+
+async function submitConfirm(status, id) {
+  const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+  try {
+    const res = await fetch(apiUrl);
+    const text = await res.text();
+    alert(text);
+    if (window.liff && liff.closeWindow) liff.closeWindow();
+  } catch (err) {
+    alert("❌ ไม่สามารถส่งข้อมูลได้");
+    console.error(err);
+  }
+}
+
 </script>
 
   <style>
