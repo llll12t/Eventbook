@@ -108,12 +108,12 @@
 
   // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
   //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
-  let filtered;
-  if (statusFilter) {
-    filtered = tableData.filter(x => x.status === statusFilter);
-  } else {
-    filtered = tableData.filter(x => x.status !== 'จบกิจกรรม');
-  }
+  // let filtered;
+  // if (statusFilter) {
+  //   filtered = tableData.filter(x => x.status === statusFilter);
+  // } else {
+  //   filtered = tableData.filter(x => x.status !== 'จบกิจกรรม');
+  // }
 
   // 2) กรองตามวันที่ (ถ้ามี)
   if (dateFilter) {
