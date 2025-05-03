@@ -5,33 +5,37 @@
   <title>ยืนยันเข้าร่วม</title>
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    async function main() {
-      await liff.init({ liffId: '2007305761-QGOV3Zww' }); // 🔁 ใส่ LIFF ID จริง
+    window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const activity = urlParams.get('activity');
+    const bookerName = urlParams.get('bookerName');
+    const date = urlParams.get('date');
+    const time = urlParams.get('time');
 
-      const urlParams = new URLSearchParams(window.location.search);
-      const id = urlParams.get('id');
-      const activity = urlParams.get('activity');
-      const bookerName = urlParams.get('bookerName');
-      const date = urlParams.get('date');
-      const time = urlParams.get('time');
+    // แสดงข้อมูลบนหน้า
+    document.getElementById('activity').textContent = decodeURIComponent(activity || '-');
+    document.getElementById('bookerName').textContent = decodeURIComponent(bookerName || '-');
+    document.getElementById('datetime').textContent = `${decodeURIComponent(date || '-')} เวลา ${decodeURIComponent(time || '-')}`;
 
-      // ใส่ข้อความลง DOM
-      document.getElementById('activity').innerText = activity || '-';
-      document.getElementById('bookerName').innerText = bookerName || '-';
-      document.getElementById('datetime').innerText = `${date || '-'} เวลา ${time || '-'}`;
+    // ปุ่มกดยืนยัน/ยกเลิก
+    document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
+    document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
 
-      // ปุ่มกดส่งสถานะกลับ
-      document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
-      document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
-
-      async function submitConfirm(status) {
-        const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+    async function submitConfirm(status) {
+      const apiUrl = `https://script.google.com/macros/s/YOUR_DEPLOYED_URL/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+      try {
         const res = await fetch(apiUrl);
         const text = await res.text();
         alert(text);
-        liff.closeWindow();
+        // ปิด liff ได้ถ้ามี
+        if (window.liff && liff.closeWindow) liff.closeWindow();
+      } catch (err) {
+        alert("❌ ไม่สามารถส่งข้อมูลได้");
+        console.error(err);
       }
     }
+  }
     main();
   </script>
   <style>
