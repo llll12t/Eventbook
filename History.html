@@ -2,139 +2,190 @@
 <html lang="th">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>ประวัติการจองกิจกรรม</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- config.js สำหรับ API_URL -->
-    <script src="config.js"></script>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ประวัติการจองกิจกรรม</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- config.js สำหรับ API_URL -->
+  <script src="config.js"></script>
+  <style>
+    :root {
+        --primary-color: #ffffff;
+        --secondary-color: #0A164D;
+        --accent-color: #EB8012;
+    }
+
+    .flying-image { position: absolute; padding-top: -20px; width: 100px; animation: fly 5s linear infinite, tilt 1s ease-in-out infinite alternate; }
+    @keyframes fly { 0% { transform: translate(0, 0); } 25% { transform: translate(100px, -50px); } 50% { transform: translate(200px, 50px); } 75% { transform: translate(100px, 100px); } 100% { transform: translate(0, 0); } }
+    @keyframes tilt { 0% { transform: rotate(5deg);  } 100% { transform: rotate(-5deg); } }
+
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+    }
+    
+    .glass {
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        backdrop-filter: blur(3.5px);
+        -webkit-backdrop-filter: blur(3.5px);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    #toast.error {
+        background-color: #dc2626;
+        color: white;
+    }
+</style>
 </head>
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed p-4">
-    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <span class="text-white text-xl">Loading...</span>
-    </div>
-     <div class="mb-4 flex justify-between sm:flex-row gap-4">
-        <div>
-            <label class="block text-sm mb-1">สถานะ</label>
-                <select id="filter-status" class="border px-3 py-2 bg-white rounded-xl w-40 h-10 appearance-none">
-                  <option value="">ทั้งหมด</option>
-                  <option value="จอง">จอง</option>
-                  <option value="เข้าร่วม">เข้าร่วม</option>
-                  <option value="ยกเลิก">ยกเลิก</option>
-                  <option value="จบกิจกรรม">จบกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
-                </select>
+
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#F5F8FD] z-50">
+        <div class="text-center">
+            <div class="relative flex w-48">
+                <div class="flex-1 mb-40">
+                    <img src="https://lh5.googleusercontent.com/d/1MoIcHrUlOtTV46t5CI3bYwT0cGQBh7PB" alt="Flying Object"
+                        class="flying-image w-48 mx-auto">
+                </div>
+            </div>
         </div>
-        <div>
-            <label class="block text-sm mb-1">วันที่</label>
-            <input type="date" id="filter-date" class="border px-3 py-2 bg-white rounded-xl w-40 h-10" style="-webkit-appearance:none; -moz-appearance:none; appearance:none;">        </div>
     </div>
-    <div id="groups-container" class="space-y-6"></div>
-    <script>
-        let tableData = [];   // ของ user
-        let allGroups = {};   // ของทุกคน
-        let eventCaps = {};   // capacity จาก Events
-        let currentUserId;
 
-        function startLoading() { $('#loading-overlay').removeClass('hidden'); }
-        function stopLoading() { $('#loading-overlay').addClass('hidden'); }
+    <!-- แทรกใน <body> ชั้นแรก -->
+    <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-2xl shadow-lg max-w-xs w-full">
+            <h3 class="text-lg font-semibold mb-4">แจ้งเตือน</h3>
+            <p id="modalMessage" class="text-sm text-gray-700 mb-6"></p>
+            <button id="modalOk" class="w-full py-2 rounded-lg bg-[#071d4a] text-white">ตกลง</button>
+        </div>
+    </div>
 
-        async function initLIFF() {
-            await liff.init({ liffId: LIFF_HISTORY });
-            if (!liff.isLoggedIn()) return liff.login();
-            const profile = await liff.getProfile();
-            currentUserId = profile.userId;
-            fetchData();
-        }
+  <div class="mb-4 flex justify-between sm:flex-row gap-4">
+    <div>
+      <label class="block text-sm mb-1">สถานะ</label>
+      <select id="filter-status" class="border px-3 py-2 bg-white rounded-xl w-40 h-10 appearance-none">
+        <option value="">ทั้งหมด</option>
+        <option value="จอง">จอง</option>
+        <option value="เข้าร่วม">เข้าร่วม</option>
+        <option value="ยกเลิก">ยกเลิก</option>
+        <option value="จบกิจกรรม">จบกิจกรรม</option> <!-- เพิ่มตรงนี้ -->
+      </select>
+    </div>
+    <div>
+      <label class="block text-sm mb-1">วันที่</label>
+      <input type="date" id="filter-date" class="border px-3 py-2 bg-white rounded-xl w-40 h-10"
+        style="-webkit-appearance:none; -moz-appearance:none; appearance:none;">
+    </div>
+  </div>
+  <div id="groups-container" class="space-y-6"></div>
+  <script>
+    let tableData = [];   // ของ user
+    let allGroups = {};   // ของทุกคน
+    let eventCaps = {};   // capacity จาก Events
+    let currentUserId;
 
-        async function fetchData() {
-            startLoading();
-            try {
-                const resp = await fetch(ADMIN_URL);
-                const { appointments, events } = await resp.json();
+    function startLoading() { $('#loadingOverlay').removeClass('hidden'); }
+    function stopLoading() { $('#loadingOverlay').addClass('hidden'); }
 
-                // 1) สร้าง map capacity
-                eventCaps = {};
-                events.slice(1).forEach(r => {
-                    const [id, , , cap] = r;
-                    eventCaps[String(id)] = Number(cap) || 0;
-                });
+    async function initLIFF() {
+      await liff.init({ liffId: LIFF_HISTORY });
+      if (!liff.isLoggedIn()) return liff.login();
+      const profile = await liff.getProfile();
+      currentUserId = profile.userId;
+      fetchData();
+    }
 
-                // 2) แปลง appointments ทั้งหมด → allAppointments
-                const allAppointments = appointments.slice(1).map(r => ({
-                    id: String(r[0]), eventId: String(r[1]), activityName: r[2], category: r[3],
-                    price: r[4], date: r[5], time: r[6], queue: r[7], bookerName: r[8],
-                    bookerENG: r[9], idCard: r[10], address: r[11], phone: r[12], email: r[13],
-                    note: r[14], status: r[15], payment: r[16], joinStatus: r[17],
-                    confirmStatus: r[18], additionalNotes: r[19],
-                    useridline: r[20], invoice: r[21], receipt: r[22], certificate: r[23]  //
-                }));
+    async function fetchData() {
+      startLoading();
+      try {
+        const resp = await fetch(ADMIN_URL);
+        const { appointments, events } = await resp.json();
 
-                // 3) สร้าง allGroups เพื่อคำนวณ booked ไม่กรอง user
-                allGroups = allAppointments.reduce((acc, cur) => {
-                    (acc[cur.eventId] = acc[cur.eventId] || []).push(cur);
-                    return acc;
-                }, {});
+        // 1) สร้าง map capacity
+        eventCaps = {};
+        events.slice(1).forEach(r => {
+          const [id, , , cap] = r;
+          eventCaps[String(id)] = Number(cap) || 0;
+        });
 
-                // 4) กรองแถวที่จะโชว์ สำหรับ currentUserId
-                tableData = allAppointments.filter(x => x.useridline === currentUserId);
+        // 2) แปลง appointments ทั้งหมด → allAppointments
+        const allAppointments = appointments.slice(1).map(r => ({
+          id: String(r[0]), eventId: String(r[1]), activityName: r[2], category: r[3],
+          price: r[4], date: r[5], time: r[6], queue: r[7], bookerName: r[8],
+          bookerENG: r[9], idCard: r[10], address: r[11], phone: r[12], email: r[13],
+          note: r[14], status: r[15], payment: r[16], joinStatus: r[17],
+          confirmStatus: r[18], additionalNotes: r[19],
+          useridline: r[20], invoice: r[21], receipt: r[22], certificate: r[23]  //
+        }));
 
-                renderGroups();
-            } catch (e) {
-                console.error(e);
-                Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลได้', 'error');
-            } finally {
-                stopLoading();
-            }
-        }
+        // 3) สร้าง allGroups เพื่อคำนวณ booked ไม่กรอง user
+        allGroups = allAppointments.reduce((acc, cur) => {
+          (acc[cur.eventId] = acc[cur.eventId] || []).push(cur);
+          return acc;
+        }, {});
 
-        function groupBy(arr, key) {
-            return arr.reduce((acc, cur) => {
-                (acc[cur[key]] = acc[cur[key]] || []).push(cur);
-                return acc;
-            }, {});
-        }
+        // 4) กรองแถวที่จะโชว์ สำหรับ currentUserId
+        tableData = allAppointments.filter(x => x.useridline === currentUserId);
 
-        // แสดงกลุ่ม พร้อมจำนวนจอง/จำนวนสูงสุด
-   function renderGroups() {
-  // ดึงค่าตัวกรอง
-  const statusFilter = $('#filter-status').val();
-  const dateFilter   = $('#filter-date').val();
+        renderGroups();
+      } catch (e) {
+        console.error(e);
+        Swal.fire('Error', 'ไม่สามารถโหลดข้อมูลได้', 'error');
+      } finally {
+        stopLoading();
+      }
+    }
 
-  // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
-  //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
-  let filtered;
-  if (statusFilter) {
-    filtered = tableData.filter(x => x.status === statusFilter);
-  } else {
-    filtered = tableData.filter(x => x.status !== '');
-  }
+    function groupBy(arr, key) {
+      return arr.reduce((acc, cur) => {
+        (acc[cur[key]] = acc[cur[key]] || []).push(cur);
+        return acc;
+      }, {});
+    }
 
-  // 2) กรองตามวันที่ (ถ้ามี)
-  if (dateFilter) {
-    const [y, m, d] = dateFilter.split('-');
-    filtered = filtered.filter(x => x.date === `${d}-${m}-${y}`);
-  }
+    // แสดงกลุ่ม พร้อมจำนวนจอง/จำนวนสูงสุด
+    function renderGroups() {
+      // ดึงค่าตัวกรอง
+      const statusFilter = $('#filter-status').val();
+      const dateFilter = $('#filter-date').val();
 
-  // 3) จัดกลุ่มตาม eventId
-  const groups = groupBy(filtered, 'eventId');
+      // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
+      //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
+      let filtered;
+      if (statusFilter) {
+        filtered = tableData.filter(x => x.status === statusFilter);
+      } else {
+        filtered = tableData.filter(x => x.status !== '');
+      }
 
-  // 4) ล้าง container แล้วเริ่ม render ใหม่
-  const cont = $('#groups-container').empty();
+      // 2) กรองตามวันที่ (ถ้ามี)
+      if (dateFilter) {
+        const [y, m, d] = dateFilter.split('-');
+        filtered = filtered.filter(x => x.date === `${d}-${m}-${y}`);
+      }
 
-  for (const [eid, items] of Object.entries(groups)) {
-    // ข้อมูล header ของกลุ่ม
-    const h       = items[0];
-    const booked  = items.length;
-    const cap     = eventCaps[eid] || 0;
+      // 3) จัดกลุ่มตาม eventId
+      const groups = groupBy(filtered, 'eventId');
 
-    // สร้างกล่องการ์ด
-    const box = $(`
+      // 4) ล้าง container แล้วเริ่ม render ใหม่
+      const cont = $('#groups-container').empty();
+
+      for (const [eid, items] of Object.entries(groups)) {
+        // ข้อมูล header ของกลุ่ม
+        const h = items[0];
+        const booked = items.length;
+        const cap = eventCaps[eid] || 0;
+
+        // สร้างกล่องการ์ด
+        const box = $(`
       <div class="bg-white rounded-xl shadow p-4">
         <div class="flex justify-between items-center">
           <div>
@@ -157,9 +208,9 @@
       </div>
     `);
 
-    // เติมรายการแต่ละคนลงใน tbody
-    items.forEach(it => {
-      box.find('tbody').append(`
+        // เติมรายการแต่ละคนลงใน tbody
+        items.forEach(it => {
+          box.find('tbody').append(`
         <tr data-id="${it.id}">
           <td class="border px-2 py-1">${it.bookerName}</td>
           <td class="border px-2 py-1">${it.status}</td>
@@ -171,21 +222,21 @@
           </td>
         </tr>
       `);
-    });
+        });
 
-    // แปะกล่องลงใน container
-    cont.append(box);
-  }
-}
+        // แปะกล่องลงใน container
+        cont.append(box);
+      }
+    }
 
-        function toggleDetailsInGroup(itemId, btn) {
-            const row = btn.closest('tr');
-            if (row.nextElementSibling && row.nextElementSibling.classList.contains('details-row')) {
-                row.nextElementSibling.remove();
-                return;
-            }
-            const it = tableData.find(x => x.id === itemId);
-            const html = `
+    function toggleDetailsInGroup(itemId, btn) {
+      const row = btn.closest('tr');
+      if (row.nextElementSibling && row.nextElementSibling.classList.contains('details-row')) {
+        row.nextElementSibling.remove();
+        return;
+      }
+      const it = tableData.find(x => x.id === itemId);
+      const html = `
         <tr class="details-row bg-gray-50">
           <td colspan="4" class="p-3 border-t">
             <div class="space-y-1 text-sm">
@@ -215,13 +266,13 @@
             
           </td>
         </tr>`;
-            row.insertAdjacentHTML('afterend', html);
-        }
+      row.insertAdjacentHTML('afterend', html);
+    }
 
-        window.onload = initLIFF;
-        $('#filter-status, #filter-date').on('change', renderGroups);
+    window.onload = initLIFF;
+    $('#filter-status, #filter-date').on('change', renderGroups);
 
-    </script>
+  </script>
 </body>
 
 </html>
