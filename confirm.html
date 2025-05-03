@@ -23,7 +23,7 @@
     document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
 
     async function submitConfirm(status) {
-      const apiUrl = `https://script.google.com/macros/s/YOUR_DEPLOYED_URL/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
       try {
         const res = await fetch(apiUrl);
         const text = await res.text();
