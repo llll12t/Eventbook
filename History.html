@@ -87,7 +87,10 @@
                     joinStatus: r[17],
                     confirmStatus: r[18],
                     additionalNotes: r[19],
-                    useridline: r[20]
+                    useridline: r[20],
+                    invoice: r[21],
+                    receipt: r[22],
+                    certificate: r[23]
                 }));
 
                 // 3) สร้าง allGroups เพื่อคำนวณ booked ไม่กรอง user
@@ -123,12 +126,12 @@
 
   // 1) กรองตามสถานะ: ถ้าเลือกสถานะ ให้แสดงเฉพาะสถานะนั้น
   //    ถ้าไม่เลือก ให้ซ่อนการ์ดที่ status === 'ปิดกิจกรรม'
-  let filtered;
-  if (statusFilter) {
-    filtered = tableData.filter(x => x.status === statusFilter);
-  } else {
-    filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
-  }
+//   let filtered;
+//   if (statusFilter) {
+//     filtered = tableData.filter(x => x.status === statusFilter);
+//   } else {
+//     filtered = tableData.filter(x => x.status !== 'ปิดกิจกรรม');
+//   }
 
   // 2) กรองตามวันที่ (ถ้ามี)
   if (dateFilter) {
@@ -222,6 +225,10 @@
               <div><strong>แจ้งเข้าร่วม:</strong> ${it.joinStatus}</div>
               <div><strong>สถานะยืนยัน:</strong> ${it.confirmStatus}</div>
               <div><strong>บันทึกเพิ่มเติม:</strong> ${it.additionalNotes || '-'}</div>
+                ${it.invoice ? `<div><strong>ใบแจ้งหนี้:</strong> <a href="${it.invoice}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+                ${it.receipt ? `<div><strong>ใบเสร็จ:</strong> <a href="${it.receipt}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+                ${it.certificate ? `<div><strong>ใบรับรอง:</strong> <a href="${it.certificate}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
+
             </div>
             
           </td>
