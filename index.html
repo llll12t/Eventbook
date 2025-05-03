@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>EVENT</title>
+    <title>EVENT TEST</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Flatpickr CSS & JS -->
@@ -576,7 +576,7 @@
                 await fetchAllEvents();
 
                 // แสดง toast แล้วปิด LIFF หลัง 500ms
-                showToast('จองสำเร็จ 🎉');
+                showAlert('จองสำเร็จ 🎉');
                 setTimeout(() => {
                     if (liff.isInClient()) {
                         liff.closeWindow();
@@ -587,7 +587,7 @@
 
             } catch (e) {
                 console.error(e);
-                showToast('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
+                showAlert('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
             } finally {
                 hideLoading();
             }
