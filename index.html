@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>EVENT</title>
+    <title>EVENT TEST</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Flatpickr CSS & JS -->
@@ -94,14 +94,7 @@
           </div>
         </div>
       </div>
-      <!-- Custom Alert Box -->
-<div id="customAlert" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
-  <div class="bg-white rounded-lg p-6 w-full max-w-sm text-center shadow-lg">
-    <div id="alertMessage" class="text-gray-800 text-lg font-medium mb-4">ข้อความแจ้งเตือน</div>
-    <button onclick="hideAlert()" class="bg-blue-600 text-white px-4 py-2 rounded">ตกลง</button>
-  </div>
-</div>
-
+      
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
         <!-- Swiper Banner -->
@@ -271,20 +264,8 @@
 
         function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
         function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-        
-        function showAlert(message, icon = "") {
-        document.getElementById("alertMessage").textContent = message;
-        document.getElementById("alertIcon").textContent = icon;
-        document.getElementById("customAlert").classList.remove("hidden");
-          }
-
-          function hideAlert() {
-            document.getElementById("customAlert").classList.add("hidden");
-          }
-
 
         let swiperInstance;
-
 
         async function fetchAllEvents() {
             showLoading();
@@ -534,9 +515,11 @@
                 { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
                 { id: 'bookEventDate', label: 'วันที่' },
                 { id: 'bookEventTime', label: 'เวลา' },
+                { id: 'bookRenterName', label: 'ชื่อ' },
                 { id: 'bookRenterNameEn', label: 'ชื่อภาษาอังกฤษ' },
                 { id: 'bookCitizenId', label: 'เลขประจำตัว' },
                 { id: 'bookAddress', label: 'ที่อยู่' },
+                { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
                 { id: 'bookEmail', label: 'อีเมล' },
                 { id: 'bookUserLineId', label: 'LINE ID' },
             ];
@@ -545,7 +528,7 @@
                 const val = document.getElementById(field.id).value.trim();
                 if (!val) {
                     hideLoading();
-                    showAlert(`กรุณากรอก ${field.label}`);
+                    alert(`กรุณากรอก ${field.label}`);
                     document.getElementById(field.id).focus();
                     return;
                 }
@@ -576,7 +559,7 @@
                 await fetchAllEvents();
 
                 // แสดง toast แล้วปิด LIFF หลัง 500ms
-                showAlert('จองสำเร็จ 🎉');
+                showToast('จองสำเร็จ 🎉');
                 setTimeout(() => {
                     if (liff.isInClient()) {
                         liff.closeWindow();
@@ -587,7 +570,7 @@
 
             } catch (e) {
                 console.error(e);
-                showAlert('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
+                showToast('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
             } finally {
                 hideLoading();
             }
