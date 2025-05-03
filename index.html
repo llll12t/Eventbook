@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>EVENT TEST</title>
+    <title>EVENT</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Flatpickr CSS & JS -->
@@ -165,26 +165,26 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs text-gray-500">หมวดหมู่</label>
-                    <input type="text" id="bookEventCategory" class="w-full border-b" readonly />
+                    <input type="text" id="bookEventCategory" class="w-full border-b bg-orange-100" readonly />
                 </div>
                 <div>
                     <label class="block text-xs text-gray-500">ราคา</label>
-                    <input type="text" id="bookEventPrice" class="w-full border-b" readonly />
+                    <input type="text" id="bookEventPrice" class="w-full border-b bg-orange-100" readonly />
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs text-gray-500">วันที่</label>
-                    <input type="text" id="bookEventDate" class="w-full border-b" readonly />
+                    <input type="text" id="bookEventDate" class="w-full border-b bg-orange-100" readonly />
                 </div>
                 <div>
                     <label class="block text-xs text-gray-500">เวลา</label>
-                    <input type="text" id="bookEventTime" class="w-full border-b" readonly />
+                    <input type="text" id="bookEventTime" class="w-full border-b bg-orange-100" readonly />
                 </div>
             </div>
             <div class="hidden">
                 <label class="block text-sm font-semibold mb-1">สำหรับ / ท่าน</label>
-                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-gray-100" value="1"
+                <input type="number" id="bookQueue" class="w-full border rounded-2xl p-2 text-sm bg-orange-100" value="1"
                     readonly />
             </div>
             <div>
@@ -193,15 +193,15 @@
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">ชื่อ-สกุล (English)</label>
-                <input type="text" id="bookRenterNameEn" class="w-full border rounded-2xl p-2 text-sm" />
+                <input type="text" id="bookRenterNameEn" class="w-full border rounded-2xl p-2 text-sm" required/>
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">เลขบัตรประชาชน</label>
-                <input type="text" id="bookCitizenId" class="w-full border rounded-2xl p-2 text-sm" maxlength="13" />
+                <input type="text" id="bookCitizenId" class="w-full border rounded-2xl p-2 text-sm" maxlength="13" required />
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">ที่อยู่</label>
-                <textarea id="bookAddress" class="w-full border rounded-2xl p-2 text-sm" rows="3"></textarea>
+                <textarea id="bookAddress" class="w-full border rounded-2xl p-2 text-sm" rows="3" required></textarea>
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">เบอร์ติดต่อ</label>
@@ -209,7 +209,7 @@
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">อีเมล</label>
-                <input type="email" id="bookEmail" class="w-full border rounded-2xl p-2 text-sm" />
+                <input type="email" id="bookEmail" class="w-full border rounded-2xl p-2 text-sm" required/>
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">หมายเหตุ</label>
