@@ -473,8 +473,13 @@
     function closeEditModal() {
       $('#edit-modal').addClass('hidden');
     }
-    $('#edit-form').on('submit', function (e) {
+    $('#edit-form').on('submit', async function (e) {
       e.preventDefault(); startLoading();
+
+      const invoiceBase64 = await fileToBase64('upload-invoice');
+      const receiptBase64 = await fileToBase64('upload-receipt');
+      const certificateBase64 = await fileToBase64('upload-certificate');
+
       const params = {
         id: $('#edit-id').val(),
         eventId: $('#edit-eventId').val(),
