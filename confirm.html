@@ -3,31 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <title>ยืนยันการเข้าร่วม</title>
-  <script>
+<script>
+  // ไม่ต้อง init liff สำหรับทดสอบแบบ web ปกติ
+  window.onload = function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get('id');
+    const activity = urlParams.get('activity');
+    const bookerName = urlParams.get('bookerName');
+    const date = urlParams.get('date');
+    const time = urlParams.get('time');
+
+    // แสดงข้อมูลบนหน้า
+    document.getElementById('activity').textContent = decodeURIComponent(activity || '-');
+    document.getElementById('bookerName').textContent = decodeURIComponent(bookerName || '-');
+    document.getElementById('datetime').textContent = `${decodeURIComponent(date || '-')} เวลา ${decodeURIComponent(time || '-')}`;
+
+    // ปุ่มกดยืนยัน/ยกเลิก
+    document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว");
+    document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก");
+
     async function submitConfirm(status) {
-      const params = new URLSearchParams(window.location.search);
-      const id = params.get("id");
-      const url = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${encodeURIComponent(status)}`;
-
+      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
       try {
-        const res = await fetch(url);   // ✅ ส่ง GET ไปยัง Apps Script
-        const text = await res.text();  // รับผลลัพธ์ข้อความ เช่น "✅ ยืนยันเรียบร้อย"
+        const res = await fetch(apiUrl);
+        const text = await res.text();
         alert(text);
-
-        // ปิด LIFF ถ้าอยู่ในแอป LINE
+        // ปิด liff ได้ถ้ามี
         if (window.liff && liff.closeWindow) liff.closeWindow();
       } catch (err) {
-        alert("❌ เกิดข้อผิดพลาด");
+        alert("❌ ไม่สามารถส่งข้อมูลได้");
         console.error(err);
       }
     }
+  }
 
-    window.onload = () => {
-      const params = new URLSearchParams(window.location.search);
-      document.getElementById("activity").textContent = decodeURIComponent(params.get("activity") || "-");
-      document.getElementById("bookerName").textContent = decodeURIComponent(params.get("bookerName") || "-");
-      document.getElementById("datetime").textContent = `${decodeURIComponent(params.get("date") || "-")} เวลา ${decodeURIComponent(params.get("time") || "-")}`;
-    }
   </script>
   <style>
     body { font-family: sans-serif; text-align: center; margin-top: 50px; }
