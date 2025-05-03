@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>EVENT TEST</title>
+    <title>EVENT </title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Flatpickr CSS & JS -->
@@ -100,6 +100,16 @@
           </div>
         </div>
       </div>
+
+      <!-- แทรกใน <body> ชั้นแรก -->
+<div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white p-6 rounded-2xl shadow-lg max-w-sm w-full">
+    <h3 class="text-lg font-semibold mb-4">แจ้งเตือน</h3>
+    <p id="modalMessage" class="text-sm text-gray-700 mb-6"></p>
+    <button id="modalOk" class="w-full py-2 rounded-lg bg-[#071d4a] text-white">ตกลง</button>
+  </div>
+</div>
+
       
     <!-- STEP 1: เลือกกิจกรรม -->
     <div id="step1" class="p-4 max-w-md mx-auto">
@@ -513,6 +523,18 @@
   }, duration);
 }
 
+// ติดตั้ง event ปุ่มปิด modal
+document.getElementById('modalOk').onclick = () => {
+  document.getElementById('customModal').classList.add('hidden');
+};
+
+// ฟังก์ชันเรียกโชว์ modal
+function showModal(msg) {
+  document.getElementById('modalMessage').textContent = msg;
+  document.getElementById('customModal').classList.remove('hidden');
+}
+
+
         async function submitBooking() {
             showLoading();
 
@@ -568,7 +590,7 @@
                 await fetchAllEvents();
 
                 // แสดง toast แล้วปิด LIFF หลัง 500ms
-                showToast('จองสำเร็จ 🎉');
+                showModal('จองสำเร็จ 🎉');
                 setTimeout(() => {
                     if (liff.isInClient()) {
                         liff.closeWindow();
@@ -579,7 +601,7 @@
 
             } catch (e) {
                 console.error(e);
-                showToast('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
+                showModal('ไม่สามารถจองได้ กรุณาลองใหม่', 3000);
             } finally {
                 hideLoading();
             }
