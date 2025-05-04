@@ -37,7 +37,7 @@
     };
 
     async function submitConfirm(status, id) {
-      const apiUrl = `https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
+      const apiUrl = `https://script.google.com/macros/s/AKfycbxmVGoMjXzA8lvBOKpFAXyPCEj4q9nl1MsL_i_691NynRpDXVnbvBYFftgD7l2iSUw/exec?method=updateConfirmData&id=${id}&confirmStatus=${status}`;
       try {
         const res = await fetch(apiUrl);
         const text = await res.text();
