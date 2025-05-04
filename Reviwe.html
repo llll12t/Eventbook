@@ -1,124 +1,119 @@
+<!-- Review.html -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>รีวิวกิจกรรม</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    window.onload = () => {
+      // ถอดรหัสหลายชั้น & แยก query
+      const qs     = new URLSearchParams(window.location.search);
+      let actual   = qs.get('liff.state') || window.location.search;
+      try {
+        while(actual.includes('%')) {
+          const d = decodeURIComponent(actual);
+          if (d===actual) break;
+          actual = d;
+        }
+      } catch{}
+      const P = new URLSearchParams(actual.replace(/^\?/, ''));
+
+      // อ่านค่า
+      const id         = P.get('id')         || '';
+      const eventId    = P.get('eventId')    || '';
+      const bookerName = P.get('bookerName') || '';
+      const date       = P.get('date')       || '';
+      const time       = P.get('time')       || '';
+      const useridline = P.get('useridline') || '';
+
+      // แสดงบนหน้า
+      document.getElementById('displayId').textContent         = id;
+      document.getElementById('displayEventId').textContent    = eventId;
+      document.getElementById('displayBookerName').textContent = bookerName;
+      document.getElementById('displayDate').textContent       = date;
+      document.getElementById('displayTime').textContent       = time;
+
+      // ซ่อน input
+      ['id','eventId','bookerName','date','time','useridline']
+        .forEach(k => document.getElementById(k).value = eval(k));
+    };
+
+    async function submitReview(e) {
+      e.preventDefault();
+      const f = document.getElementById('reviewForm');
+      const scores = ['service','service0','service1','service2','service3']
+        .map(k => Number(f[k].value));
+      const total = scores.reduce((a,b)=>a+b,0);
+      const payload = {
+        method:       'insertReviewData',
+        id:           f.id.value,
+        eventId:      f.eventId.value,
+        bookerName:   f.bookerName.value,
+        date:         f.date.value,
+        time:         f.time.value,
+        service:      scores[0],
+        service0:     scores[1],
+        service1:     scores[2],
+        service2:     scores[3],
+        service3:     scores[4],
+        totalScore:   total,
+        useridline:   f.useridline.value
+      };
+      try {
+        const res = await fetch('https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec', {
+          method:'POST',
+          body:  JSON.stringify(payload)
+        });
+        document.getElementById('status').textContent =
+          res.ok ? 'ขอบคุณสำหรับรีวิว 🙏' : '❌ ส่งไม่สำเร็จ';
+      } catch {
+        document.getElementById('status').textContent = '❌ เกิดข้อผิดพลาด';
+      }
+    }
+  </script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
   <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
     <h2 class="text-2xl font-bold mb-4 text-center">รีวิวกิจกรรม</h2>
-
-    <!-- แสดงข้อมูลที่รับจากลิงก์ -->
-    <div class="mb-6 text-gray-700 space-y-1">
-      <p>รหัสการจอง: <span id="displayId" class="font-medium"></span></p>
-      <p>รหัสกิจกรรม: <span id="displayEventId" class="font-medium"></span></p>
-      <p>ชื่อผู้ลงทะเบียน: <span id="displayBookerName" class="font-medium"></span></p>
-      <p>วันที่: <span id="displayDate" class="font-medium"></span> เวลา: <span id="displayTime" class="font-medium"></span></p>
+    <div class="mb-6 text-gray-700">
+      <p>รหัสจอง: <span id="displayId" class="font-medium">–</span></p>
+      <p>รหัสกิจกรรม: <span id="displayEventId" class="font-medium">–</span></p>
+      <p>ชื่อผู้ลงทะเบียน: <span id="displayBookerName" class="font-medium">–</span></p>
+      <p>วันที่: <span id="displayDate" class="font-medium">–</span> เวลา: <span id="displayTime" class="font-medium">–</span></p>
     </div>
+    <form id="reviewForm" class="space-y-4" onsubmit="submitReview(event)">
+      <input type="hidden" id="id" name="id"/>
+      <input type="hidden" id="eventId" name="eventId"/>
+      <input type="hidden" id="bookerName" name="bookerName"/>
+      <input type="hidden" id="date" name="date"/>
+      <input type="hidden" id="time" name="time"/>
+      <input type="hidden" id="useridline" name="useridline"/>
 
-    <form id="reviewForm" class="space-y-4">
-      <!-- ซ่อนฟิลด์รับค่าจาก URL -->
-      <input type="hidden" id="id" name="id" />
-      <input type="hidden" id="eventId" name="eventId" />
-      <input type="hidden" id="bookerName" name="bookerName" />
-      <input type="hidden" id="date" name="date" />
-      <input type="hidden" id="time" name="time" />
-      <input type="hidden" id="useridline" name="useridline" />
-
-      <!-- 5 คำถาม rating -->
-      <div>
-        <label class="block mb-1">บริการโดยรวม (1–5)</label>
+      <!-- 5 คำถาม -->
+      <div><label>บริการโดยรวม (1–5)</label>
         <select id="service" name="service" class="w-full border p-2 rounded">
           <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
         </select>
       </div>
-      <div>
-        <label class="block mb-1">บริการ0 (1–5)</label>
-        <select id="service0" name="service0" class="w-full border p-2 rounded">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
-      <div>
-        <label class="block mb-1">บริการ1 (1–5)</label>
-        <select id="service1" name="service1" class="w-full border p-2 rounded">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
-      <div>
-        <label class="block mb-1">บริการ2 (1–5)</label>
-        <select id="service2" name="service2" class="w-full border p-2 rounded">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
-      <div>
-        <label class="block mb-1">บริการ3 (1–5)</label>
-        <select id="service3" name="service3" class="w-full border p-2 rounded">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        </select>
-      </div>
+      <!-- ซ้ำสำหรับ service0–service3 -->
+      <div><label>บริการ0</label><select id="service0" name="service0" class="w-full border p-2 rounded">
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select></div>
+      <div><label>บริการ1</label><select id="service1" name="service1" class="w-full border p-2 rounded">
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select></div>
+      <div><label>บริการ2</label><select id="service2" name="service2" class="w-full border p-2 rounded">
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select></div>
+      <div><label>บริการ3</label><select id="service3" name="service3" class="w-full border p-2 rounded">
+        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select></div>
 
       <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">ส่งรีวิว</button>
     </form>
-    <p id="status" class="mt-4 text-center"></p>
+    <p id="status" class="mt-4 text-center text-gray-700"></p>
   </div>
-
-  <script>
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec';
-
-    function getParam(name) {
-      return new URLSearchParams(window.location.search).get(name) || '';
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    function init() {
-      // keys ที่รับจาก URL
-      const keys = ['id','eventId','bookerName','date','time','useridline'];
-      keys.forEach(k => {
-        const v = getParam(k);
-        // ใส่ค่า hidden field
-        document.getElementById(k).value = v;
-        // แสดงผลในส่วน display หากมี
-        const disp = document.getElementById('display' + capitalize(k));
-        if (disp) disp.innerText = v;
-      });
-    }
-
-    document.getElementById('reviewForm').addEventListener('submit', async e => {
-      e.preventDefault();
-      const f = e.target;
-      // รวบรวมข้อมูลทั้งหมด
-      const s0 = Number(f.service.value), s1 = Number(f.service0.value),
-            s2 = Number(f.service1.value), s3 = Number(f.service2.value),
-            s4 = Number(f.service3.value);
-      const data = {
-        method: 'insertReviewData',
-        id: f.id.value,
-        eventId: f.eventId.value,
-        bookerName: f.bookerName.value,
-        date: f.date.value,
-        time: f.time.value,
-        service: s0,
-        service0: s1,
-        service1: s2,
-        service2: s3,
-        service3: s4,
-        totalScore: s0 + s1 + s2 + s3 + s4,
-        useridline: f.useridline.value
-      };
-      const resp = await fetch(scriptUrl, {
-        method: 'POST',
-        body: JSON.stringify(data)
-      });
-      document.getElementById('status').innerText =
-        resp.ok ? 'ขอบคุณสำหรับรีวิว 🙏' : 'ส่งไม่สำเร็จ ลองใหม่อีกครั้ง';
-    });
-
-    init();
-  </script>
 </body>
 </html>
