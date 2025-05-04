@@ -1,119 +1,156 @@
-<!-- Review.html -->
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>รีวิวกิจกรรม</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    window.onload = () => {
-      // ถอดรหัสหลายชั้น & แยก query
-      const qs     = new URLSearchParams(window.location.search);
-      let actual   = qs.get('liff.state') || window.location.search;
-      try {
-        while(actual.includes('%')) {
-          const d = decodeURIComponent(actual);
-          if (d===actual) break;
-          actual = d;
-        }
-      } catch{}
-      const P = new URLSearchParams(actual.replace(/^\?/, ''));
-
-      // อ่านค่า
-      const id         = P.get('id')         || '';
-      const eventId    = P.get('eventId')    || '';
-      const bookerName = P.get('bookerName') || '';
-      const date       = P.get('date')       || '';
-      const time       = P.get('time')       || '';
-      const useridline = P.get('useridline') || '';
-
-      // แสดงบนหน้า
-      document.getElementById('displayId').textContent         = id;
-      document.getElementById('displayEventId').textContent    = eventId;
-      document.getElementById('displayBookerName').textContent = bookerName;
-      document.getElementById('displayDate').textContent       = date;
-      document.getElementById('displayTime').textContent       = time;
-
-      // ซ่อน input
-      ['id','eventId','bookerName','date','time','useridline']
-        .forEach(k => document.getElementById(k).value = eval(k));
-    };
-
-    async function submitReview(e) {
-      e.preventDefault();
-      const f = document.getElementById('reviewForm');
-      const scores = ['service','service0','service1','service2','service3']
-        .map(k => Number(f[k].value));
-      const total = scores.reduce((a,b)=>a+b,0);
-      const payload = {
-        method:       'insertReviewData',
-        id:           f.id.value,
-        eventId:      f.eventId.value,
-        bookerName:   f.bookerName.value,
-        date:         f.date.value,
-        time:         f.time.value,
-        service:      scores[0],
-        service0:     scores[1],
-        service1:     scores[2],
-        service2:     scores[3],
-        service3:     scores[4],
-        totalScore:   total,
-        useridline:   f.useridline.value
-      };
-      try {
-        const res = await fetch('https://script.google.com/macros/s/AKfycbwOiSYN37QTLiFdz8F0VfVBHGGsoA7Rn6DoAQn0ZBa7Ss6E-UP6WDZVncDgnVby1cVOyQ/exec', {
-          method:'POST',
-          body:  JSON.stringify(payload)
-        });
-        document.getElementById('status').textContent =
-          res.ok ? 'ขอบคุณสำหรับรีวิว 🙏' : '❌ ส่งไม่สำเร็จ';
-      } catch {
-        document.getElementById('status').textContent = '❌ เกิดข้อผิดพลาด';
-      }
-    }
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  <style>
+    .star-rating { direction: rtl; display: inline-block; }
+    .star-rating input[type="radio"] { display: none; }
+    .star-rating label { color: #ccc; font-size: 2rem; cursor: pointer; }
+    .star-rating input[type="radio"]:checked ~ label,
+    .star-rating label:hover,
+    .star-rating label:hover ~ label { color: #f5b301; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
-    <h2 class="text-2xl font-bold mb-4 text-center">รีวิวกิจกรรม</h2>
-    <div class="mb-6 text-gray-700">
-      <p>รหัสจอง: <span id="displayId" class="font-medium">–</span></p>
-      <p>รหัสกิจกรรม: <span id="displayEventId" class="font-medium">–</span></p>
-      <p>ชื่อผู้ลงทะเบียน: <span id="displayBookerName" class="font-medium">–</span></p>
-      <p>วันที่: <span id="displayDate" class="font-medium">–</span> เวลา: <span id="displayTime" class="font-medium">–</span></p>
-    </div>
-    <form id="reviewForm" class="space-y-4" onsubmit="submitReview(event)">
-      <input type="hidden" id="id" name="id"/>
-      <input type="hidden" id="eventId" name="eventId"/>
-      <input type="hidden" id="bookerName" name="bookerName"/>
-      <input type="hidden" id="date" name="date"/>
-      <input type="hidden" id="time" name="time"/>
-      <input type="hidden" id="useridline" name="useridline"/>
+<body class="bg-gray-100 text-sm">
+  <div class="max-w-xl mx-auto bg-white p-6 mt-6 rounded-xl shadow">
+    <h1 class="text-xl font-bold text-blue-700 mb-4">แบบประเมินกิจกรรม</h1>
+    <form id="feedbackForm">
+      <input type="hidden" id="roomId" name="roomId" />
+      <input type="hidden" id="userIdLine" name="userIdLine" />
 
-      <!-- 5 คำถาม -->
-      <div><label>บริการโดยรวม (1–5)</label>
-        <select id="service" name="service" class="w-full border p-2 rounded">
-          <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-        </select>
+      <div class="mb-3">
+        <label class="block text-gray-700">ชื่อกิจกรรม</label>
+        <input type="text" id="roomName" name="roomName" class="w-full p-2 bg-gray-100 rounded" readonly />
       </div>
-      <!-- ซ้ำสำหรับ service0–service3 -->
-      <div><label>บริการ0</label><select id="service0" name="service0" class="w-full border p-2 rounded">
-        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-      </select></div>
-      <div><label>บริการ1</label><select id="service1" name="service1" class="w-full border p-2 rounded">
-        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-      </select></div>
-      <div><label>บริการ2</label><select id="service2" name="service2" class="w-full border p-2 rounded">
-        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-      </select></div>
-      <div><label>บริการ3</label><select id="service3" name="service3" class="w-full border p-2 rounded">
-        <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
-      </select></div>
+      <div class="mb-3">
+        <label class="block text-gray-700">ชื่อผู้เข้าร่วม</label>
+        <input type="text" id="bookerName" name="bookerName" class="w-full p-2 bg-gray-100 rounded" readonly />
+      </div>
+      <div class="flex gap-4 mb-3">
+        <div class="flex-1">
+          <label class="block text-gray-700">วันที่</label>
+          <input type="text" id="date" name="date" class="w-full p-2 bg-gray-100 rounded" readonly />
+        </div>
+        <div class="flex-1">
+          <label class="block text-gray-700">เวลา</label>
+          <input type="text" id="time" name="time" class="w-full p-2 bg-gray-100 rounded" readonly />
+        </div>
+      </div>
 
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">ส่งรีวิว</button>
+      <!-- คำถาม 1 -->
+      <div class="mb-4">
+        <p class="text-gray-700">1. ความน่าสนใจของกิจกรรม</p>
+        <div class="star-rating">
+          <input type="radio" id="clean5" name="clean" value="5" /><label for="clean5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="clean4" name="clean" value="4" /><label for="clean4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="clean3" name="clean" value="3" /><label for="clean3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="clean2" name="clean" value="2" /><label for="clean2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="clean1" name="clean" value="1" required /><label for="clean1"><i class="fas fa-star"></i></label>
+        </div>
+      </div>
+
+      <!-- คำถาม 2 -->
+      <div class="mb-4">
+        <p class="text-gray-700">2. ความชัดเจนของวิทยากร / ผู้สอน</p>
+        <div class="star-rating">
+          <input type="radio" id="noise5" name="noise" value="5" /><label for="noise5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="noise4" name="noise" value="4" /><label for="noise4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="noise3" name="noise" value="3" /><label for="noise3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="noise2" name="noise" value="2" /><label for="noise2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="noise1" name="noise" value="1" required /><label for="noise1"><i class="fas fa-star"></i></label>
+        </div>
+      </div>
+
+      <!-- คำถาม 3 -->
+      <div class="mb-4">
+        <p class="text-gray-700">3. ความพร้อมของอุปกรณ์ / สถานที่</p>
+        <div class="star-rating">
+          <input type="radio" id="service5" name="service" value="5" /><label for="service5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="service4" name="service" value="4" /><label for="service4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="service3" name="service" value="3" /><label for="service3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="service2" name="service" value="2" /><label for="service2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="service1" name="service" value="1" required /><label for="service1"><i class="fas fa-star"></i></label>
+        </div>
+      </div>
+
+      <!-- คำถาม 4 -->
+      <div class="mb-4">
+        <p class="text-gray-700">4. ความคุ้มค่ากับเวลา / ค่าใช้จ่าย</p>
+        <div class="star-rating">
+          <input type="radio" id="fixproblem5" name="fixproblem" value="5" /><label for="fixproblem5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="fixproblem4" name="fixproblem" value="4" /><label for="fixproblem4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="fixproblem3" name="fixproblem" value="3" /><label for="fixproblem3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="fixproblem2" name="fixproblem" value="2" /><label for="fixproblem2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="fixproblem1" name="fixproblem" value="1" required /><label for="fixproblem1"><i class="fas fa-star"></i></label>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 mb-1">ความคิดเห็นเพิ่มเติม</label>
+        <textarea id="details" name="details" rows="3" class="w-full p-2 border rounded"></textarea>
+      </div>
+
+      <button type="submit" class="w-full p-3 bg-blue-700 text-white font-bold rounded hover:bg-blue-600">ส่งความคิดเห็น</button>
     </form>
-    <p id="status" class="mt-4 text-center text-gray-700"></p>
   </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const state = decodeURIComponent(urlParams.get("liff.state") || "").replace(/^\?/, "");
+    const p = new URLSearchParams(state);
+
+    document.getElementById("roomId").value = p.get("eventId") || "";
+    document.getElementById("roomName").value = p.get("activity") || "";
+    document.getElementById("bookerName").value = p.get("bookerName") || "";
+    document.getElementById("date").value = p.get("date") || "";
+    document.getElementById("time").value = p.get("time") || "";
+    document.getElementById("userIdLine").value = p.get("useridline") || "";
+
+    document.getElementById("feedbackForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const data = {
+        method: "submitFeedback",
+        roomId: document.getElementById("roomId").value,
+        roomName: document.getElementById("roomName").value,
+        bookerName: document.getElementById("bookerName").value,
+        date: document.getElementById("date").value,
+        time: document.getElementById("time").value,
+        userIdLine: document.getElementById("userIdLine").value,
+        clean: document.querySelector('input[name="clean"]:checked')?.value || "",
+        noise: document.querySelector('input[name="noise"]:checked')?.value || "",
+        service: document.querySelector('input[name="service"]:checked')?.value || "",
+        fixproblem: document.querySelector('input[name="fixproblem"]:checked')?.value || "",
+        details: document.getElementById("details").value
+      };
+
+      if (!(data.clean && data.noise && data.service && data.fixproblem)) {
+        Swal.fire("กรุณาให้คะแนนทุกข้อ", "", "error");
+        return;
+      }
+
+      Swal.fire({ title: "กำลังส่งข้อมูล...", didOpen: () => Swal.showLoading(), allowOutsideClick: false });
+
+      fetch("https://script.google.com/macros/s/AKfycbxtbN_-k9O_yxP1QTsXsQajYwLh4yL8oEG_eA5iKofRcCTuKTO8KL0ghJMDiDbMQ34nxQ/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(data)
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res.success) {
+            Swal.fire("ส่งเรียบร้อย", "ขอบคุณสำหรับความคิดเห็น!", "success").then(() => window.close());
+          } else {
+            Swal.fire("ผิดพลาด", res.message || "ไม่สามารถบันทึกข้อมูลได้", "error");
+          }
+        })
+        .catch(() => Swal.fire("ผิดพลาด", "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์", "error"));
+    });
+  </script>
 </body>
 </html>
