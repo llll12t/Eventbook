@@ -6,9 +6,15 @@
   <title>ยืนยันเข้าร่วมกิจกรรม</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script>
-    window.onload = function () {
+    window.onload = async function () {
+      try {
+        await liff.init({ liffId: "YOUR_LIFF_ID" }); // 🔁 เปลี่ยน YOUR_LIFF_ID เป็นของคุณ
+      } catch (err) {
+        console.error("LIFF init error", err);
+      }
+
       const query = new URLSearchParams(window.location.search);
       let actualQuery = query.get("liff.state") || window.location.search;
 
@@ -35,6 +41,13 @@
 
       document.getElementById("yesBtn").onclick = () => submitConfirm("ยืนยันแล้ว", id);
       document.getElementById("noBtn").onclick = () => submitConfirm("ยกเลิก", id);
+      document.getElementById("closeLiffBtn").onclick = () => {
+        if (liff.isInClient()) {
+          liff.closeWindow();
+        } else {
+          alert("กรุณาปิดหน้าต่างนี้ด้วยตนเอง");
+        }
+      };
     };
 
     async function submitConfirm(status, id) {
@@ -42,8 +55,8 @@
       try {
         const res = await fetch(apiUrl);
         const text = await res.text();
-        alert(text);
-        if (window.liff && liff.closeWindow) liff.closeWindow();
+        document.getElementById("resultMessage").textContent = text || "✅ สำเร็จ";
+        document.getElementById("resultBox").classList.remove("hidden");
       } catch (err) {
         alert("❌ ไม่สามารถส่งข้อมูลได้");
         console.error(err);
@@ -52,6 +65,18 @@
   </script>
 </head>
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed flex items-center justify-center p-4">
+
+  <!-- กล่องแจ้งเตือนหลังสำเร็จ -->
+  <div id="resultBox" class="hidden absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 text-center space-y-4 max-w-xs">
+      <p id="resultMessage" class="text-lg font-medium text-green-700">✅ สำเร็จ</p>
+      <button id="closeLiffBtn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+
+  <!-- กล่องหลัก -->
   <div class="bg-white rounded-2xl shadow max-w-sm w-full overflow-hidden">
     <!-- Header -->
     <div class="bg-white p-4">
@@ -80,7 +105,7 @@
     <div class="px-6 pb-6 flex space-x-4">
       <button id="yesBtn"
         class="flex-1 bg-[#0A164D] hover:bg-[#EB8012] text-white py-3 rounded-lg font-medium transition">
-      ยืนยัน
+        ยืนยัน
       </button>
       <button id="noBtn"
         class="flex-1 bg-red-400 hover:bg-red-500 text-white py-3 rounded-lg font-medium transition">
