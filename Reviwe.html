@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>รีวิวกิจกรรม</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
@@ -16,35 +18,35 @@
     .star-rating label:hover ~ label { color: #f5b301; }
   </style>
 </head>
-<body class="bg-gray-100 text-sm">
-  <div class="max-w-xl mx-auto bg-white p-6 mt-6 rounded-xl shadow">
-    <h1 class="text-xl font-bold text-blue-700 mb-4">แบบประเมินกิจกรรม</h1>
+<body class="text-sm">
+  <div class="max-w-md mx-auto bg-white p-6 mt-6 ">
+    <h1 class="text-xl font-bold text-[#0A164D] mb-2">แบบประเมินกิจกรรม</h1>
     <form id="feedbackForm">
       <input type="hidden" id="roomId" name="roomId" />
       <input type="hidden" id="userIdLine" name="userIdLine" />
 
       <div class="mb-3">
-        <label class="block text-gray-700">ชื่อกิจกรรม</label>
+        <label class="block text-gray-700 ">ชื่อกิจกรรม</label>
         <input type="text" id="roomName" name="roomName" class="w-full p-2 bg-gray-100 rounded" readonly />
       </div>
       <div class="mb-3">
-        <label class="block text-gray-700">ชื่อผู้เข้าร่วม</label>
+        <label class="block text-gray-700 ">ชื่อผู้เข้าร่วม</label>
         <input type="text" id="bookerName" name="bookerName" class="w-full p-2 bg-gray-100 rounded" readonly />
       </div>
-      <div class="flex gap-4 mb-3">
+      <div class="flex gap-4 mb-6">
         <div class="flex-1">
-          <label class="block text-gray-700">วันที่</label>
+          <label class="block text-gray-700 ">วันที่</label>
           <input type="text" id="date" name="date" class="w-full p-2 bg-gray-100 rounded" readonly />
         </div>
         <div class="flex-1">
-          <label class="block text-gray-700">เวลา</label>
+          <label class="block text-gray-700 ">เวลา</label>
           <input type="text" id="time" name="time" class="w-full p-2 bg-gray-100 rounded" readonly />
         </div>
       </div>
 
       <!-- คำถาม 1 -->
-      <div class="mb-4">
-        <p class="text-gray-700">1. ความน่าสนใจของกิจกรรม</p>
+      <div class="mb-6">
+        <p class="text-gray-700 mb-2">1. ความน่าสนใจของกิจกรรม</p>
         <div class="star-rating">
           <input type="radio" id="clean5" name="clean" value="5" /><label for="clean5"><i class="fas fa-star"></i></label>
           <input type="radio" id="clean4" name="clean" value="4" /><label for="clean4"><i class="fas fa-star"></i></label>
@@ -55,8 +57,8 @@
       </div>
 
       <!-- คำถาม 2 -->
-      <div class="mb-4">
-        <p class="text-gray-700">2. ความชัดเจนของวิทยากร / ผู้สอน</p>
+      <div class="mb-6">
+        <p class="text-gray-700 mb-2">2. ความชัดเจนของวิทยากร / ผู้สอน</p>
         <div class="star-rating">
           <input type="radio" id="noise5" name="noise" value="5" /><label for="noise5"><i class="fas fa-star"></i></label>
           <input type="radio" id="noise4" name="noise" value="4" /><label for="noise4"><i class="fas fa-star"></i></label>
@@ -67,8 +69,8 @@
       </div>
 
       <!-- คำถาม 3 -->
-      <div class="mb-4">
-        <p class="text-gray-700">3. ความพร้อมของอุปกรณ์ / สถานที่</p>
+      <div class="mb-6">
+        <p class="text-gray-700 mb-2">3. ความพร้อมของอุปกรณ์ / สถานที่</p>
         <div class="star-rating">
           <input type="radio" id="service5" name="service" value="5" /><label for="service5"><i class="fas fa-star"></i></label>
           <input type="radio" id="service4" name="service" value="4" /><label for="service4"><i class="fas fa-star"></i></label>
@@ -79,8 +81,8 @@
       </div>
 
       <!-- คำถาม 4 -->
-      <div class="mb-4">
-        <p class="text-gray-700">4. ความคุ้มค่ากับเวลา / ค่าใช้จ่าย</p>
+      <div class="mb-6">
+        <p class="text-gray-700 mb-2">4. ความคุ้มค่ากับเวลา / ค่าใช้จ่าย</p>
         <div class="star-rating">
           <input type="radio" id="fixproblem5" name="fixproblem" value="5" /><label for="fixproblem5"><i class="fas fa-star"></i></label>
           <input type="radio" id="fixproblem4" name="fixproblem" value="4" /><label for="fixproblem4"><i class="fas fa-star"></i></label>
@@ -90,12 +92,12 @@
         </div>
       </div>
 
-      <div class="mb-4">
-        <label class="block text-gray-700 mb-1">ความคิดเห็นเพิ่มเติม</label>
+      <div class="mb-6">
+        <label class="block text-gray-700 mb-6 mb-1">ความคิดเห็นเพิ่มเติม</label>
         <textarea id="details" name="details" rows="3" class="w-full p-2 border rounded"></textarea>
       </div>
 
-      <button type="submit" class="w-full p-3 bg-blue-700 text-white font-bold rounded hover:bg-blue-600">ส่งความคิดเห็น</button>
+      <button type="submit" class="w-full p-3 bg-[#0A164D] text-white font-bold rounded hover:bg-blue-600">ส่งความคิดเห็น</button>
     </form>
   </div>
 
