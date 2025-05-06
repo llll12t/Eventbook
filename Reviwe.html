@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html> 
 <html lang="th">
 <head>
@@ -11,7 +12,7 @@
   <style>
     .star-rating { direction: rtl; display: inline-block; }
     .star-rating input[type="radio"] { display: none; }
-    .star-rating label { color: #ccc; font-size: 1.5rem; cursor: pointer; }
+    .star-rating label { color: #ccc; font-size: 2rem; cursor: pointer; }
     .star-rating input[type="radio"]:checked ~ label,
     .star-rating label:hover,
     .star-rating label:hover ~ label { color: #f5b301; }
@@ -21,117 +22,126 @@
   <div class="max-w-md mx-auto bg-white p-6 mt-6 rounded shadow">
     <h1 class="text-xl font-bold text-[#0A164D] mb-4">แบบประเมินกิจกรรม</h1>
     <form id="feedbackForm">
-      <!-- ข้อมูลกิจกรรม (readonly) -->
       <input type="hidden" id="roomId" name="roomId" />
       <input type="hidden" id="userIdLine" name="userIdLine" />
-      <div class="mb-4"><label>ชื่อกิจกรรม</label>
+      <div class="mb-3">
+        <label class="block text-gray-700">ชื่อกิจกรรม</label>
         <input type="text" id="roomName" name="roomName" class="w-full p-2 bg-gray-100 rounded" readonly />
       </div>
-      <div class="mb-4"><label>ชื่อผู้เข้าร่วม</label>
+      <div class="mb-3">
+        <label class="block text-gray-700">ชื่อผู้เข้าร่วม</label>
         <input type="text" id="bookerName" name="bookerName" class="w-full p-2 bg-gray-100 rounded" readonly />
       </div>
       <div class="flex gap-4 mb-6">
         <div class="flex-1">
-          <label>วันที่</label>
+          <label class="block text-gray-700">วันที่</label>
           <input type="text" id="date" name="date" class="w-full p-2 bg-gray-100 rounded" readonly />
         </div>
         <div class="flex-1">
-          <label>เวลา</label>
+          <label class="block text-gray-700">เวลา</label>
           <input type="text" id="time" name="time" class="w-full p-2 bg-gray-100 rounded" readonly />
         </div>
       </div>
 
-      <!-- 1. ความน่าสนใจของหัวข้อและเนื้อหา -->
+      <!-- 1 -->
       <div class="mb-6">
-        <p class="mb-2">1. ความน่าสนใจของหัวข้อและเนื้อหาของกิจกรรม</p>
+        <p class="text-gray-700 mb-2">1. ความน่าสนใจของหัวข้อและเนื้อหาของกิจกรรม</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q1-${v}" name="q1" value="${v}" required />
-            <label for="q1-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q1-5" name="q1" value="5" /><label for="q1-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q1-4" name="q1" value="4" /><label for="q1-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q1-3" name="q1" value="3" /><label for="q1-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q1-2" name="q1" value="2" /><label for="q1-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q1-1" name="q1" value="1" required /><label for="q1-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 2. รูปแบบการดำเนินกิจกรรม -->
+      <!-- 2 -->
       <div class="mb-6">
-        <p class="mb-2">2. รูปแบบการดำเนินกิจกรรมของมีความเหมาะสม</p>
+        <p class="text-gray-700 mb-2">2. รูปแบบการดำเนินกิจกรรมมีความเหมาะสม</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q2-${v}" name="q2" value="${v}" required />
-            <label for="q2-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q2-5" name="q2" value="5" /><label for="q2-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q2-4" name="q2" value="4" /><label for="q2-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q2-3" name="q2" value="3" /><label for="q2-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q2-2" name="q2" value="2" /><label for="q2-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q2-1" name="q2" value="1" required /><label for="q2-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 3. ประชาสัมพันธ์และการสมัครเข้าร่วม -->
+      <!-- 3 -->
       <div class="mb-6">
-        <p class="mb-2">3. การประชาสัมพันธ์ และการสมัครเข้าร่วมของกิจกรรมมีความเหมาะสม</p>
+        <p class="text-gray-700 mb-2">3. การประชาสัมพันธ์ และการสมัครเข้าร่วมของกิจกรรมมีความเหมาะสม</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q3-${v}" name="q3" value="${v}" required />
-            <label for="q3-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q3-5" name="q3" value="5" /><label for="q3-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q3-4" name="q3" value="4" /><label for="q3-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q3-3" name="q3" value="3" /><label for="q3-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q3-2" name="q3" value="2" /><label for="q3-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q3-1" name="q3" value="1" required /><label for="q3-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 4. วิทยากรหรือผู้ดำเนินกิจกรรม -->
+      <!-- 4 -->
       <div class="mb-6">
-        <p class="mb-2">4. วิทยากร หรือผู้ดำเนินกิจกรรมมีความเหมาะสม</p>
+        <p class="text-gray-700 mb-2">4. วิทยากร หรือผู้ดำเนินกิจกรรมมีความเหมาะสม</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q4-${v}" name="q4" value="${v}" required />
-            <label for="q4-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q4-5" name="q4" value="5" /><label for="q4-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q4-4" name="q4" value="4" /><label for="q4-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q4-3" name="q4" value="3" /><label for="q4-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q4-2" name="q4" value="2" /><label for="q4-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q4-1" name="q4" value="1" required /><label for="q4-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 5. ความคุ้มค่าของกิจกรรม -->
+      <!-- 5 -->
       <div class="mb-6">
-        <p class="mb-2">5. ความคุ้มค่าของกิจกรรม สามารถนำเอาประสบการณ์ที่ได้รับไปต่อยอดได้</p>
+        <p class="text-gray-700 mb-2">5. ความคุ้มค่าของกิจกรรม สามารถนำประสบการณ์ที่ได้รับไปต่อยอดได้</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q5-${v}" name="q5" value="${v}" required />
-            <label for="q5-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q5-5" name="q5" value="5" /><label for="q5-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q5-4" name="q5" value="4" /><label for="q5-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q5-3" name="q5" value="3" /><label for="q5-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q5-2" name="q5" value="2" /><label for="q5-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q5-1" name="q5" value="1" required /><label for="q5-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 6. สถานที่และอุปกรณ์อำนวยความสะดวก -->
+      <!-- 6 -->
       <div class="mb-6">
-        <p class="mb-2">6. ความเหมาะสมของสถานที่และอุปกรณ์อำนวยความสะดวก</p>
+        <p class="text-gray-700 mb-2">6. ความเหมาะสมของสถานที่และอุปกรณ์อำนวยความสะดวก</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q6-${v}" name="q6" value="${v}" required />
-            <label for="q6-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q6-5" name="q6" value="5" /><label for="q6-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q6-4" name="q6" value="4" /><label for="q6-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q6-3" name="q6" value="3" /><label for="q6-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q6-2" name="q6" value="2" /><label for="q6-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q6-1" name="q6" value="1" required /><label for="q6-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 7. วัน/เวลาที่จัดกิจกรรม -->
+      <!-- 7 -->
       <div class="mb-6">
-        <p class="mb-2">7. ความเหมาะสมของ วัน เวลาที่จัดกิจกรรม</p>
+        <p class="text-gray-700 mb-2">7. ความเหมาะสมของวัน เวลาที่จัดกิจกรรม</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q7-${v}" name="q7" value="${v}" required />
-            <label for="q7-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q7-5" name="q7" value="5" /><label for="q7-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q7-4" name="q7" value="4" /><label for="q7-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q7-3" name="q7" value="3" /><label for="q7-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q7-2" name="q7" value="2" /><label for="q7-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q7-1" name="q7" value="1" required /><label for="q7-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 8. ภาพรวมความพึงพอใจ -->
+      <!-- 8 -->
       <div class="mb-6">
-        <p class="mb-2">8. สรุปภาพรวมความพึงพอใจที่ท่านได้รับจากการจัดกิจกรรมในครั้งนี้</p>
+        <p class="text-gray-700 mb-2">8. สรุปภาพรวมความพึงพอใจที่ท่านได้รับจากการจัดกิจกรรมในครั้งนี้</p>
         <div class="star-rating">
-          ${[5,4,3,2,1].map(v=>`
-            <input type="radio" id="q8-${v}" name="q8" value="${v}" required />
-            <label for="q8-${v}"><i class="fas fa-star"></i></label>
-          `).join('')}
+          <input type="radio" id="q8-5" name="q8" value="5" /><label for="q8-5"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q8-4" name="q8" value="4" /><label for="q8-4"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q8-3" name="q8" value="3" /><label for="q8-3"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q8-2" name="q8" value="2" /><label for="q8-2"><i class="fas fa-star"></i></label>
+          <input type="radio" id="q8-1" name="q8" value="1" required /><label for="q8-1"><i class="fas fa-star"></i></label>
         </div>
       </div>
 
-      <!-- 9. ความเห็นเพิ่มเติม -->
+      <!-- 9 -->
       <div class="mb-6">
-        <label class="block mb-1">9. ความเห็นเพิ่มเติม</label>
+        <label class="block text-gray-700 mb-1">9. ความเห็นเพิ่มเติม</label>
         <textarea id="q9" name="q9" rows="3" class="w-full p-2 border rounded"></textarea>
       </div>
 
@@ -142,24 +152,27 @@
   </div>
 
   <script>
-    // ดึงค่า state จาก LIFF
-    const params = new URLSearchParams(
-      decodeURIComponent(new URLSearchParams(window.location.search).get("liff.state") || "").replace(/^\?/, "")
+    // ดึง state จาก LIFF แล้วเติมค่าในช่อง readonly
+    const p = new URLSearchParams(
+      decodeURIComponent(new URLSearchParams(window.location.search).get("liff.state")||"").replace(/^\?/, "")
     );
-    ["eventId","activity","bookerName","date","time","useridline"].forEach(k=>{
-      if (params.get(k)) document.getElementById(k==="activity"?"roomName":k).value = params.get(k);
-    });
+    document.getElementById("roomId").value    = p.get("eventId")    || "";
+    document.getElementById("roomName").value  = p.get("activity")   || "";
+    document.getElementById("bookerName").value= p.get("bookerName") || "";
+    document.getElementById("date").value      = p.get("date")       || "";
+    document.getElementById("time").value      = p.get("time")       || "";
+    document.getElementById("userIdLine").value= p.get("useridline") || "";
 
-    document.getElementById("feedbackForm").addEventListener("submit", function(e) {
+    document.getElementById("feedbackForm").addEventListener("submit", e => {
       e.preventDefault();
       const data = {
         method: "submitFeedback",
-        roomId: params.get("eventId"),
-        roomName: params.get("activity"),
-        bookerName: params.get("bookerName"),
-        date: params.get("date"),
-        time: params.get("time"),
-        userIdLine: params.get("useridline"),
+        roomId:    p.get("eventId"),
+        roomName:  p.get("activity"),
+        bookerName:p.get("bookerName"),
+        date:      p.get("date"),
+        time:      p.get("time"),
+        userIdLine:p.get("useridline"),
         q1: document.querySelector('input[name="q1"]:checked')?.value,
         q2: document.querySelector('input[name="q2"]:checked')?.value,
         q3: document.querySelector('input[name="q3"]:checked')?.value,
@@ -170,27 +183,27 @@
         q8: document.querySelector('input[name="q8"]:checked')?.value,
         q9: document.getElementById("q9").value
       };
-      // ตรวจสอบครบทุกข้อ (ยกเว้น q9)
-      for (let i=1; i<=8; i++){
-        if (!data["q"+i]) {
-          return Swal.fire("กรุณาให้คะแนนทุกข้อ", "", "error");
+      // ตรวจสอบครบ 1–8
+      for(let i=1;i<=8;i++){
+        if(!data["q"+i]){
+          return Swal.fire("กรุณาให้คะแนนทุกข้อ","","error");
         }
       }
-      Swal.fire({ title: "กำลังส่งข้อมูล...", didOpen: ()=> Swal.showLoading(), allowOutsideClick:false });
-      fetch("https://script.google.com/macros/s/AKfycbxtbN_-k9O_yxP1QTsXsQajYwLh4yL8oEG_eA5iKofRcCTuKTO8KL0ghJMDiDbMQ34nxQ/exec", {
+      Swal.fire({ title:"กำลังส่งข้อมูล...", didOpen:()=>Swal.showLoading(), allowOutsideClick:false });
+      fetch("https://script.google.com/macros/s/AKfycbxtbN_-k9O_yxP1QTsXsQajYwLh4yL8oEG_eA5iKofRcCTuKTO8KL0ghJMDiDbMQ34nxQ/exec",{
         method:"POST",
         headers:{"Content-Type":"application/x-www-form-urlencoded"},
-        body: new URLSearchParams(data)
+        body:new URLSearchParams(data)
       })
-      .then(res=>res.json())
+      .then(r=>r.json())
       .then(res=>{
-        if (res.success) {
-          Swal.fire("ส่งเรียบร้อย","ขอบคุณสำหรับความคิดเห็น!","success").then(()=> window.close());
+        if(res.success){
+          Swal.fire("ส่งเรียบร้อย","ขอบคุณสำหรับความคิดเห็น!","success").then(()=>window.close());
         } else {
-          Swal.fire("ผิดพลาด", res.message||"ไม่สามารถบันทึกข้อมูลได้","error");
+          Swal.fire("ผิดพลาด",res.message||"ไม่สามารถบันทึกข้อมูลได้","error");
         }
       })
-      .catch(()=> Swal.fire("ผิดพลาด","ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์","error"));
+      .catch(()=>Swal.fire("ผิดพลาด","ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์","error"));
     });
   </script>
 </body>
