@@ -393,15 +393,24 @@
       const html = `<tr class="details-row bg-gray-50">
         <td colspan="4" class="p-3 border-t">
           <div class="space-y-1 text-sm">
-            <div><strong>ไอดี:</strong> ${it.id}</div>
-            <div><strong>หมวดหมู่:</strong> ${it.category}</div>
-            <div><strong>ราคา:</strong> ${it.price}</div>
-            <div><strong>วันที่/เวลา:</strong> ${it.date} ${it.time}</div>
-            <div><strong>คิว:</strong> ${it.queue}</div>
-            <div><strong>ENG:</strong> ${it.bookerENG}</div>
-            <div><strong>ที่อยู่:</strong> ${it.address}</div>
-            <div><strong>อีเมล:</strong> ${it.email}</div>
-            <div><strong>หมายเหตุ:</strong> ${it.note || '-'}</div>
+              <div><strong>ไอดี:</strong> ${it.id}</div>
+              <div><strong>ไอดีกิจกรรม:</strong> ${it.eventId}</div>
+              <div><strong>ชื่อกิจกรรม:</strong> ${it.activityName}</div>
+              <div><strong>หมวดหมู่:</strong> ${it.category}</div>
+              <div><strong>ราคา:</strong> ${it.price}</div>
+              <div><strong>วันที่/เวลา:</strong> ${it.date} ${it.time}</div>
+              <div><strong>จำนวน:</strong> ${it.queue}</div>
+              <div><strong>ชื่อ-สกุล:</strong> ${it.bookerName}</div>
+              <div><strong>ชื่อ-สกุลENG:</strong> ${it.bookerENG}</div>
+              <div><strong>บัตรประชาชน:</strong> ${it.idCard}</div>
+              <div><strong>ที่อยู่:</strong> ${it.address}</div>
+              <div><strong>อีเมล:</strong> ${it.email}</div>
+              <div><strong>หมายเหตุ:</strong> ${it.note}</div>
+              <div><strong>สถานะ:</strong> ${it.status}</div>
+              <div><strong>ชำระเงิน:</strong> ${it.payment}</div>
+              <div><strong>แจ้งเข้าร่วม:</strong> ${it.joinStatus}</div>
+              <div><strong>สถานะยืนยัน:</strong> ${it.confirmStatus}</div>
+              <div><strong>บันทึกเพิ่มเติม:</strong> ${it.additionalNotes || '-'}</div>
             ${it.invoice ? `<div><strong>ใบแจ้งหนี้:</strong> <a href="${it.invoice}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
 ${it.receipt ? `<div><strong>ใบเสร็จ:</strong> <a href="${it.receipt}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
 ${it.certificate ? `<div><strong>ใบรับรอง:</strong> <a href="${it.certificate}" target="_blank" class="text-blue-600 underline">ดูเอกสาร</a></div>` : ''}
