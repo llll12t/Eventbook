@@ -38,7 +38,6 @@
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed">
   <!-- User Profile Display ถูกย้ายเข้าไปในแต่ละ Step แล้ว -->
-
   <!-- Loading Overlay -->
   <div id="loadingOverlay" class="fixed inset-0 flex items-start justify-center z-50 p-4 top-12 max-w-md mx-auto">
     <div class="w-full animate-pulse">
@@ -70,7 +69,7 @@
 
   <!-- STEP 1: เลือกกิจกรรม (เพิ่ม relative และ userProfileDisplay) -->
   <div id="step1" class="p-4 max-w-md mx-auto relative">
-    <div class="absolute top-4 right-4 flex items-center p-1 pr-3 bg-white/70 backdrop-blur-sm rounded-full shadow-md z-10">
+    <div class="absolute top-4 right-4 flex items-center p-1 pr-3 bg-white/70 backdrop-blur-sm rounded-full  z-10">
       <img class="user-profile-picture w-8 h-8 rounded-full object-cover" src="https://via.placeholder.com/40">
       <span class="user-profile-name ml-2 text-sm font-semibold text-gray-700">Loading...</span>
     </div>
@@ -392,7 +391,7 @@
       allCategories.forEach(cat => {
         const btn = document.createElement("button");
         btn.textContent = cat;
-        btn.className = "bg-gray-200 hover:bg-gray-400 px-3 py-2 rounded-xl text-sm";
+        btn.className = "bg-white/70 backdrop-blur-sm hover:bg-gray-400 px-3 py-2 rounded-2xl text-sm";
         btn.onclick = () => {
           const filtered = events.filter(evt => evt["หมวดหมู่"] === cat);
           renderEventList(filtered);
