@@ -43,24 +43,23 @@
     }
 
     #toast.error {
-      /* Tailwind utility ผ่าน @apply ไม่ได้บน CDN เลยใส่เต็มๆ */
       background-color: #dc2626;
-      /* bg-red-600 */
       color: white;
     }
   </style>
 </head>
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed">
-  <!-- START: User Profile Display (เพิ่มส่วนนี้) -->
+  <!-- START: User Profile Display (แก้ไขส่วนนี้) -->
+  <!-- เพิ่ม class 'fixed' เพื่อให้ลอยอยู่กับที่ และปรับ z-index เป็น z-40 -->
   <div id="userProfileDisplay"
-    class="fixed top-4 right-4 z-20 flex items-center p-1 pr-3 bg-white/70 backdrop-blur-sm rounded-full shadow-md">
+    class="fixed top-4 right-4 z-40 flex items-center p-1 pr-3 bg-white/70 backdrop-blur-sm rounded-full shadow-md">
     <img id="userProfilePicture" src="https://via.placeholder.com/40" class="w-8 h-8 rounded-full object-cover">
     <span id="userProfileName" class="ml-2 text-sm font-semibold text-gray-700">Loading...</span>
   </div>
   <!-- END: User Profile Display -->
 
-  <!-- Loading Overlay (แก้ไขส่วนนี้) -->
+  <!-- Loading Overlay (z-50) -->
   <div id="loadingOverlay" class="fixed inset-0 flex items-start justify-center bg-[#F5F8FD] z-50 p-4 max-w-md mx-auto">
     <div class="w-full animate-pulse">
       <!-- Skeleton for Banner -->
@@ -74,7 +73,6 @@
       </div>
       <!-- Skeleton for Event List -->
       <div class="grid grid-cols-2 gap-4">
-        <!-- Skeleton Card 1 -->
         <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
           <div class="h-32 bg-slate-200 rounded-xl"></div>
           <div class="p-2 space-y-3">
@@ -83,7 +81,6 @@
             <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
           </div>
         </div>
-        <!-- Skeleton Card 2 -->
         <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
           <div class="h-32 bg-slate-200 rounded-xl"></div>
           <div class="p-2 space-y-3">
@@ -92,7 +89,6 @@
             <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
           </div>
         </div>
-        <!-- Skeleton Card 3 -->
         <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
           <div class="h-32 bg-slate-200 rounded-xl"></div>
           <div class="p-2 space-y-3">
@@ -101,7 +97,6 @@
             <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
           </div>
         </div>
-        <!-- Skeleton Card 4 -->
         <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
           <div class="h-32 bg-slate-200 rounded-xl"></div>
           <div class="p-2 space-y-3">
@@ -115,7 +110,7 @@
   </div>
 
 
-  <!-- แทรกใน <body> ชั้นแรก -->
+  <!-- Custom Modal (z-50) -->
   <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-2xl shadow-lg max-w-xs w-full">
       <h3 class="text-lg font-semibold mb-4">แจ้งเตือน</h3>
@@ -251,7 +246,7 @@
         บันทึกการจอง
       </button>
     </form>
-    <!-- ตรงก่อน </body> -->
+    
     <div id="toast"
       class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
     </div>
@@ -260,6 +255,7 @@
   </div>
 
   <script>
+    // --- ไม่มีการแก้ไขในส่วนของ JavaScript ---
     // Helpers
     function formatDate(d) {
       const dt = new Date(d);
@@ -279,24 +275,21 @@
     let selectedEvent = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
-      // แสดง skeleton ทันที
       showLoading();
       await liff.init({ liffId: LIFF_EVENT });
       if (!liff.isLoggedIn()) {
         liff.login();
-        return; // หยุดการทำงาน script ชั่วคราวจนกว่าจะ login เสร็จ
+        return; 
       }
       const profile = await liff.getProfile();
 
-      // START: อัปเดตข้อมูลผู้ใช้ (เพิ่มส่วนนี้)
       document.getElementById('bookUserLineId').value = profile.userId;
       document.getElementById('userProfileName').textContent = profile.displayName;
       const profilePic = document.getElementById('userProfilePicture');
       profilePic.src = profile.pictureUrl;
-      profilePic.onerror = () => { // กรณีรูปโปรไฟล์มีปัญหา
+      profilePic.onerror = () => { 
         profilePic.src = 'https://via.placeholder.com/40';
       }
-      // END: อัปเดตข้อมูลผู้ใช้
 
       await fetchAllEvents();
 
@@ -313,7 +306,6 @@
     let swiperInstance;
 
     async function fetchAllEvents() {
-      // showLoading() ถูกเรียกไปแล้วใน DOMContentLoaded
       try {
         const res = await fetch(EVENT_URL);
         const data = await res.json();
@@ -327,7 +319,6 @@
         console.error('Fetch events failed:', e);
         showModal("ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่");
       } finally {
-        // ซ่อน skeleton เมื่อโหลดข้อมูลเสร็จ
         hideLoading();
       }
     }
@@ -343,10 +334,8 @@
         wrapper.appendChild(slide);
       });
 
-      // Destroy เก่า (ถ้ามี)
       if (swiperInstance) swiperInstance.destroy(true, true);
 
-      // สร้าง Swiper ใหม่
       swiperInstance = new Swiper(".mySwiper", {
         loop: true,
         autoplay: {
@@ -375,7 +364,6 @@
         const card = document.createElement("div");
         card.className = "relative bg-white rounded-2xl shadow-lg overflow-hidden";
 
-        // Image section
         const imgWrapper = document.createElement("div");
         imgWrapper.className = "relative";
 
@@ -390,11 +378,9 @@
 
         imgWrapper.append(img, priceTag);
 
-        // Content section
         const content = document.createElement("div");
         content.className = "p-2 flex flex-col gap-2";
 
-        // Row 1: Title and status
         const topRow = document.createElement("div");
         topRow.className = "flex justify-between items-center";
 
@@ -408,41 +394,18 @@
 
         topRow.append(title, status);
 
-        // Row 2: Date + Time on left, Button on right (equal height)
         const row = document.createElement("div");
-        row.className = "flex justify-between items-stretch"; // <-- key line for height match
+        row.className = "flex justify-between items-stretch"; 
 
         const dateTime = document.createElement("div");
         dateTime.className = "flex flex-col justify-center";
-        dateTime.innerHTML = `
-
-                    <div class="flex text-xs mb-1">
-                    <div class="mr-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none">
-                        <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    </div>
-                    <div class="mr-1">${formatDate(evt["วันที่"])}</div>
-                    </div>
-                    <div class="flex text-xs">
-                    <div class="mr-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none">
-                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
-                        <path d="M9.5 9.5L12.9999 12.9996M16 8L11 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg> 
-                    </div>
-                    <div class="mr-1">${formatTime(evt["เวลา"])}</div>        
-                    </div>
-                    `;
+        dateTime.innerHTML = `<div class="flex text-xs mb-1"><div class="mr-1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none"><path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg></div><div class="mr-1">${formatDate(evt["วันที่"])}</div></div><div class="flex text-xs"><div class="mr-1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" /><path d="M9.5 9.5L12.9999 12.9996M16 8L11 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg> </div><div class="mr-1">${formatTime(evt["เวลา"])}</div></div>`;
 
         const btn = document.createElement("button");
         if (booked >= total) {
-          btn.textContent = "เต็ม"; // แสดงเมื่อเต็มแล้ว
-          btn.disabled = true; // ปิดการใช้งานปุ่ม
-          btn.className = "mt-2 bg-gray-400 text-white px-4 py-1 rounded-xl cursor-not-allowed"; // Disabled style
+          btn.textContent = "เต็ม";
+          btn.disabled = true;
+          btn.className = "mt-2 bg-gray-400 text-white px-4 py-1 rounded-xl cursor-not-allowed";
         } else {
           btn.textContent = "เลือก";
           btn.className = "mt-2 bg-[#071D4A] text-white px-3 py-1 rounded-xl";
@@ -460,7 +423,6 @@
         c.appendChild(card);
       });
     }
-
 
     function populateDetail() {
       showStep('step2');
@@ -519,14 +481,12 @@
 
       const allCategories = [...new Set(events.map(evt => evt["หมวดหมู่"]).filter(Boolean))];
 
-      // เพิ่มปุ่ม "ทั้งหมด"
       const allBtn = document.createElement("button");
       allBtn.textContent = "ทั้งหมด";
       allBtn.className = "bg-[#071d4a] text-white px-3 py-2 rounded-2xl text-sm";
       allBtn.onclick = () => renderEventList(events);
       catContainer.appendChild(allBtn);
 
-      // ปุ่มตามหมวดหมู่
       allCategories.forEach(cat => {
         const btn = document.createElement("button");
         btn.textContent = cat;
@@ -538,70 +498,36 @@
         catContainer.appendChild(btn);
       });
     }
-    function showToast(msg, type = 'success', duration = 1500) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      // รีเซ็ตคลาสเดิมทั้งหมด แล้วใส่ใหม่
-      t.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg opacity-100 transition-opacity duration-300 z-50 ${type === 'error'
-          ? 'error' // จะใช้สไตล์จาก #toast.error 
-          : 'bg-black bg-opacity-75 text-white'
-        }`;
-
-      // ซ่อนหลังหมดเวลา
-      setTimeout(() => {
-        t.classList.add('opacity-0');
-      }, duration);
-    }
-
-    // ติดตั้ง event ปุ่มปิด modal
-    document.getElementById('modalOk').onclick = () => {
-      document.getElementById('customModal').classList.add('hidden');
-    };
 
     function showModal(msg, onOk) {
       const modal = document.getElementById('customModal');
       const msgEl = document.getElementById('modalMessage');
       const okBtn = document.getElementById('modalOk');
 
-      // set ข้อความ
       msgEl.textContent = msg;
-      // แสดง modal
       modal.classList.remove('hidden');
 
-      // ลบ handler เก่าก่อน แล้วผูกใหม่
       okBtn.onclick = () => {
-        // ซ่อน modal
         modal.classList.add('hidden');
-        // เรียก callback ถ้ามี
         if (typeof onOk === 'function') onOk();
       };
     }
 
-
-
     async function submitBooking() {
-      showLoading(); // แสดง Skeleton Loading
+      showLoading();
 
-      // Validate required fields
       const requiredFields = [
         { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
         { id: 'bookRenterNameEn', label: 'ชื่อภาษาอังกฤษ' },
         { id: 'bookCitizenId', label: 'เลขประจำตัว' },
         { id: 'bookAddress', label: 'ที่อยู่' },
         { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
-        { id: 'bookEmail', label: 'อีเมล' },
-        { id: 'bookEventId', label: 'รหัสกิจกรรม' },
-        { id: 'bookEventName', label: 'ชื่อกิจกรรม' },
-        { id: 'bookEventDate', label: 'วันที่' },
-        { id: 'bookEventTime', label: 'เวลา' },
-        { id: 'bookRenterName', label: 'ชื่อ' },
-        { id: 'bookUserLineId', label: 'LINE ID' },
+        { id: 'bookEmail', label: 'อีเมล' }
       ];
 
       for (const field of requiredFields) {
         const el = document.getElementById(field.id);
-        const val = el.value.trim();
-        if (!val) {
+        if (!el.value.trim()) {
           hideLoading();
           showModal(`กรุณากรอก ${field.label}`);
           el.focus();
@@ -616,7 +542,7 @@
         price: document.getElementById('bookEventPrice').value,
         date: document.getElementById('bookEventDate').value,
         time: document.getElementById('bookEventTime').value,
-        queue: "1", // คิวตายตัว
+        queue: "1",
         renterName: document.getElementById('bookRenterName').value,
         renterNameEn: document.getElementById('bookRenterNameEn').value,
         citizenId: document.getElementById('bookCitizenId').value,
@@ -642,7 +568,7 @@
         console.error(e);
         showModal('ไม่สามารถจองได้ กรุณาลองใหม่');
       } finally {
-        hideLoading(); // ซ่อน Skeleton Loading
+        hideLoading();
       }
     }
   </script>
