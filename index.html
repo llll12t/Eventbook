@@ -51,11 +51,10 @@
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed">
   <!-- START: User Profile Display (แก้ไขส่วนนี้) -->
-  <!-- เพิ่ม class 'fixed' เพื่อให้ลอยอยู่กับที่ และปรับ z-index เป็น z-40 -->
   <div id="userProfileDisplay"
-    class="fixed top-4 right-4 z-40 flex items-center p-1 pr-3 bg-white/70 backdrop-blur-sm rounded-full shadow-md">
+    class="fixed top-4 right-4 z-40 flex items-center pl-1 pr-4 py-1 bg-[#DD7929] rounded-full">
     <img id="userProfilePicture" src="https://via.placeholder.com/40" class="w-8 h-8 rounded-full object-cover">
-    <span id="userProfileName" class="ml-2 text-sm font-semibold text-gray-700">Loading...</span>
+    <span id="userProfileName" class="ml-2 text-sm font-semibold text-white">Loading...</span>
   </div>
   <!-- END: User Profile Display -->
 
@@ -246,7 +245,7 @@
         บันทึกการจอง
       </button>
     </form>
-    
+
     <div id="toast"
       class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
     </div>
@@ -256,7 +255,6 @@
 
   <script>
     // --- ไม่มีการแก้ไขในส่วนของ JavaScript ---
-    // Helpers
     function formatDate(d) {
       const dt = new Date(d);
       const dd = String(dt.getDate()).padStart(2, '0');
@@ -279,15 +277,16 @@
       await liff.init({ liffId: LIFF_EVENT });
       if (!liff.isLoggedIn()) {
         liff.login();
-        return; 
+        return;
       }
       const profile = await liff.getProfile();
 
       document.getElementById('bookUserLineId').value = profile.userId;
+      // แก้ไขการแสดงผลโปรไฟล์ให้สอดคล้องกับคลาสใหม่
       document.getElementById('userProfileName').textContent = profile.displayName;
       const profilePic = document.getElementById('userProfilePicture');
       profilePic.src = profile.pictureUrl;
-      profilePic.onerror = () => { 
+      profilePic.onerror = () => {
         profilePic.src = 'https://via.placeholder.com/40';
       }
 
@@ -395,7 +394,7 @@
         topRow.append(title, status);
 
         const row = document.createElement("div");
-        row.className = "flex justify-between items-stretch"; 
+        row.className = "flex justify-between items-stretch";
 
         const dateTime = document.createElement("div");
         dateTime.className = "flex flex-col justify-center";
