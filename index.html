@@ -26,6 +26,7 @@
       --secondary-color: #0A164D;
       --accent-color: #EB8012;
     }
+
     select {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -51,19 +52,68 @@
 </head>
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed">
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#F5F8FD] z-50">
-    <div class="text-center">
-      <div class="relative flex w-64 animate-pulse gap-2 p-4">
-        <div class="h-12 w-12 rounded-full bg-slate-400"></div>
-        <div class="flex-1">
-          <div class="mb-1 h-5 w-3/5 rounded-lg bg-slate-400 text-lg"></div>
-          <div class="h-5 w-[90%] rounded-lg bg-slate-400 text-sm"></div>
+  <!-- START: User Profile Display (เพิ่มส่วนนี้) -->
+  <div id="userProfileDisplay"
+    class="fixed top-4 right-4 z-20 flex items-center p-1 pr-3 bg-white/70 backdrop-blur-sm rounded-full shadow-md">
+    <img id="userProfilePicture" src="https://via.placeholder.com/40" class="w-8 h-8 rounded-full object-cover">
+    <span id="userProfileName" class="ml-2 text-sm font-semibold text-gray-700">Loading...</span>
+  </div>
+  <!-- END: User Profile Display -->
+
+  <!-- Loading Overlay (แก้ไขส่วนนี้) -->
+  <div id="loadingOverlay" class="fixed inset-0 flex items-start justify-center bg-[#F5F8FD] z-50 p-4 max-w-md mx-auto">
+    <div class="w-full animate-pulse">
+      <!-- Skeleton for Banner -->
+      <div class="h-24 bg-slate-200 rounded-xl mb-4"></div>
+      <!-- Skeleton for Category Filters -->
+      <div class="flex flex-wrap gap-2 justify-center mb-6 px-2 py-4">
+        <div class="h-10 w-20 bg-slate-300 rounded-2xl"></div>
+        <div class="h-10 w-24 bg-slate-200 rounded-xl"></div>
+        <div class="h-10 w-20 bg-slate-200 rounded-xl"></div>
+        <div class="h-10 w-28 bg-slate-200 rounded-xl"></div>
+      </div>
+      <!-- Skeleton for Event List -->
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Skeleton Card 1 -->
+        <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
+          <div class="h-32 bg-slate-200 rounded-xl"></div>
+          <div class="p-2 space-y-3">
+            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+            <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
+          </div>
         </div>
-        <div class="absolute bottom-5 right-0 h-4 w-4 rounded-full bg-slate-400"></div>
+        <!-- Skeleton Card 2 -->
+        <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
+          <div class="h-32 bg-slate-200 rounded-xl"></div>
+          <div class="p-2 space-y-3">
+            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+            <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
+          </div>
+        </div>
+        <!-- Skeleton Card 3 -->
+        <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
+          <div class="h-32 bg-slate-200 rounded-xl"></div>
+          <div class="p-2 space-y-3">
+            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+            <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
+          </div>
+        </div>
+        <!-- Skeleton Card 4 -->
+        <div class="bg-slate-100 rounded-2xl shadow-lg p-2">
+          <div class="h-32 bg-slate-200 rounded-xl"></div>
+          <div class="p-2 space-y-3">
+            <div class="h-4 bg-slate-200 rounded w-3/4"></div>
+            <div class="h-3 bg-slate-200 rounded w-1/2"></div>
+            <div class="h-8 bg-slate-300 rounded-xl w-full"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
 
   <!-- แทรกใน <body> ชั้นแรก -->
   <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
@@ -229,10 +279,24 @@
     let selectedEvent = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
+      // แสดง skeleton ทันที
+      showLoading();
       await liff.init({ liffId: LIFF_EVENT });
-      if (!liff.isLoggedIn()) liff.login();
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return; // หยุดการทำงาน script ชั่วคราวจนกว่าจะ login เสร็จ
+      }
       const profile = await liff.getProfile();
+
+      // START: อัปเดตข้อมูลผู้ใช้ (เพิ่มส่วนนี้)
       document.getElementById('bookUserLineId').value = profile.userId;
+      document.getElementById('userProfileName').textContent = profile.displayName;
+      const profilePic = document.getElementById('userProfilePicture');
+      profilePic.src = profile.pictureUrl;
+      profilePic.onerror = () => { // กรณีรูปโปรไฟล์มีปัญหา
+        profilePic.src = 'https://via.placeholder.com/40';
+      }
+      // END: อัปเดตข้อมูลผู้ใช้
 
       await fetchAllEvents();
 
@@ -242,13 +306,14 @@
       document.getElementById('backToStep2').onclick = () => showStep('step2');
     });
 
-    function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
-    function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+    function showLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+    function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
+
 
     let swiperInstance;
 
     async function fetchAllEvents() {
-      showLoading();
+      // showLoading() ถูกเรียกไปแล้วใน DOMContentLoaded
       try {
         const res = await fetch(EVENT_URL);
         const data = await res.json();
@@ -260,7 +325,9 @@
         renderBannersWithSwiper(bannersData);
       } catch (e) {
         console.error('Fetch events failed:', e);
+        showModal("ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่");
       } finally {
+        // ซ่อน skeleton เมื่อโหลดข้อมูลเสร็จ
         hideLoading();
       }
     }
@@ -315,7 +382,7 @@
         const img = document.createElement("img");
         img.src = evt["รูปภาพ"];
         img.className = "w-full h-32 object-cover";
-        img.onerror = () => { img.src = 'placeholder.png'; };
+        img.onerror = () => { img.src = 'https://via.placeholder.com/300x200?text=No+Image'; };
 
         const priceTag = document.createElement("div");
         priceTag.className = "absolute top-2 left-2 bg-orange-500 text-white text-sm font-bold px-3 py-1 rounded-full";
@@ -491,31 +558,29 @@
       document.getElementById('customModal').classList.add('hidden');
     };
 
-    // ฟังก์ชันเรียกโชว์ modal
-   // แทรกในสคริปต์ของคุณ (แทนตัวเดิม)
-function showModal(msg, onOk) {
-  const modal = document.getElementById('customModal');
-  const msgEl = document.getElementById('modalMessage');
-  const okBtn = document.getElementById('modalOk');
-  
-  // set ข้อความ
-  msgEl.textContent = msg;
-  // แสดง modal
-  modal.classList.remove('hidden');
-  
-  // ลบ handler เก่าก่อน แล้วผูกใหม่
-  okBtn.onclick = () => {
-    // ซ่อน modal
-    modal.classList.add('hidden');
-    // เรียก callback ถ้ามี
-    if (typeof onOk === 'function') onOk();
-  };
-}
+    function showModal(msg, onOk) {
+      const modal = document.getElementById('customModal');
+      const msgEl = document.getElementById('modalMessage');
+      const okBtn = document.getElementById('modalOk');
+
+      // set ข้อความ
+      msgEl.textContent = msg;
+      // แสดง modal
+      modal.classList.remove('hidden');
+
+      // ลบ handler เก่าก่อน แล้วผูกใหม่
+      okBtn.onclick = () => {
+        // ซ่อน modal
+        modal.classList.add('hidden');
+        // เรียก callback ถ้ามี
+        if (typeof onOk === 'function') onOk();
+      };
+    }
 
 
 
     async function submitBooking() {
-      showLoading();
+      showLoading(); // แสดง Skeleton Loading
 
       // Validate required fields
       const requiredFields = [
@@ -534,7 +599,8 @@ function showModal(msg, onOk) {
       ];
 
       for (const field of requiredFields) {
-        const val = document.getElementById(field.id).value.trim();
+        const el = document.getElementById(field.id);
+        const val = el.value.trim();
         if (!val) {
           hideLoading();
           showModal(`กรุณากรอก ${field.label}`);
@@ -565,7 +631,6 @@ function showModal(msg, onOk) {
         await fetch(EVENT_URL, { method: 'POST', body: JSON.stringify(payload) });
         await fetchAllEvents();
 
-        // แสดง toast แล้วปิด LIFF หลัง 500ms
         showModal('จองสำเร็จ 🎉', () => {
           if (liff.isInClient()) {
             liff.closeWindow();
@@ -575,11 +640,9 @@ function showModal(msg, onOk) {
         });
       } catch (e) {
         console.error(e);
-        hideLoading();
-        // ไม่ต้องปิด LIFF ในกรณี error
         showModal('ไม่สามารถจองได้ กรุณาลองใหม่');
       } finally {
-        hideLoading();
+        hideLoading(); // ซ่อน Skeleton Loading
       }
     }
   </script>
