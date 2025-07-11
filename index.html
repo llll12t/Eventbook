@@ -65,16 +65,15 @@
     </div>
   </div>
 
-  <!-- START: แถบโปรไฟล์ LINE (เพิ่มใหม่) -->
+  <!-- แถบโปรไฟล์ LINE -->
   <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-sm shadow-sm">
     <div class="max-w-md mx-auto flex items-center justify-end p-2 space-x-3">
       <span id="profileName" class="text-sm font-semibold text-gray-700">Loading...</span>
       <img id="profileImage" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
     </div>
   </header>
-  <!-- END: แถบโปรไฟล์ LINE -->
 
-  <!-- Modal แจ้งเตือน -->
+  <!-- Modal แจ้งเตือน (สำหรับ error) -->
   <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-2xl shadow-lg max-w-xs w-full">
       <h3 class="text-lg font-semibold mb-4">แจ้งเตือน</h3>
@@ -83,8 +82,7 @@
     </div>
   </div>
 
-
-  <!-- STEP 1: เลือกกิจกรรม (ปรับ p-4 เป็น pt-4 pb-4 px-4 เพื่อไม่ให้ชนกับ header) -->
+  <!-- STEP 1: เลือกกิจกรรม -->
   <div id="step1" class="pt-4 pb-4 px-4 max-w-md mx-auto">
     <!-- Swiper Banner -->
     <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
@@ -97,7 +95,7 @@
     </div>
     <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
   </div>
-  <!-- STEP 2: รายละเอียดกิจกรรม (ปรับ p-4 เป็น pt-4 pb-4 px-4) -->
+  <!-- STEP 2: รายละเอียดกิจกรรม -->
   <div id="step2" class="hidden pt-4 pb-4 px-4 max-w-md mx-auto">
     <button id="backToStep1" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
     <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4" />
@@ -136,7 +134,7 @@
     </div>
   </div>
 
-  <!-- STEP 3: ฟอร์มจอง (ปรับ p-4 เป็น pt-4 pb-4 px-4) -->
+  <!-- STEP 3: ฟอร์มจอง -->
   <div id="step3" class="hidden pt-4 pb-4 px-4 max-w-md mx-auto">
     <button id="backToStep2" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
     <form id="bookingForm" class="space-y-4 bg-white p-4 rounded-2xl shadow">
@@ -198,14 +196,10 @@
         <textarea id="bookNote" class="w-full border rounded-2xl p-2 text-sm" rows="3"></textarea>
       </div>
       <input type="hidden" id="bookUserLineId" required />
-      <!-- (ปรับปรุง) เพิ่ม class flex, items-center, justify-center เพื่อจัด spinner -->
       <button type="button" id="submitBookingBtn" class="bg-[#071d4a] text-white w-full py-3 rounded-2xl text-sm flex items-center justify-center">
         บันทึกการจอง
       </button>
     </form>
-    <!-- Toast Message -->
-    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 z-50">
-    </div>
 
     <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40 hidden"></pre>
   </div>
@@ -233,18 +227,15 @@
       await liff.init({ liffId: LIFF_EVENT });
       if (!liff.isLoggedIn()) {
         liff.login();
-        return; // หยุดการทำงาน script ชั่วคราวจนกว่าจะ login เสร็จ
+        return; 
       }
       
       const profile = await liff.getProfile();
       document.getElementById('bookUserLineId').value = profile.userId;
-
-      // START: (เพิ่มใหม่) แสดงข้อมูลโปรไฟล์
       document.getElementById('profileName').textContent = profile.displayName;
       if (profile.pictureUrl) {
          document.getElementById('profileImage').src = profile.pictureUrl;
       }
-      // END: (เพิ่มใหม่) แสดงข้อมูลโปรไฟล์
 
       await fetchAllEvents();
 
@@ -280,28 +271,19 @@
     function renderBannersWithSwiper(banners) {
       const wrapper = document.getElementById('bannerWrapper');
       wrapper.innerHTML = '';
-
       banners.forEach(b => {
         const slide = document.createElement('div');
         slide.className = "swiper-slide";
         slide.innerHTML = `<img src="${b['รูปแบนเนอร์']}" alt="banner" class="w-full h-24 object-cover" />`;
         wrapper.appendChild(slide);
       });
-
       if (swiperInstance) swiperInstance.destroy(true, true);
-
-      swiperInstance = new Swiper(".mySwiper", {
-        loop: true,
-        autoplay: { delay: 4000, disableOnInteraction: false },
-        pagination: { el: ".swiper-pagination", clickable: true },
-        navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" }
-      });
+      swiperInstance = new Swiper(".mySwiper", { loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, pagination: { el: ".swiper-pagination", clickable: true } });
     }
 
     function renderEventList(events) {
       const c = document.getElementById("step1EventList");
       c.innerHTML = "";
-
       events.forEach(evt => {
         const booked = Number(evt["คิว"]) || 0;
         const total = Number(evt["จำนวนจำกัด"]) || 0;
@@ -416,7 +398,7 @@
       });
     }
 
-    function showModal(msg, onOk) {
+    function showModal(msg) {
       const modal = document.getElementById('customModal');
       const msgEl = document.getElementById('modalMessage');
       const okBtn = document.getElementById('modalOk');
@@ -424,16 +406,14 @@
       modal.classList.remove('hidden');
       okBtn.onclick = () => {
         modal.classList.add('hidden');
-        if (typeof onOk === 'function') onOk();
       };
     }
 
-    // START: (ปรับปรุง) ฟังก์ชัน submitBooking ใหม่ทั้งหมด
+    // START: (ปรับปรุง) ฟังก์ชัน submitBooking
     async function submitBooking() {
       const btn = document.getElementById('submitBookingBtn');
       const originalBtnText = btn.innerHTML;
       
-      // Validate required fields
       const requiredFields = [
         { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
         { id: 'bookRenterNameEn', label: 'ชื่อภาษาอังกฤษ' },
@@ -453,7 +433,6 @@
         }
       }
 
-      // เปลี่ยนปุ่มเป็นสถานะ Loading
       btn.disabled = true;
       btn.innerHTML = `
         <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -470,7 +449,7 @@
         price: document.getElementById('bookEventPrice').value,
         date: document.getElementById('bookEventDate').value,
         time: document.getElementById('bookEventTime').value,
-        queue: "1", // คิวตายตัว
+        queue: "1",
         renterName: document.getElementById('bookRenterName').value,
         renterNameEn: document.getElementById('bookRenterNameEn').value,
         citizenId: document.getElementById('bookCitizenId').value,
@@ -482,20 +461,25 @@
       };
 
       try {
+        // 1. ส่งข้อมูลการจองไปที่ Server
         await fetch(EVENT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        await fetchAllEvents();
-
-        // เมื่อสำเร็จ แสดง Modal และกำหนดให้ปิด LIFF เมื่อกด OK
-        showModal('จองสำเร็จ 🎉', () => {
-          if (liff.isInClient()) {
+        
+        // ---- การเปลี่ยนแปลงอยู่ตรงนี้ ----
+        // 2. [ลบออก] ไม่จำเป็นต้อง fetch ข้อมูลใหม่ เพราะเราจะปิด LIFF ทันที
+        // await fetchAllEvents(); 
+        
+        // 3. ปิด LIFF ทันทีเมื่อบันทึกสำเร็จ
+        if (liff.isInClient()) {
             liff.closeWindow();
-          } else {
-            // กรณีทดสอบนอก LINE ให้กลับไปหน้าแรกและคืนค่าปุ่ม
+        } else {
+            // กรณีทดสอบนอก LINE ให้แสดง alert และกลับไปหน้าแรก
+            alert("จองสำเร็จ (ใน LINE หน้าต่างจะถูกปิด)");
             showStep('step1');
             btn.disabled = false;
             btn.innerHTML = originalBtnText;
-          }
-        });
+        }
+        // ---- จบส่วนที่เปลี่ยนแปลง ----
+
       } catch (e) {
         console.error(e);
         // เมื่อเกิด Error แสดง Modal และคืนค่าปุ่มให้เป็นเหมือนเดิม
@@ -504,7 +488,7 @@
         btn.innerHTML = originalBtnText;
       }
     }
-    // END: (ปรับปรุง) ฟังก์ชัน submitBooking ใหม่ทั้งหมด
+    // END: (ปรับปรุง) ฟังก์ชัน submitBooking
 
   </script>
 </body>
