@@ -19,7 +19,6 @@
   <script src="config.js"></script>
   <!-- LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-  <!-- กำหนดธีมสีใน :root (3 ค่าสี) -->
   <style>
     :root {
       --primary-color: #ffffff;
@@ -31,27 +30,11 @@
       -moz-appearance: none;
       appearance: none;
     }
-
-    .glass {
-      background: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-      backdrop-filter: blur(3.5px);
-      -webkit-backdrop-filter: blur(3.5px);
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-    }
-
-    #toast.error {
-      /* Tailwind utility ผ่าน @apply ไม่ได้บน CDN เลยใส่เต็มๆ */
-      background-color: #dc2626;
-      /* bg-red-600 */
-      color: white;
-    }
   </style>
 </head>
 
 <body class="bg-gradient-to-b from-blue-100 via-orange-100 to-white min-h-screen relative bg-fixed">
-  <!-- Loading Overlay (สำหรับตอนเปิดหน้าครั้งแรก) -->
+  <!-- Loading Overlay -->
   <div id="loadingOverlay" class="fixed inset-0 flex items-center justify-center bg-[#F5F8FD] z-50">
     <div class="text-center">
       <div class="relative flex w-64 animate-pulse gap-2 p-4">
@@ -65,9 +48,9 @@
     </div>
   </div>
 
+  <!-- [ลบออก] ไม่ใช้ Header แบบเดิมแล้ว -->
 
-
-  <!-- Modal แจ้งเตือน (สำหรับ error) -->
+  <!-- Modal แจ้งเตือน -->
   <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-2xl shadow-lg max-w-xs w-full">
       <h3 class="text-lg font-semibold mb-4">แจ้งเตือน</h3>
@@ -76,16 +59,20 @@
     </div>
   </div>
 
-  <!-- STEP 1: เลือกกิจกรรม -->
-  <div id="step1" class="pt-4 pb-4 px-4 max-w-md mx-auto">
-    <div class="bg-white/80 backdrop-blur-sm flex items-center justify-end p-2 space-x-3">
-      <span id="profileName" class="text-sm font-semibold text-gray-700">Loading...</span>
-      <img id="profileImage" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
-    </div>    
 
-<div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
-      <div class="swiper-wrapper" id="bannerWrapper">
+  <!-- STEP 1: เลือกกิจกรรม -->
+  <div id="step1" class="p-4 max-w-md mx-auto">
+    <!-- [เพิ่มใหม่] Top Bar สำหรับ Step 1 -->
+    <div class="flex justify-end items-center mb-4">
+      <div class="flex items-center space-x-2">
+        <span class="profile-name text-sm font-semibold text-gray-700"></span>
+        <img class="profile-image w-10 h-10 rounded-full object-cover border-2 border-white shadow" src="https://via.placeholder.com/40">
       </div>
+    </div>
+    
+    <!-- Swiper Banner -->
+    <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
+      <div class="swiper-wrapper" id="bannerWrapper"></div>
       <div class="swiper-pagination"></div>
     </div>
     <div class="px-2 py-4 mb-4">
@@ -93,41 +80,37 @@
     </div>
     <div id="step1EventList" class="grid grid-cols-2 gap-4"></div>
   </div>
+  
   <!-- STEP 2: รายละเอียดกิจกรรม -->
-  <div id="step2" class="hidden pt-4 pb-4 px-4 max-w-md mx-auto">
-    <button id="backToStep1" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
-    <div class="bg-white/80 backdrop-blur-sm flex items-center justify-end p-2 space-x-3">
-      <span id="profileName" class="text-sm font-semibold text-gray-700">Loading...</span>
-      <img id="profileImage" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
-    </div>    
-
+  <div id="step2" class="hidden p-4 max-w-md mx-auto">
+    <!-- [เพิ่มใหม่] Top Bar สำหรับ Step 2 -->
+    <div class="flex justify-between items-center mb-4">
+      <button id="backToStep1" class="bg-[#DD7929] px-6 py-2 text-white rounded-full">กลับ</button>
+      <div class="flex items-center space-x-2">
+        <span class="profile-name text-sm font-semibold text-gray-700"></span>
+        <img class="profile-image w-10 h-10 rounded-full object-cover border-2 border-white shadow" src="https://via.placeholder.com/40">
+      </div>
+    </div>
+    
     <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4" />
     <div id="detailGallery" class="flex space-x-2 overflow-x-auto mb-4"></div>
-    <div class="flex  ">
+    <div class="flex">
       <h2 id="detailEventName" class="text-lg font-bold"></h2>
       <p id="detailEventCategory" class="text-sm text-gray-500 mb-1 p-1"></p>
     </div>
     <div class="flex justify-between items-center mb-2">
       <div class="flex">
         <div class="pt-1 mr-2">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" color="#000000" fill="none">
-            <path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            <path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none"><path d="M16 2V6M8 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M13 4H11C7.22876 4 5.34315 4 4.17157 5.17157C3 6.34315 3 8.22876 3 12V14C3 17.7712 3 19.6569 4.17157 20.8284C5.34315 22 7.22876 22 11 22H13C16.7712 22 18.6569 22 19.8284 20.8284C21 19.6569 21 17.7712 21 14V12C21 8.22876 21 6.34315 19.8284 5.17157C18.6569 4 16.7712 4 13 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M3 10H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /><path d="M11.9955 14H12.0045M11.9955 18H12.0045M15.991 14H16M8 14H8.00897M8 18H8.00897" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
         </div>
         <div id="detailEventDateTime" class="text-sm text-gray-700"></div>
       </div>
       <div id="detailEventPrice" class="text-2xl font-bold text-red-500"></div>
     </div>
     <div class="flex justify-between items-center mb-2">
-      <div id="detailEventQueue" class="w-40 text-center mr-4 rounded-full border-2 border-orange-500 px-4 py-2 font-bold text-orange-500">
-      </div>
+      <div id="detailEventQueue" class="w-40 text-center mr-4 rounded-full border-2 border-orange-500 px-4 py-2 font-bold text-orange-500"></div>
       <div class="w-full">
-        <button id="detailBookBtn" class="w-full px-4 py-2 rounded-2xl text-white bg-[#071d4a]">
-          จองกิจกรรมนี้
-        </button>
+        <button id="detailBookBtn" class="w-full px-4 py-2 rounded-2xl text-white bg-[#071d4a]">จองกิจกรรมนี้</button>
       </div>
     </div>
     <div>
@@ -138,9 +121,18 @@
   </div>
 
   <!-- STEP 3: ฟอร์มจอง -->
-  <div id="step3" class="hidden pt-4 pb-4 px-4 max-w-md mx-auto">
-    <button id="backToStep2" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
+  <div id="step3" class="hidden p-4 max-w-md mx-auto">
+    <!-- [เพิ่มใหม่] Top Bar สำหรับ Step 3 -->
+    <div class="flex justify-between items-center mb-4">
+        <button id="backToStep2" class="bg-[#DD7929] px-6 py-2 text-white rounded-full">กลับ</button>
+        <div class="flex items-center space-x-2">
+            <span class="profile-name text-sm font-semibold text-gray-700"></span>
+            <img class="profile-image w-10 h-10 rounded-full object-cover border-2 border-white shadow" src="https://via.placeholder.com/40">
+        </div>
+    </div>
+
     <form id="bookingForm" class="space-y-4 bg-white p-4 rounded-2xl shadow">
+      <!-- ... (เนื้อหาฟอร์มเหมือนเดิม) ... -->
       <input type="hidden" id="bookEventId" required />
       <div>
         <label class="block text-xs text-gray-500">ชื่อกิจกรรม</label>
@@ -203,12 +195,11 @@
         บันทึกการจอง
       </button>
     </form>
-
     <pre id="debugData" class="mt-4 p-2 bg-gray-100 text-xs overflow-auto max-h-40 hidden"></pre>
   </div>
 
   <script>
-    // Helpers
+    // ... (ส่วน Helper functions และตัวแปร เหมือนเดิม) ...
     function formatDate(d) {
       const dt = new Date(d);
       const dd = String(dt.getDate()).padStart(2, '0');
@@ -222,9 +213,9 @@
       const mi = String(dt.getMinutes()).padStart(2, '0');
       return `${hh}:${mi}`;
     }
-
     let eventsData = [];
     let selectedEvent = null;
+
 
     document.addEventListener('DOMContentLoaded', async () => {
       await liff.init({ liffId: LIFF_EVENT });
@@ -235,10 +226,17 @@
       
       const profile = await liff.getProfile();
       document.getElementById('bookUserLineId').value = profile.userId;
-      document.getElementById('profileName').textContent = profile.displayName;
-      if (profile.pictureUrl) {
-         document.getElementById('profileImage').src = profile.pictureUrl;
-      }
+
+      // [ปรับปรุง] อัปเดตข้อมูลโปรไฟล์โดยใช้ class
+      const profileNameElements = document.querySelectorAll('.profile-name');
+      const profileImageElements = document.querySelectorAll('.profile-image');
+
+      profileNameElements.forEach(el => el.textContent = profile.displayName);
+      profileImageElements.forEach(el => {
+          if (profile.pictureUrl) {
+            el.src = profile.pictureUrl;
+          }
+      });
 
       await fetchAllEvents();
 
@@ -248,11 +246,10 @@
       document.getElementById('backToStep2').onclick = () => showStep('step2');
     });
 
+    // ... (ฟังก์ชันอื่นๆ ทั้งหมดเหมือนเดิม ไม่ต้องเปลี่ยนแปลง) ...
     function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
     function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-
     let swiperInstance;
-
     async function fetchAllEvents() {
       showLoading();
       try {
@@ -260,7 +257,6 @@
         const data = await res.json();
         eventsData = data.events;
         bannersData = data.banners;
-
         renderCategoryButtons(eventsData);
         renderEventList(eventsData);
         renderBannersWithSwiper(bannersData);
@@ -270,7 +266,6 @@
         hideLoading();
       }
     }
-
     function renderBannersWithSwiper(banners) {
       const wrapper = document.getElementById('bannerWrapper');
       wrapper.innerHTML = '';
@@ -283,7 +278,6 @@
       if (swiperInstance) swiperInstance.destroy(true, true);
       swiperInstance = new Swiper(".mySwiper", { loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, pagination: { el: ".swiper-pagination", clickable: true } });
     }
-
     function renderEventList(events) {
       const c = document.getElementById("step1EventList");
       c.innerHTML = "";
@@ -334,7 +328,6 @@
         c.appendChild(card);
       });
     }
-
     function populateDetail() {
       showStep('step2');
       const booked = Number(selectedEvent['คิว']) || 0;
@@ -370,7 +363,6 @@
         btn.onclick = () => { showStep('step3'); populateBookingForm(); };
       }
     }
-
     function populateBookingForm() {
       showStep('step3');
       document.getElementById('bookEventId').value = selectedEvent['ไอดีกิจกรรม'];
@@ -380,9 +372,7 @@
       document.getElementById('bookEventDate').value = formatDate(selectedEvent['วันที่']);
       document.getElementById('bookEventTime').value = formatTime(selectedEvent['เวลา']);
     }
-
     function showStep(id) { ['step1', 'step2', 'step3'].forEach(s => document.getElementById(s).classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); window.scrollTo(0,0); }
-
     function renderCategoryButtons(events) {
       const catContainer = document.getElementById('categoryFilter');
       catContainer.innerHTML = '';
@@ -400,7 +390,6 @@
         catContainer.appendChild(btn);
       });
     }
-
     function showModal(msg) {
       const modal = document.getElementById('customModal');
       const msgEl = document.getElementById('modalMessage');
@@ -411,12 +400,9 @@
         modal.classList.add('hidden');
       };
     }
-
-    // START: (ปรับปรุง) ฟังก์ชัน submitBooking
     async function submitBooking() {
       const btn = document.getElementById('submitBookingBtn');
       const originalBtnText = btn.innerHTML;
-      
       const requiredFields = [
         { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
         { id: 'bookRenterNameEn', label: 'ชื่อภาษาอังกฤษ' },
@@ -425,7 +411,6 @@
         { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
         { id: 'bookEmail', label: 'อีเมล' }
       ];
-
       for (const field of requiredFields) {
         const el = document.getElementById(field.id);
         const val = el.value.trim();
@@ -435,63 +420,28 @@
           return;
         }
       }
-
       btn.disabled = true;
-      btn.innerHTML = `
-        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        กำลังบันทึก...
-      `;
-
+      btn.innerHTML = `<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>กำลังบันทึก...`;
       const payload = {
-        eventId: document.getElementById('bookEventId').value,
-        eventName: document.getElementById('bookEventName').value,
-        category: document.getElementById('bookEventCategory').value,
-        price: document.getElementById('bookEventPrice').value,
-        date: document.getElementById('bookEventDate').value,
-        time: document.getElementById('bookEventTime').value,
-        queue: "1",
-        renterName: document.getElementById('bookRenterName').value,
-        renterNameEn: document.getElementById('bookRenterNameEn').value,
-        citizenId: document.getElementById('bookCitizenId').value,
-        address: document.getElementById('bookAddress').value,
-        phone: document.getElementById('bookPhone').value,
-        email: document.getElementById('bookEmail').value,
-        note: document.getElementById('bookNote').value,
-        userLineId: document.getElementById('bookUserLineId').value
+        eventId: document.getElementById('bookEventId').value, eventName: document.getElementById('bookEventName').value, category: document.getElementById('bookEventCategory').value, price: document.getElementById('bookEventPrice').value, date: document.getElementById('bookEventDate').value, time: document.getElementById('bookEventTime').value, queue: "1", renterName: document.getElementById('bookRenterName').value, renterNameEn: document.getElementById('bookRenterNameEn').value, citizenId: document.getElementById('bookCitizenId').value, address: document.getElementById('bookAddress').value, phone: document.getElementById('bookPhone').value, email: document.getElementById('bookEmail').value, note: document.getElementById('bookNote').value, userLineId: document.getElementById('bookUserLineId').value
       };
-
       try {
-        // 1. ส่งข้อมูลการจองไปที่ Server
         await fetch(EVENT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        
-        // ---- การเปลี่ยนแปลงอยู่ตรงนี้ ----
-        // 2. [ลบออก] ไม่จำเป็นต้อง fetch ข้อมูลใหม่ เพราะเราจะปิด LIFF ทันที
-        // await fetchAllEvents(); 
-        
-        // 3. ปิด LIFF ทันทีเมื่อบันทึกสำเร็จ
         if (liff.isInClient()) {
             liff.closeWindow();
         } else {
-            // กรณีทดสอบนอก LINE ให้แสดง alert และกลับไปหน้าแรก
             alert("จองสำเร็จ (ใน LINE หน้าต่างจะถูกปิด)");
             showStep('step1');
             btn.disabled = false;
             btn.innerHTML = originalBtnText;
         }
-        // ---- จบส่วนที่เปลี่ยนแปลง ----
-
       } catch (e) {
         console.error(e);
-        // เมื่อเกิด Error แสดง Modal และคืนค่าปุ่มให้เป็นเหมือนเดิม
         showModal('ไม่สามารถจองได้ กรุณาลองใหม่');
         btn.disabled = false;
         btn.innerHTML = originalBtnText;
       }
     }
-    // END: (ปรับปรุง) ฟังก์ชัน submitBooking
 
   </script>
 </body>
