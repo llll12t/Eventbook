@@ -65,13 +65,7 @@
     </div>
   </div>
 
-  <!-- แถบโปรไฟล์ LINE -->
-  <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-sm shadow-sm">
-    <div class="max-w-md mx-auto flex items-center justify-end p-2 space-x-3">
-      <span id="profileName" class="text-sm font-semibold text-gray-700">Loading...</span>
-      <img id="profileImage" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
-    </div>
-  </header>
+
 
   <!-- Modal แจ้งเตือน (สำหรับ error) -->
   <div id="customModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
@@ -84,8 +78,12 @@
 
   <!-- STEP 1: เลือกกิจกรรม -->
   <div id="step1" class="pt-4 pb-4 px-4 max-w-md mx-auto">
-    <!-- Swiper Banner -->
-    <div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
+    <div class="bg-white/80 backdrop-blur-sm flex items-center justify-end p-2 space-x-3">
+      <span id="profileName" class="text-sm font-semibold text-gray-700">Loading...</span>
+      <img id="profileImage" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
+    </div>    
+
+<div class="swiper mySwiper max-w-md mx-auto mb-4 rounded-xl overflow-hidden shadow-lg">
       <div class="swiper-wrapper" id="bannerWrapper">
       </div>
       <div class="swiper-pagination"></div>
@@ -98,6 +96,11 @@
   <!-- STEP 2: รายละเอียดกิจกรรม -->
   <div id="step2" class="hidden pt-4 pb-4 px-4 max-w-md mx-auto">
     <button id="backToStep1" class="bg-[#DD7929] mb-4 px-6 py-2 text-white rounded-full">กลับ</button>
+    <div class="bg-white/80 backdrop-blur-sm flex items-center justify-end p-2 space-x-3">
+      <span id="profileName" class="text-sm font-semibold text-gray-700">Loading...</span>
+      <img id="profileImage" src="https://via.placeholder.com/40" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow">
+    </div>    
+
     <img id="detailMainImg" class="w-full h-48 object-cover rounded-2xl mb-4" />
     <div id="detailGallery" class="flex space-x-2 overflow-x-auto mb-4"></div>
     <div class="flex  ">
