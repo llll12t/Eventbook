@@ -166,14 +166,7 @@
         <label class="block text-sm font-semibold mb-1">ชื่อ-สกุล</label>
         <input type="text" id="bookRenterName" class="w-full border rounded-2xl p-2 text-sm" required />
       </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">ชื่อ-สกุล (English)</label>
-        <input type="text" id="bookRenterNameEn" class="w-full border rounded-2xl p-2 text-sm" required />
-      </div>
-      <div>
-        <label class="block text-sm font-semibold mb-1">เลขบัตรประชาชน</label>
-        <input type="text" id="bookCitizenId" class="w-full border rounded-2xl p-2 text-sm" maxlength="13" required />
-      </div>
+      
       <div>
         <label class="block text-sm font-semibold mb-1">ที่อยู่</label>
         <textarea id="bookAddress" class="w-full border rounded-2xl p-2 text-sm" rows="3" required></textarea>
@@ -405,8 +398,6 @@
       const originalBtnText = btn.innerHTML;
       const requiredFields = [
         { id: 'bookRenterName', label: 'ชื่อ-สกุล' },
-        { id: 'bookRenterNameEn', label: 'ชื่อภาษาอังกฤษ' },
-        { id: 'bookCitizenId', label: 'เลขประจำตัว' },
         { id: 'bookAddress', label: 'ที่อยู่' },
         { id: 'bookPhone', label: 'เบอร์ติดต่อ' },
         { id: 'bookEmail', label: 'อีเมล' }
